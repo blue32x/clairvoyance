@@ -1,7 +1,15 @@
 #include<cstdlib>
 #include<iostream>
-#include<opencv/cv.h>
-#include<opencv/highgui.h>
-#include<opencv2/opencv.hpp>
+
+#include <Windows.h>
+#include <NuiApi.h>
+//#include <iostream>
+
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+#include <opencv/cxcore.h>
+
+
+
 using namespace std;
 using namespace cv;
