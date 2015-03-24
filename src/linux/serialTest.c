@@ -33,9 +33,8 @@
 int main ()
 {
   int fd ;
-  char send[] = {162, 3, 1, 100, 10};
 
-  if ((fd = serialOpen ("/dev/ttyAMA0", 19200)) < 0)
+  if ((fd = serialOpen ("/dev/ttyAMA0", 4800)) < 0)
   {
     fprintf (stderr, "Unable to open serial device: %s\n", strerror (errno)) ;
     return 1 ;
