@@ -233,50 +233,49 @@ void Newset_distance(unsigned char data1, unsigned char data2, unsigned char dat
 
 void main()
 {
-	/*
     unsigned int v;
     unsigned int st1,st2;
     UART1_Open();
     //Set_SteeringSpeed(100);
     while(1){
-    v=Get_wheel_value();
-    //printf("%d\n",v);
-    if(v>=0&& v<=128)
-    {   
-        v= (v*5)+1500;
-        st1=((v & 0xff00)>>8);
-        st2=(v & 0x00ff);
-        Newset_steering(st1,st2);
-        //Set_Steering(st1,st2);
-        //printf("%d,%d\n",st1,st2);
-    }
-    else if(v>128&&v<=255)
-    {
-        v=1500-(255-v)*5;
-        st1=((v & 0xff00)>>8);
-        st2=(v & 0x00ff);
-        Newset_steering(st1,st2);
-        //Set_Steering(st1,st2);
-        //printf("%d\n",v);
-    }
-    else if(v>=1000)
-    {   v=v-1000;
-        printf("%d\n",v);
-        Set_Accel(v);
-        //v=v*31;
-        v=v*4;
-        Newset_speed(((0xff00&v)>>8),(0x00ff&v));
-        Newset_distance(0x00,0x00,0xff,0xff);
-        //Set_Speed(((0xff00&v)>>8),(0x00ff&v));
-        //Set_Distance(0xFF, 0xFF); 
-        //Go_Distance_Forward(); 
-    }
-
-
+	    printf("input wheel value : ");
+	    scanf("%d",&v);
+	    if(v>=0&& v<=128)
+	    {   
+		v= (v*5)+1500;
+		st1=((v & 0xff00)>>8);
+		st2=(v & 0x00ff);
+		Newset_steering(st1,st2);
+		//Set_Steering(st1,st2);
+		printf("if case1\n");
+	    }
+	    else if(v>128&&v<=255)
+	    {
+		v=1500-(255-v)*5;
+		st1=((v & 0xff00)>>8);
+		st2=(v & 0x00ff);
+		Newset_steering(st1,st2);
+		//Set_Steering(st1,st2);
+		printf("if case2\n");
+	    }
+	    else if(v>=1000)
+	    {   
+		v=v-1000;
+		printf("%d\n",v);
+		Set_Accel(v);
+		//v=v*31;
+		v=v*4;
+		Newset_speed(((0xff00&v)>>8),(0x00ff&v));
+		Newset_distance(0x00,0x00,0xff,0xff);
+		printf("if case3\n",v);
+		//Set_Speed(((0xff00&v)>>8),(0x00ff&v));
+		//Set_Distance(0xFF, 0xFF); 
+		//Go_Distance_Forward(); 
+	    }
     }
     //Get_wheel_value();
 
-	*/
+/*
     UART1_Open();
     Set_Accel(0x19);
     Set_Speed(0x05, 0xDC);
@@ -285,4 +284,5 @@ void main()
     Set_Steering(0x05, 0xDC);
     Go_Step_Forward(); //설정된 Step만큼 전진한다.
     Go_Distance_Forward(); //설정된 거리만큼 전진한다.
+*/
 }
