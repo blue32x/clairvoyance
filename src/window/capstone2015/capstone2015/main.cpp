@@ -1,4 +1,9 @@
+
+
 /********color + depth 영상**************************************/
+
+
+/*
 
 #include <Windows.h>
 #include <NuiApi.h>
@@ -167,6 +172,7 @@ int createDepthImage(HANDLE h, IplImage* Depth)
         return 0;
 }
 
+
 RGBQUAD Nui_ShortToQuad_Depth(USHORT s)
 {
         USHORT realDepth = (s&0xfff8) >> 3;
@@ -182,4 +188,5 @@ RGBQUAD Nui_ShortToQuad_Depth(USHORT s)
         q.rgbRed = q.rgbBlue = q.rgbGreen = ~b;
         return q;
 }
+*/
 /********color + depth 영상**************************************/
