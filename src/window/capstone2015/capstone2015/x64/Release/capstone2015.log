@@ -1,0 +1,13 @@
+﻿빌드 시작: 2015-03-27 오후 1:23:39
+     1>2 노드의 "C:\Users\User\Desktop\g_p\clairvoyance\src\window\capstone2015\capstone2015\capstone2015.vcxproj" 프로젝트(Build 대상)입니다.
+     1>ClCompile:
+         C:\Program Files\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp source.cpp
+         main.cpp
+     1>main.cpp(7): fatal error C1083: 포함 파일을 열 수 없습니다. 'NuiApi.h': No such file or directory
+         source.cpp
+     1>source.cpp(271): fatal error C1071: 주석에서 예기치 않은 파일의 끝이 나타났습니다.
+     1>"C:\Users\User\Desktop\g_p\clairvoyance\src\window\capstone2015\capstone2015\capstone2015.vcxproj" 프로젝트를 빌드했습니다(Build 대상). - 실패
+
+빌드하지 못했습니다.
+
+경과 시간: 00:00:00.99
