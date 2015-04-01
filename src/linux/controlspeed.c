@@ -370,6 +370,7 @@ void joystick() //up =^[[A down =^[[B  l= ^[[D  r= ^[[C
  {
   case 8:
    param+=0x10;
+   param+=0x00;
    checkSum =((op+len+RW+param+param1)&0x00ff);
    checkSum = (unsigned char)checkSum; 
    serialPutchar (fd, op) ;
