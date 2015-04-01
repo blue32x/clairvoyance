@@ -2,10 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 
 #include <wiringPi.h>
 #include <wiringSerial.h>
 
+#define UP 72
 int fd;
 /////////////////////////////////////////////////////////////////////////
 
@@ -79,18 +81,23 @@ void Desire_speed()  ///speed =encoder tic * 10/s   ex)1000=0x0064 * 10
   unsigned char RW = 0x01;
   int speed1=0;
   int speed2=0;
-  char param ;
-  char param1 ;
-  char checkSum;
+  unsigned char param ;
+  unsigned char param1 ;
+  unsigned int checkSum;
   
   printf(" max speed is 01F4 (500) \n");
   printf(" input Speed value twice(ex:0x00 and 0x64 means speed 0x0064 : ");
   scanf("%x %x",&speed1,&speed2);
-  param=speed2;
-  param1=speed1;
+  param=(speed2 & speed2);
+  param1=(speed1 & speed1);
+  
+   printf("d speed %d %d \n",param1,param);
+   printf("x speed %x %x \n",param1,param);
+    printf("u speed %u %u \n",param1,param);
+   printf("c speed %c %c \n",param1,param);
   
   checkSum =((op+len+RW+param+param1)&0x00ff);
-
+  checkSum = (unsigned char)checkSum; 
 
   serialPutchar (fd, op) ;
   serialPutchar (fd, len) ;
@@ -100,7 +107,113 @@ void Desire_speed()  ///speed =encoder tic * 10/s   ex)1000=0x0064 * 10
   serialPutchar (fd, checkSum) ;
  
 }
+//////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+void ReadSpeed()  ///
+{
+  unsigned char op = 0x91;
+  unsigned char len = 0x02;
+  unsigned char RW = 0x02;
+  unsigned char checkSum=0x95;
+  
+  printf(" current speed is\n");
+ 
+  
 
+  serialPutchar (fd, op) ;
+  serialPutchar (fd, len) ;
+  serialPutchar (fd, RW) ;
+
+  serialPutchar (fd, checkSum) ;
+ 
+}
+//////////////////////////////////////////////////
+void Speed_proportional() // 1 ~/ ~ 10 ~ / 50 
+{
+  unsigned char op = 0x92;
+  unsigned char len = 0x03;
+  unsigned char RW = 0x01;
+  unsigned char param1 ;
+  //unsigned char param2;
+  unsigned char checkSum;
+  int Speed_proportional1 = 0;
+  //int Speed_proportional2 = 0;
+
+  printf(" acceleration= min(0) < normal(0x0a) < max(0x32) \n");
+  printf(" input accel value : ");
+  scanf("%x",&Speed_proportional1);
+  param1 = (Speed_proportional1 & Speed_proportional1) ;
+ // param2 = Speed_proportional2;
+  checkSum =((op+len+RW+param1) & 0x00ff);
+  
+  printf("d speed %d  \n",param1);
+   printf("x speed %x  \n",param1);
+    printf("u speed %u \n",param1);
+   printf("c speed %c  \n",param1);
+  
+  serialPutchar (fd, op) ;
+  serialPutchar (fd, len) ;
+  serialPutchar (fd, RW) ;
+  serialPutchar (fd, param1) ;
+  //serialPutchar (fd, param2) ;
+  serialPutchar (fd, checkSum) ;
+}
+//////////////////////////////////////////////////
+
+void Speed_integral() // 1 ~/ ~ 10 ~ / 50 
+{
+  unsigned char op = 0x93;
+  unsigned char len = 0x03;
+  unsigned char RW = 0x01;
+  unsigned char param ;
+  unsigned char checkSum;
+  int Speed_integral = 0;
+   
+  printf(" acceleration= min(0) < normal(0x0a) < max(0x32) \n");
+  printf(" input accel value : ");
+  scanf("%x",&Speed_integral);
+  param =Speed_integral;
+  checkSum =((op+len+RW+param) & 0x00ff);
+  
+   printf("d speed %d  \n",param);
+   printf("x speed %x  \n",param);
+    printf("u speed %u \n",param);
+   printf("c speed %c  \n",param);
+  
+  serialPutchar (fd, op) ;
+  serialPutchar (fd, len) ;
+  serialPutchar (fd, RW) ;
+  serialPutchar (fd, param) ;
+  serialPutchar (fd, checkSum) ;
+}
+//////////////////////////////////////////////////
+
+void Speed_differental() // 1 ~/ ~ 10 ~ / 50 
+{
+  unsigned char op = 0x94;
+  unsigned char len = 0x03;
+  unsigned char RW = 0x01;
+  unsigned char param ;
+  unsigned char checkSum;
+  int Speed_differental = 0;
+   
+  printf(" acceleration= min(0) < normal(0x0a) < max(0x32) \n");
+  printf(" input accel value : ");
+  scanf("%x",&Speed_differental);
+  param = Speed_differental;
+  checkSum =((op+len+RW+param) & 0x00ff);
+  
+   printf("d speed %d  \n",param);
+   printf("x speed %x  \n",param);
+   printf("u speed %u \n",param);
+   printf("c speed %c  \n",param);
+  
+  serialPutchar (fd, op) ;
+  serialPutchar (fd, len) ;
+  serialPutchar (fd, RW) ;
+  serialPutchar (fd, param) ;
+  serialPutchar (fd, checkSum) ;
+}
 //////////////////////////////////////////////////////////////////////////
 void ggambback()
 {
@@ -239,6 +352,46 @@ void steering() // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 degree)
   serialPutchar (fd, checkSum) ;
 }
 //////////////////////////////////////////////////
+void joystick() //up =^[[A down =^[[B  l= ^[[D  r= ^[[C  
+{
+ int key;
+
+ unsigned char op=0x91;
+ unsigned char len=0x04;
+ unsigned char RW=0x01;
+ unsigned char param=0x00 ;
+ unsigned char param1=0x00 ;
+ unsigned int checkSum;
+
+
+ scanf("%d",&key);
+ 
+ switch(key)
+ {
+  case 8:
+   param+=0x10;
+   checkSum =((op+len+RW+param+param1)&0x00ff);
+   checkSum = (unsigned char)checkSum; 
+   serialPutchar (fd, op) ;
+   serialPutchar (fd, len) ;
+   serialPutchar (fd, RW) ;
+   serialPutchar (fd, param) ;
+   serialPutchar (fd, param1) ;
+   serialPutchar (fd, checkSum) ;
+   break;
+
+         
+  case 2:
+   break;
+  case 4:
+   break;
+  case 6:
+   break;
+}
+ 
+}
+//////////////////////////////////////////////////
+
 
 void menu() 
 {
@@ -252,7 +405,12 @@ void menu()
   printf("|      5.   Desire_speed()                  |\n");
   printf("|      6.   buzzer()                        |\n");
   printf("|      7.   steering()                      |\n");
-  printf("|      8.   Exit                            |\n");
+  printf("|      8.   Speed_proportional()            |\n");
+  printf("|      9.   Speed_integral()                |\n");
+  printf("|      10.  Speed_differental()             |\n");
+  printf("|      11.  current speed()                 |\n");
+  printf("|      12.  joystick                        |\n");
+  printf("|      13.   exit                           |\n");
   printf("|___________________________________________|\n");
 }
 ////////////////////////////////////////////////////////
@@ -275,7 +433,7 @@ int main ()
   menu();
   
 
-  while(numb!=8)
+  while(numb!=13)
   {
    printf("select number : ");
    scanf("%d",&numb);
@@ -306,6 +464,21 @@ int main ()
   case 7:
 	steering();
 	break;
+  case 8:
+        Speed_proportional();
+        break;
+  case 9: 
+        Speed_integral();
+        break;
+  case 10:
+        Speed_differental();
+        break;
+  case 11:
+        ReadSpeed();
+        break;
+  case 12:
+        joystick();
+        break;
 }
 }
 
