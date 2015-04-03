@@ -391,7 +391,7 @@ void joystick() //up =^[[A down =^[[B  l= ^[[D  r= ^[[C
 
          
   case 2:
-
+///!!!
    if(param==0x10)
    {
     	if(param1 == 0x01)
