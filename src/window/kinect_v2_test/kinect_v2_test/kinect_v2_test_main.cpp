@@ -24,6 +24,7 @@ int main(/* int argc, _TCHAR* argv[] */) //_tmain은 유니코드가 정의되�
 	HRESULT hResult = S_OK; //error check를 위한 HRESULT 변수, long type
 	GetDefaultKinectSensor( &pSensor ); //sensor 초기화
 	pSensor->Open(); //sensor를 연다
+	//Starts streaming data from the Kinect using a specified access mode
 	
 
 	// Source
@@ -99,24 +100,25 @@ int main(/* int argc, _TCHAR* argv[] */) //_tmain은 유니코드가 정의되�
 	while( 1 ){
 		
 		// Color Frame
+		
 		IColorFrame* pColorFrame = nullptr;
 		hResult = pColorReader->AcquireLatestFrame( &pColorFrame );
-		if( SUCCEEDED( hResult ) ){
+		if( SUCCEEDED( hResult ) )
+		{
 			hResult = pColorFrame->CopyConvertedFrameDataToArray( colorBufferSize, reinterpret_cast<BYTE*>( colorBufferMat.data ), ColorImageFormat::ColorImageFormat_Bgra );
-			if( SUCCEEDED( hResult ) ){
-				cv::resize( colorBufferMat, colorMat, cv::Size(), 0.5, 0.5 );
-			}
+			cv::resize( colorBufferMat, colorMat, cv::Size(), 0.5, 0.5 );
+			
 		}
+		
 		//SafeRelease( pColorFrame );
 
 		// Depth Frame
 		IDepthFrame* pDepthFrame = nullptr;
 		hResult = pDepthReader->AcquireLatestFrame( &pDepthFrame );
-		if( SUCCEEDED( hResult ) ){
+		if( SUCCEEDED( hResult ) )
+		{
 			hResult = pDepthFrame->AccessUnderlyingBuffer( &depthBufferSize, reinterpret_cast<UINT16**>( &depthBufferMat.data ) );
-			if( SUCCEEDED( hResult ) ){
-				depthBufferMat.convertTo( depthMat, CV_8U, -255.0f / 8000.0f, 255.0f );
-			}
+			depthBufferMat.convertTo( depthMat, CV_8U, -255.0f / 8000.0f, 255.0f );
 		}
 		//SafeRelease( pDepthFrame );
 		
@@ -125,33 +127,31 @@ int main(/* int argc, _TCHAR* argv[] */) //_tmain은 유니코드가 정의되�
 		{
 			std::vector<ColorSpacePoint> colorSpacePoints( depthWidth * depthHeight );
 			hResult = pCoordinateMapper->MapDepthFrameToColorSpace( depthWidth * depthHeight, reinterpret_cast<UINT16*>( depthBufferMat.data ), depthWidth * depthHeight, &colorSpacePoints[0] );
-			if( SUCCEEDED( hResult ) )
+			coordinateMapperMat = cv::Scalar( 0, 0, 0, 0 );
+			for( int y = 0; y < depthHeight; y++ )
 			{
-				coordinateMapperMat = cv::Scalar( 0, 0, 0, 0 );
-				for( int y = 0; y < depthHeight; y++ )
+				for( int x = 0; x < depthWidth; x++ )
 				{
-					for( int x = 0; x < depthWidth; x++ )
+					unsigned int index = y * depthWidth + x;
+					ColorSpacePoint point = colorSpacePoints[index];
+					int colorX = static_cast<int>( std::floor( point.X + 1  ) );
+					int colorY = static_cast<int>( std::floor( point.Y + 0.5 ) );
+					unsigned short depth = depthBufferMat.at<unsigned short>( y, x );
+					if( ( colorX >= 0 ) && ( colorX < colorWidth ) && ( colorY >= 0 ) && ( colorY < colorHeight ) && ( depth >= minDepth ) && ( depth <= maxDepth ) )
 					{
-						unsigned int index = y * depthWidth + x;
-						ColorSpacePoint point = colorSpacePoints[index];
-						int colorX = static_cast<int>( std::floor( point.X + 1  ) );
-						int colorY = static_cast<int>( std::floor( point.Y + 0.5 ) );
-						unsigned short depth = depthBufferMat.at<unsigned short>( y, x );
-						if( ( colorX >= 0 ) && ( colorX < colorWidth ) && ( colorY >= 0 ) && ( colorY < colorHeight ) && ( depth >= minDepth ) && ( depth <= maxDepth ) )
-						{
-							coordinateMapperMat.at<cv::Vec4b>( y, x ) = colorBufferMat.at<cv::Vec4b>( colorY, colorX );
-						}
+						coordinateMapperMat.at<cv::Vec4b>( y, x ) = colorBufferMat.at<cv::Vec4b>( colorY, colorX );
 					}
 				}
 			}
+			
 		}
 
 		SafeRelease( pColorFrame );
 		SafeRelease( pDepthFrame );
 
-		cv::imshow( "Color", colorMat );
-		cv::imshow( "Depth", depthMat );
-		cv::imshow( "CoordinateMapper", coordinateMapperMat );
+		cv::imshow( "Color", colorMat ); //"Color" window에 colorMat 정보를 뿌려준다.
+		cv::imshow( "Depth", depthMat ); //"Depth" window에 depthMat 정보를 뿌려준다.
+		cv::imshow( "CoordinateMapper", coordinateMapperMat ); //"CoordinateMapper" window에 coordinateMapperMat 정보를 뿌려준다.
 
 		if( cv::waitKey( 30 ) == VK_ESCAPE ){
 			break;
@@ -166,7 +166,7 @@ int main(/* int argc, _TCHAR* argv[] */) //_tmain은 유니코드가 정의되�
 	SafeRelease( pColorDescription );
 	SafeRelease( pDepthDescription );
 	SafeRelease( pCoordinateMapper );
-
+	
 	//kinect sensor close
 	if( pSensor ){
 		pSensor->Close();

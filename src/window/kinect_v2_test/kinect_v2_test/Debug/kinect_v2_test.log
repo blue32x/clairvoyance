@@ -1,5 +1,5 @@
-﻿빌드 시작: 2015-04-04 오후 1:19:41
-     1>2 노드의 "C:\Users\sh\documents\visual studio 2012\Projects\kinect_v2_test\kinect_v2_test\kinect_v2_test.vcxproj" 프로젝트(Build 대상)입니다.
+﻿빌드 시작: 2015-04-04 오후 2:41:40
+     1>2 노드의 "C:\Users\sh\Documents\GitHub\clairvoyance\src\window\kinect_v2_test\kinect_v2_test\kinect_v2_test.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\VCWizards\AppWiz\Generic\Application\templates\1042" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt kinect_v2_test_main.cpp
          kinect_v2_test_main.cpp
@@ -7,10 +7,10 @@
      1>c:\opencv\build\include\opencv2\flann\logger.h(66): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 11.0\vc\include\stdio.h(218) : 'fopen' 선언을 참조하십시오.
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\sh\documents\visual studio 2012\Projects\kinect_v2_test\Debug\kinect_v2_test.exe" /INCREMENTAL /NOLOGO opencv_calib3d2410d.lib opencv_contrib2410d.lib opencv_core2410d.lib opencv_features2d2410d.lib opencv_flann2410d.lib opencv_gpu2410d.lib opencv_highgui2410d.lib opencv_imgproc2410d.lib opencv_legacy2410d.lib opencv_ml2410d.lib opencv_nonfree2410d.lib opencv_objdetect2410d.lib opencv_ocl2410d.lib opencv_photo2410d.lib opencv_stitching2410d.lib opencv_superres2410d.lib opencv_ts2410d.lib opencv_video2410d.lib opencv_videostab2410d.lib kinect20.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\sh\documents\visual studio 2012\Projects\kinect_v2_test\Debug\kinect_v2_test.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\sh\documents\visual studio 2012\Projects\kinect_v2_test\Debug\kinect_v2_test.lib" /MACHINE:X86 Debug\kinect_v2_test_main.obj
-         kinect_v2_test.vcxproj -> C:\Users\sh\documents\visual studio 2012\Projects\kinect_v2_test\Debug\kinect_v2_test.exe
-     1>"C:\Users\sh\documents\visual studio 2012\Projects\kinect_v2_test\kinect_v2_test\kinect_v2_test.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\sh\Documents\GitHub\clairvoyance\src\window\kinect_v2_test\Debug\kinect_v2_test.exe" /INCREMENTAL /NOLOGO opencv_calib3d2410d.lib opencv_contrib2410d.lib opencv_core2410d.lib opencv_features2d2410d.lib opencv_flann2410d.lib opencv_gpu2410d.lib opencv_highgui2410d.lib opencv_imgproc2410d.lib opencv_legacy2410d.lib opencv_ml2410d.lib opencv_nonfree2410d.lib opencv_objdetect2410d.lib opencv_ocl2410d.lib opencv_photo2410d.lib opencv_stitching2410d.lib opencv_superres2410d.lib opencv_ts2410d.lib opencv_video2410d.lib opencv_videostab2410d.lib kinect20.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\sh\Documents\GitHub\clairvoyance\src\window\kinect_v2_test\Debug\kinect_v2_test.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\sh\Documents\GitHub\clairvoyance\src\window\kinect_v2_test\Debug\kinect_v2_test.lib" /MACHINE:X86 Debug\kinect_v2_test_main.obj
+         kinect_v2_test.vcxproj -> C:\Users\sh\Documents\GitHub\clairvoyance\src\window\kinect_v2_test\Debug\kinect_v2_test.exe
+     1>"C:\Users\sh\Documents\GitHub\clairvoyance\src\window\kinect_v2_test\kinect_v2_test\kinect_v2_test.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
 
 빌드했습니다.
 
-경과 시간: 00:00:03.12
+경과 시간: 00:00:03.04
