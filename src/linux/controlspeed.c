@@ -354,8 +354,8 @@ void steering() // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 degree)
 //////////////////////////////////////////////////
 void joystick() //up =^[[A down =^[[B  l= ^[[D  r= ^[[C  
 {
- int key;
-
+ int key=0;
+ int count=0;
  unsigned char op=0x91;
  unsigned char len=0x04;
  unsigned char RW=0x01;
@@ -363,15 +363,22 @@ void joystick() //up =^[[A down =^[[B  l= ^[[D  r= ^[[C
  unsigned char param1=0x00 ;
  unsigned int checkSum;
 
+ while(key!=9)
+{
 
  scanf("%d",&key);
  
  switch(key)
- {
+ { 
   case 8:
-   param+=0x10;
-   param+=0x00;
-   checkSum =((op+len+RW+param+param1)&0x00ff);
+   
+   if(param==0xf0)
+   {
+    param1+=0x01;
+    param = 0x00;
+    }   
+   param += 0x10;
+   checkSum = ((op+len+RW+param+param1)&0x00ff);
    checkSum = (unsigned char)checkSum; 
    serialPutchar (fd, op) ;
    serialPutchar (fd, len) ;
@@ -379,17 +386,42 @@ void joystick() //up =^[[A down =^[[B  l= ^[[D  r= ^[[C
    serialPutchar (fd, param) ;
    serialPutchar (fd, param1) ;
    serialPutchar (fd, checkSum) ;
+   printf("current speed %x %x \n",param1,param);
    break;
 
          
   case 2:
+///!!!
+   if(param==0x10)
+   {
+    	if(param1 == 0x01)
+	 {
+ 	   param1 = 0x00;
+           param =0xf0;
+ 	 }
+    param1=0x00;  
+    param = 0x00;
+    }   
+
+   param -= 0x10;
+   checkSum = ((op+len+RW+param+param1)&0x00ff);
+   checkSum = (unsigned char)checkSum; 
+   serialPutchar (fd, op) ;
+   serialPutchar (fd, len) ;
+   serialPutchar (fd, RW) ;
+   serialPutchar (fd, param) ;
+   serialPutchar (fd, param1) ;
+   serialPutchar (fd, checkSum) ;
+   printf("current speed %x %x \n",param1,param);
    break;
-  case 4:
+ 
+   case 4:
    break;
-  case 6:
+
+   case 6:
    break;
 }
- 
+ }
 }
 //////////////////////////////////////////////////
 
