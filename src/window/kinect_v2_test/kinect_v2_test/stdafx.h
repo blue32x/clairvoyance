@@ -1,7 +1,12 @@
+﻿
 #pragma once
  
 #include "targetver.h"
  
+
+#include <Windows.h> 
+#include <opencv2/opencv.hpp>
+
 #include <stdio.h>
 #include <tchar.h>
 #include <stdlib.h>
@@ -27,3 +32,4 @@
  
 using namespace std;
 using namespace cv;
+
