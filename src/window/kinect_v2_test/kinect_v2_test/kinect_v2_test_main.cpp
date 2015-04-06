@@ -254,6 +254,7 @@ int main()
 	if(FAILED(hResult))
 	{
 		std::cerr << "Error : IDepthFrameSource :: OpenReader()"<<std::endl;
+		return -1;
 	}
 	////////////////////////////////////////////////////////////////////////////////////
 
@@ -297,6 +298,25 @@ int main()
 
 
 
+	//get Coordinate Mapper
+	///////////////////////////////////////////////////////////////////////////////////////
+	ICoordinateMapper * pCoordinateMapper;
+	hResult = pSensor-> get_CoordinateMapper(&pCoordinateMapper);
+	if(FAILED(hResult))
+	{
+		std::cerr << "Error : IKinectSensor::get_CoordinateMapper()" << std::endl;
+		return -1;
+	}
+
+	cv::Mat coordinateMapperMat(depthHeight,depthWidth,CV_8UC4);
+	cv::namedWindow("CoordinateMapper");
+	///////////////////////////////////////////////////////////////////////////////////////
+
+
+	unsigned short minDepth, maxDepth;
+	pDepthSource->get_DepthMinReliableDistance(&minDepth);
+	pDepthSource->get_DepthMaxReliableDistance(&maxDepth);
+
 
 
 	//Frame을 생성하고 color와 depth image를 출력한다.
@@ -335,6 +355,37 @@ int main()
 		}
 
 
+
+		//Mapping (Depth to Color)
+		std::vector<ColorSpacePoint> colorSpacePoints(depthWidth * depthHeight);
+		hResult = pCoordinateMapper->MapDepthFrameToColorSpace(depthWidth * depthHeight, reinterpret_cast<UINT16 *>( depthBufferMat.data ), depthWidth * depthHeight, &colorSpacePoints[0] );
+		if(SUCCEEDED(hResult))
+		{
+			coordinateMapperMat = cv::Scalar(0,0,0,0);
+			for(int y = 0; y < depthHeight; y++)
+			{
+				for(int x = 0; x < depthWidth; x++)
+				{
+					unsigned int index = y * depthWidth + x;
+					ColorSpacePoint point = colorSpacePoints[index];
+					int colorX = static_cast<int>(std::floor(point.X));
+					int colorY = static_cast<int>(std::floor(point.Y));
+					unsigned short depth = depthBufferMat.at<unsigned short>(y,x);
+					
+					if( ( colorX >= 0 ) && ( colorX < colorWidth ) && ( colorY >= 0 ) && ( colorY < colorHeight ))// && ( depth >= minDepth ) && ( depth <= maxDepth ) )
+					{
+						coordinateMapperMat.at<cv::Vec4b>( y, x ) = colorBufferMat.at<cv::Vec4b>( colorY, colorX );
+					}
+					
+
+				}
+			}
+		}
+
+
+
+
+
 		SafeRelease(pDepthFrame); 
 		SafeRelease(pColorFrame); //Frame을 풀어놓는다.
 		//내부 버퍼가 해제되어 다음 데이터를 검색 할 수있는 산태가 된다.
@@ -342,6 +393,7 @@ int main()
 		//Show window
 		cv::imshow("Color", colorMat);
 		cv::imshow("Depth", depthMat);
+		cv::imshow("CoordinateMapper",coordinateMapperMat);
 		if( cv::waitKey( 30 ) == VK_ESCAPE )
 		{
 			break;
@@ -353,6 +405,7 @@ int main()
 	SafeRelease( pColorReader );
 	SafeRelease( pDepthSource );
 	SafeRelease( pDepthReader );
+	SafeRelease( pCoordinateMapper);
 	//kinect sensor close
 	if( pSensor )
 	{
