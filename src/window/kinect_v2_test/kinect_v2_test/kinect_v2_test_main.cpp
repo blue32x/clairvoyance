@@ -165,18 +165,34 @@ int main()
 
 		//Mapping (Depth to Color)
 		std::vector<ColorSpacePoint> colorSpacePoints(depthWidth * depthHeight);
+		//vectro는 배열을 대신하여 사용 할 수 있는 자료구조
+		//배열의 크기는 정적이지만 vector는 동적으로 크기가 변한다.
+		//vector는 중간 자료의 삭제나 삽입이 없다.
 		hResult = pCoordinateMapper->MapDepthFrameToColorSpace(depthWidth * depthHeight, reinterpret_cast<UINT16 *>( depthBufferMat.data ), depthWidth * depthHeight, &colorSpacePoints[0] );
+		//depthWidth * depthHight 크기의 자료인 depthBufferMat.data를 
+		//depthWidth * depthHight 크기의 자료인 colorSpacePoints의 (ColorSpacePoint 자료형 벡터) 첫번째 주소부터 넣는다.
+		//결과는 colorSpacePoints 벡터에 depth 자료가 들어가게 된다.
 		if(SUCCEEDED(hResult))
 		{
 			coordinateMapperMat = cv::Scalar(0,0,0,0);
+			//Mat를 상속받는??? Scalar는 4개의 값만 사용하는 data type
+			//각각의 원소는 double형인듯?? 한데 더 찾아봐야할듯
+			//rgb 나타내려는듯!?
+
+			//
+			//x y 좌표계의 기준을 더 찾아볼것
 			for(int y = 0; y < depthHeight; y++)
 			{
 				for(int x = 0; x < depthWidth; x++)
 				{
-					unsigned int index = y * depthWidth + x;
-					ColorSpacePoint point = colorSpacePoints[index];
+					unsigned int index = y * depthWidth + x; //vector가 1차원 배열이기 때문에 index값을 지금과 같이 설정해 준것임
+					ColorSpacePoint point = colorSpacePoints[index]; //point 값에 index에 해당하는 값을 대입한다.
+
+					//int로의 자료 변환
 					int colorX = static_cast<int>(std::floor(point.X));
 					int colorY = static_cast<int>(std::floor(point.Y));
+
+					//depth 정보를 unsigned short 자료형으로 받아 온다.
 					unsigned short depth = depthBufferMat.at<unsigned short>(y,x);
 					
 					if( ( colorX >= 0 ) && ( colorX < colorWidth ) && ( colorY >= 0 ) && ( colorY < colorHeight ))// && ( depth >= minDepth ) && ( depth <= maxDepth ) )
