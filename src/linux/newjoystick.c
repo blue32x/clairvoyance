@@ -595,7 +595,9 @@ else if(gear == 3)
   RW = 0x01;
  
   if( (param4 == 0x03) && (param3 < 0xe8) )
-  { break; }
+  { 
+  break; 
+  }
  
   if(param3 < 0x05)
 {
@@ -625,7 +627,9 @@ else if(gear == 3)
   RW = 0x01;
  
   if( (param4 == 0x07) && (param3 > 0xd0) )
-  { break; }
+  { 
+  break; 
+  }
  
   if(param3 > 0xfa)
 {
