@@ -2,9 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
+
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#include <wiringPi.h>
+#include <wiringSerial.h>
 
 #define BUF_SIZE 1024
 
@@ -26,18 +31,26 @@ int main(int argc, char** argv)
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(6061);			//server port
 	server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");	//server ip
+	printf("client socket initialize success\n");
+
 	if(connect(client_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1)
 	{
 		printf("socket connect failed\n");
 		exit(1);
 	}
+	printf("client socket connect success\n");
 
 	// Write socket
+	/*
 	write(client_socket, argv[1], strlen(argv[1] + 1));
+	*/
 
-	// Read socket
-	read(client_socket, buff, BUF_SIZE);
-	printf("%s\n", buff);
+	while(1)
+	{
+		// Read socket
+		read(client_socket, buff, BUF_SIZE);
+		printf("%s\n", buff);
+	}
 
 	close(client_socket);
 	return 0;
