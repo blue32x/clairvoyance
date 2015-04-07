@@ -1,0 +1,186 @@
+void joystick() //up =^[[A down =^[[B  l= ^[[D  r= ^[[C  
+{
+ char key=0;
+ char gear=1;
+ int count=0;
+ unsigned char op=0x91;
+ unsigned char len=0x04;
+ unsigned char RW=0x01;
+ unsigned char param=0x00 ;
+ unsigned char param1=0x00 ;
+ unsigned int checkSum;
+
+ while(key!='i')
+{
+
+ key=getch();
+ 
+ switch(key)
+ { 
+  case 'w':
+if (gear==1)
+{
+   if( (param==0xf4)&& (param1==0x01) )
+    { break;}
+   
+   if(param==0xf4)
+   {
+    param1+=0x01;
+    param = 0x00;
+    }   
+   param += 0x01;
+   checkSum = ((op+len+RW+param+param1)&0x00ff);
+   checkSum = (unsigned char)checkSum; 
+   serialPutchar (fd, op) ;
+   serialPutchar (fd, len) ;
+   serialPutchar (fd, RW) ;
+   serialPutchar (fd, param) ;
+   serialPutchar (fd, param1) ;
+   serialPutchar (fd, checkSum) ;
+   printf("current speed %x %x \n",param1,param);
+   break;
+}
+else if(gear==2)
+{
+  if( (param > 0xf4)&& (param1==0x01) )
+     {  break;}
+   if( param>0xf4 )
+   {
+    param1+=0x01;
+    param = 0x00;
+    }   
+   param += 0x05;
+   checkSum = ((op+len+RW+param+param1)&0x00ff);
+   checkSum = (unsigned char)checkSum; 
+   serialPutchar (fd, op) ;
+   serialPutchar (fd, len) ;
+   serialPutchar (fd, RW) ;
+   serialPutchar (fd, param) ;
+   serialPutchar (fd, param1) ;
+   serialPutchar (fd, checkSum) ;
+   printf("current speed %x %x \n",param1,param);
+   break;
+}
+else if(gear==3)
+{
+  if( (param > 0xf4)&& (param1==0x01) )
+    {  break;}   
+   if( param>0xf4 )
+   {
+    param1+=0x01;
+    param = 0x00;
+    }   
+   param += 0x10;
+   checkSum = ((op+len+RW+param+param1)&0x00ff);
+   checkSum = (unsigned char)checkSum; 
+   serialPutchar (fd, op) ;
+   serialPutchar (fd, len) ;
+   serialPutchar (fd, RW) ;
+   serialPutchar (fd, param) ;
+   serialPutchar (fd, param1) ;
+   serialPutchar (fd, checkSum) ;
+   printf("current speed %x %x \n",param1,param);
+   break;
+}
+         
+  case 's':
+  if(gear ==1)
+{
+   if( (param==0x00)&& (param1==0x00) )
+    { break;}
+   
+   if(param==0x01)
+   {
+    	if(param1 == 0x01)
+	 {
+ 	   param1 = 0x00;
+           param =0xf4;
+ 	 }
+    	else
+    	{
+   	 param1=0x00;  
+   	 param = 0x01;
+   	 }
+    }   
+
+   param -= 0x01;
+
+   checkSum = ((op+len+RW+param+param1)&0x00ff);
+   checkSum = (unsigned char)checkSum; 
+   serialPutchar (fd, op) ;
+   serialPutchar (fd, len) ;
+   serialPutchar (fd, RW) ;
+   serialPutchar (fd, param) ;
+   serialPutchar (fd, param1) ;
+   serialPutchar (fd, checkSum) ;
+   printf("current speed %x %x \n",param1,param);
+   break;
+}
+
+else if(gear == 2)
+{
+  if( (param <= 0x05)&& (param1==0x00) )
+    {   
+        param=0x00;
+        printf("current speed %x %x \n",param1,param);
+ 	break;
+       }
+   
+   if(param <= 0x05)
+   {
+    	if(param1 == 0x01)
+	 {
+ 	   param1 = 0x00;
+           param =0xf4;
+ 	 }
+    	else
+    	{
+   	 param1=0x00;  
+   	 param = 0x05;
+   	 }
+    }   
+
+   param -= 0x05;
+
+   checkSum = ((op+len+RW+param+param1)&0x00ff);
+   checkSum = (unsigned char)checkSum; 
+   serialPutchar (fd, op) ;
+   serialPutchar (fd, len) ;
+   serialPutchar (fd, RW) ;
+   serialPutchar (fd, param) ;
+   serialPutchar (fd, param1) ;
+   serialPutchar (fd, checkSum) ;
+   printf("current speed %x %x \n",param1,param);
+   break;
+
+}else if(gear == 3)
+{
+  if( (param <= 0x10)&& (param1==0x00) )
+    {
+     param == 0x00;
+     printf("current speed %x %x \n",param1,param);
+     break;
+     }
+   
+   if(param <= 0x10)
+   {
+    	if(param1 == 0x01)
+	 {
+ 	   param1 = 0x00;
+           param =0xf4;
+ 	 }
+    	else
+    	{
+   	 param1=0x00;  
+   	 param = 0x10;
+   	 }
+    }   
+
+   param -= 0x10;
+
+   checkSum = ((op+len+RW+param+param1)&0x00ff);
+   checkSum = (unsigned char)checkSum; 
+   serialPutchar (fd, op) ;
+   serialPutchar (fd, len) ;
+   serialPutchar (fd, RW) ;
+   serialPutchar (f
