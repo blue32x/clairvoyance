@@ -357,7 +357,13 @@ void joystick() //up =^[[A down =^[[B  l= ^[[D  r= ^[[C
 {
  char key=0;
  char gear=1;
- int count=0;
+ int count8=0;//ggamback
+ int count5=0;//light
+ int count7=0;//left ggamback
+ int count9=0;//right ggamback
+ int count4=0;//forward light
+ int count6=0;//back light
+
  unsigned char op=0x91;
  unsigned char len=0x04;
  unsigned char RW=0x01;
@@ -586,9 +592,151 @@ else if(gear == 3)
    case '3':
    gear=3 ;
    break;
+/////////////////////////////////////////////////////
+   case 'r'://reverse  255=>0 ,0 => 255 max speed 
+   op=0x91;
+   len=0x04;
+   RW=0x01;	
+ 	
+     if(gear ==1)
+{
+   if( (param==0x00)&& (param1==0x00) )
+    { break;}
+   
+   if(param==0x01)
+   {
+    	if(param1 == 0x01)
+	 {
+ 	   param1 = 0x00;
+           param =0xf4;
+ 	 }
 
-/// steering       +1 = 0.1 degree ,MaxLeft=03e8 , middle=05dc , MaxRight = 07d0 
-   case 'a':  //left 
+    }   
+
+   param -= 0x01;
+
+   checkSum = ((op+len+RW+param+param1)&0x00ff);
+   checkSum = (unsigned char)checkSum; 
+   serialPutchar (fd, op) ;
+   serialPutchar (fd, len) ;
+   serialPutchar (fd, RW) ;
+   serialPutchar (fd, param) ;
+   serialPutchar (fd, param1) ;
+   serialPutchar (fd, checkSum) ;
+   printf("current speed %x %x \n",param1,param);
+   break;
+}
+
+else if(gear == 2)
+{
+  if( (param <= 0x05)&& (param1==0x00) )
+    {   
+        param = 0x00;
+     
+ 	
+        checkSum = ((op+len+RW+param+param1)&0x00ff);
+        checkSum = (unsigned char)checkSum; 
+        serialPutchar (fd, op) ;
+        serialPutchar (fd, len) ;
+        serialPutchar (fd, RW) ;
+        serialPutchar (fd, param) ;
+        serialPutchar (fd, param1) ;
+        serialPutchar (fd, checkSum) ;
+        
+       
+        break;
+       }
+   
+   if(param <= 0x05)
+   {
+    	if(param1 == 0x01)
+	 {
+ 	   param1 = 0x00;
+           param =0xf4;
+ 	 }
+    
+    }   
+
+   param -= 0x05;
+
+   checkSum = ((op+len+RW+param+param1)&0x00ff);
+   checkSum = (unsigned char)checkSum; 
+   serialPutchar (fd, op) ;
+   serialPutchar (fd, len) ;
+   serialPutchar (fd, RW) ;
+   serialPutchar (fd, param) ;
+   serialPutchar (fd, param1) ;
+   serialPutchar (fd, checkSum) ;
+   printf("current speed %x %x \n",param1,param);
+   break;
+
+}
+else if(gear == 3)
+{
+  if( (param < 0x11) && (param1==0x00) )
+    {
+     param = 0x00;
+   
+     
+     checkSum = ((op+len+RW+param+param1)&0x00ff);
+     checkSum = (unsigned char)checkSum; 
+     serialPutchar (fd, op) ;
+     serialPutchar (fd, len) ;
+     serialPutchar (fd, RW) ;
+     serialPutchar (fd, param) ;
+     serialPutchar (fd, param1) ;
+     serialPutchar (fd, checkSum) ;
+     printf("current speed %x %x \n",param1,param);
+     break;
+  
+    
+     }
+   
+   if(param <= 0x10)
+   {
+    	if(param1 == 0x01)
+	 {
+ 	   param1 = 0x00;
+           param =0xf4;
+ 	 }
+
+    }   
+
+   param -= 0x10;
+
+   checkSum = ((op+len+RW+param+param1)&0x00ff);
+   checkSum = (unsigned char)checkSum; 
+   serialPutchar (fd, op) ;
+   serialPutchar (fd, len) ;
+   serialPutchar (fd, RW) ;
+   serialPutchar (fd, param) ;
+   serialPutchar (fd, param1) ;
+   serialPutchar (fd, checkSum) ;
+   printf("current speed %x %x \n",param1,param);
+   break;
+}
+
+
+
+////////////////////////////////////////////////////
+   case 'q'://break;
+ 	 op=0x91;
+  	 len=0x04;
+   	 RW=0x01;	
+ 	 param1=0x00;
+ 	 param = 0x00;
+	 checkSum = ((op+len+RW+param+param1)&0x00ff);
+  	 serialPutchar (fd, op) ;
+  	 serialPutchar (fd, len) ;
+  	 serialPutchar (fd, RW) ;
+  	 serialPutchar (fd, param) ;
+  	 serialPutchar (fd, param1) ;
+  	 serialPutchar (fd, checkSum) ;
+  	 printf("!!!break!!!\n");
+  	 break;
+   
+/////// steering       +1 = 0.1 degree ,MaxLeft=03e8 , middle=05dc , MaxRight = 07d0 
+   case 'd':  //right 
 
   op = 0xA3;
   len = 0x04;
@@ -620,7 +768,7 @@ else if(gear == 3)
 
    break;
 
- case 'd':  //right 07d0
+ case 'a':  //left 07d0
 
   op = 0xA3;
   len = 0x04;
@@ -653,13 +801,26 @@ else if(gear == 3)
    break;
 
  case '7':	//ggamback left
- 
+  count7++;
   op = 0xA1;
   len = 0x03;
   RW = 0x01;
-  param = 0x02  ;
+  
+
+
+if ( (count7%2) == 1 )
+{
+
+   param = 0x02  ;
   checkSum = 0xA7;
-          
+  }
+
+    if ( (count7%2) == 0 )  //all off
+           {
+            param = 0x00 ; 
+            checkSum = 0xA5 ;
+           
+            }        
   serialPutchar (fd, op) ;
   serialPutchar (fd, len) ;
   serialPutchar (fd, RW) ;
@@ -668,11 +829,26 @@ else if(gear == 3)
   break;
 
  case '9':	//ggamback right
-  	    op = 0xA1;
+  	   count9++;
+           op = 0xA1;
   	    len = 0x03;
  	    RW = 0x01;  
+
+         if ( (count9%2) == 1 ) 
+           {
             param = 0x01 ;
             checkSum = 0xA6 ;
+
+            }
+           if ( (count9%2) == 0 )  //all off
+           {
+            param = 0x00 ; 
+            checkSum = 0xA5 ;
+           
+            }
+
+
+
             serialPutchar (fd, op) ;
  	    serialPutchar (fd, len) ;
 	    serialPutchar (fd, RW) ;
@@ -680,18 +856,18 @@ else if(gear == 3)
  	    serialPutchar (fd, checkSum) ;
  	    break;
  case '8':	//all on off
-	count++;
+	count8++;
         op = 0xA1;
 	 len = 0x03;
  	 RW = 0x01;
 	 
- 	if ( (count%2) == 1 )  //all on
+ 	if ( (count8%2) == 1 )  //all on
           {  
             param = 0x03;
             checkSum = 0xA8;
            
            }
-        if ( (count%2) == 0 )  //all off
+        if ( (count8%2) == 0 )  //all off
            {
             param = 0x00 ; 
             checkSum = 0xA5 ;
@@ -705,10 +881,97 @@ else if(gear == 3)
   serialPutchar (fd, checkSum) ;
    break;
 
- //case '4'://ggambback
- //case '5'://ggambback
-// case '6'://ggambback
- //case '0'://buzzer
+ case '4'://foward
+ 	   op = 0xA0;
+    	   len = 0x03;
+ 	   RW = 0x01;	
+        count4++;
+
+            if( count4%2 == 0 )
+    {
+            param = 0x00 ; 
+            checkSum = 0xA4 ;
+      }
+            if( count4%2 == 1 )
+    {
+            param = 0x01 ;
+            checkSum = 0xA5 ;
+} 
+  serialPutchar (fd, op) ;
+  serialPutchar (fd, len) ;
+  serialPutchar (fd, RW) ;
+  serialPutchar (fd, param) ;
+  serialPutchar (fd, checkSum) ;
+  break;
+ case '6'://light back
+     op = 0xA0;
+     len = 0x03;
+     RW = 0x01;
+     count6++;
+
+    if( count6%2 == 0 )
+    {
+            param = 0x00 ; 
+            checkSum = 0xA4 ;
+      }
+
+
+  if( count6%2 == 1 )
+    {
+     param = 0x02  ;
+     checkSum = 0xA6 ;
+    }
+  serialPutchar (fd, op) ;
+  serialPutchar (fd, len) ;
+  serialPutchar (fd, RW) ;
+  serialPutchar (fd, param) ;
+  serialPutchar (fd, checkSum) ;
+  break;
+ 
+case '5'://light all on off
+  count5++;
+  op = 0xA0;
+  len = 0x03;
+  RW = 0x01;
+   
+   if( count5%2 == 0 )
+    {
+            param = 0x00 ; 
+            checkSum = 0xA4 ;
+      }
+    
+   if( count5%2 == 1 )
+     {      
+	 param = 0x03;
+            checkSum = 0xA7 ;
+         }   
+     
+
+
+
+
+  serialPutchar (fd, op) ;
+  serialPutchar (fd, len) ;
+  serialPutchar (fd, RW) ;
+  serialPutchar (fd, param) ;
+  serialPutchar (fd, checkSum) ;
+  break;
+ 
+case '0'://buzzer
+
+//0.5second
+
+  op = 0xA2;
+  len = 0x03;
+  RW = 0x01;
+  param = 0x0a;
+  checkSum =((op+len+RW+param)&0x00ff);
+  
+  serialPutchar (fd, op) ;
+  serialPutchar (fd, len) ;
+  serialPutchar (fd, RW) ;
+  serialPutchar (fd, param) ;
+  serialPutchar (fd, checkSum) ;
 
 
 
