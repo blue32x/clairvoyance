@@ -902,23 +902,29 @@ case '0'://buzzer
 
 void menu() 
 {
-  printf("_____________________________________________\n");
-  printf("|               control board               |\n");
-  printf("|      0.   menu()                          |\n");
-  printf("|      1.   ggambback()                     |\n");
-  printf("|      2.   lgiht()                         |\n");
-  printf("|      3.   PositionControlOnOff()          |\n");
-  printf("|      4.   SpeedControlOnOff()             |\n");
-  printf("|      5.   Desire_speed()                  |\n");
-  printf("|      6.   buzzer()                        |\n");
-  printf("|      7.   steering()                      |\n");
-  printf("|      8.   Speed_proportional()            |\n");
-  printf("|      9.   Speed_integral()                |\n");
-  printf("|      10.  Speed_differental()             |\n");
-  printf("|      11.  current speed()                 |\n");
-  printf("|      12.  joystick                        |\n");
-  printf("|      13.   exit                           |\n");
-  printf("|___________________________________________|\n");
+  printf("____________________________________________ _\n");
+  printf("|               control board                |\n");
+  printf("|      0.   menu()                           |\n");
+  printf("|      1.   ggambback()                      |\n");
+  printf("|           key = 7(left), 8(all), 9(right)  |\n");
+  printf("|      2.   lgiht()                          |\n");
+  printf("|           key = 4(left), 5(all), 6(right)  |\n");
+  printf("|      3.   PositionControlOnOff()           |\n");
+  printf("|      4.   SpeedControlOnOff()              |\n");
+  printf("|      5.   Desire_speed()                   |\n");
+  printf("|      6.   buzzer()                         |\n");
+  printf("|      7.   steering()                       |\n");
+  printf("|           key = a(left), d(right)          |\n");
+  printf("|      8.   Speed_proportional()             |\n");
+  printf("|      9.   Speed_integral()                 |\n");
+  printf("|      10.  Speed_differental()              |\n");
+  printf("|      11.  current speed()                  |\n");
+  printf("|      12.  joystick                         |\n");
+  printf("|           gear key = 1,2,3                 |\n");
+  printf("|           key = w(speed up)                |\n");
+  printf("|                 s(speed drop)              |\n");
+  printf("|      13.  exit                             |\n");
+  printf("|___________________________________________ |\n");
 }
 ////////////////////////////////////////////////////////
 int main ()
