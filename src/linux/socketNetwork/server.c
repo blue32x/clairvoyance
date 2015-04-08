@@ -10,6 +10,8 @@
 #include "getch.h"
 
 #define BUF_SIZE 1024
+#define PORT 6061
+#define IP "127.0.0.1"
 
 int main(void)
 {
@@ -25,7 +27,7 @@ int main(void)
 	char buff_snd[BUF_SIZE];
 	char ch;
 	   
-	// Initialize
+	// Create socket
 	server_socket = socket(PF_INET, SOCK_STREAM, 0);
 	server_opt = 1;
 	setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &server_opt, sizeof(server_opt));
@@ -34,13 +36,13 @@ int main(void)
 		printf("server socket create failed.\n");
 		exit(1);
 	}
+	printf("server socket create success\n");
 
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(6061); 			// server port
+	server_addr.sin_port = htons(PORT); 			// server port
 	//server_addr.sin_addr.s_addr = htonl(INADDR_ANY);	// server ip
-	server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");	// server ip
-	printf("server socket initialize success\n");
+	server_addr.sin_addr.s_addr = inet_addr(IP);		// server ip
 
 	// Bind
 	if(bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1 )
@@ -50,7 +52,7 @@ int main(void)
 	}
 	printf("server socket bind success\n");
 
-	// Listen for client socket
+	// Listen
 	if(listen(server_socket, 5) == -1)
 	{
 		printf("server listen failed.\n");
@@ -70,18 +72,17 @@ int main(void)
 			exit(1);
 		}
 		printf("accept client socket success\n");
-		break;
 	} while(0);
 
 	while((ch = getche()) != ']')
 	{
-		// Read
+		// Read socket
 		/*
 		read(client_socket, buff_rcv, BUF_SIZE);
 		printf("receive: %s\n", buff_rcv);
 		*/
 	      
-		// Write
+		// Write socket
 		//sprintf(buff_snd, "%d : %s", strlen(buff_rcv), buff_rcv);
 		//write(client_socket, buff_snd, strlen(buff_snd) + 1);
 		buff_snd[0] = ch;
@@ -89,6 +90,8 @@ int main(void)
 		printf("%d : %s\n", strlen(buff_snd), buff_snd);
 		write(client_socket, buff_snd, strlen(buff_snd) + 1);
 	}
+
 	close(client_socket);
+	close(server_socket);
 	return 0;
 }
