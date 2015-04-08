@@ -413,16 +413,7 @@ else if(gear==2)
 {
   if( (param > 0xe9)&& (param1==0x01) )
      {
-      param=0xf4; 
-       checkSum = ((op+len+RW+param+param1)&0x00ff);
-   checkSum = (unsigned char)checkSum; 
-   serialPutchar (fd, op) ;
-   serialPutchar (fd, len) ;
-   serialPutchar (fd, RW) ;
-   serialPutchar (fd, param) ;
-   serialPutchar (fd, param1) ;
-   serialPutchar (fd, checkSum) ;
-   printf("current speed %x %x \n",param1,param); 
+      param=0xf4;  
       break; 
       }
   else if( param>0xe9 )
@@ -447,18 +438,7 @@ else if(gear==3)
   if( (param > 0xe4)&& (param1==0x01) )
     {
      param=0xf4; 
-     
-   checkSum = ((op+len+RW+param+param1)&0x00ff);
-   checkSum = (unsigned char)checkSum; 
-   serialPutchar (fd, op) ;
-   serialPutchar (fd, len) ;
-   serialPutchar (fd, RW) ;
-   serialPutchar (fd, param) ;
-   serialPutchar (fd, param1) ;
-   serialPutchar (fd, checkSum) ;
-   printf("current speed %x %x \n",param1,param);
-    
-    break;
+     break;
      }   
   if( param > 0xe4 )
    {
@@ -485,32 +465,19 @@ else if(gear==3)
   
   if(gear ==1)
 {
-   if( (param == 0x00) && (param1 == (0xff) ) )
-    {
-     
-     serialPutchar (fd, op) ;
-     serialPutchar (fd, len) ;
-     serialPutchar (fd, RW) ;
-     serialPutchar (fd, param) ;
-     serialPutchar (fd, param1) ;
-     serialPutchar (fd, checkSum) ;
-     printf("current speed %x %x \n",param1,param); 
-     break;
-    }
+   if( (param==0x00)&& (param1==0x00) )
+    { break;}
    
-   if(param == 0x00)
+   if(param==0x01)
    {
     	if(param1 == 0x01)
 	 {
  	   param1 = 0x00;
-           param =0xff;
+           param =0xf4;
  	 }
-        else if(param1 = 0x00)
-         {
-           param1 = 0xff;
-           param =0xff;
-         }   
-   }
+       
+    }   
+
    param -= 0x01;
 
    checkSum = ((op+len+RW+param+param1)&0x00ff);
@@ -527,7 +494,7 @@ else if(gear==3)
 
 else if(gear == 2)
 {
-  if( (param <= 0x05)&& (param1==(0xff) ))
+  if( (param <= 0x05)&& (param1==0x00) )
     {   
         param = 0x00;
      
@@ -550,14 +517,11 @@ else if(gear == 2)
     	if(param1 == 0x01)
 	 {
  	   param1 = 0x00;
-           param = 0xff;
+           param =0xf4;
  	 }
-        else if(param1 == 0x00 )
-         {
-           param1 = (0xff);
-           param  =  0xff;
-    }    
-   }
+    
+    }   
+
    param -= 0x05;
 
    checkSum = ((op+len+RW+param+param1)&0x00ff);
@@ -574,10 +538,11 @@ else if(gear == 2)
 }
 else if(gear == 3)
 {
-  if( (param < 0x11) && (param1==(0xff) ) )
+  if( (param < 0x11) && (param1==0x00) )
     {
      param = 0x00;
-       
+   
+     
      checkSum = ((op+len+RW+param+param1)&0x00ff);
      checkSum = (unsigned char)checkSum; 
      serialPutchar (fd, op) ;
@@ -587,8 +552,8 @@ else if(gear == 3)
      serialPutchar (fd, param1) ;
      serialPutchar (fd, checkSum) ;
      printf("current speed %x %x \n",param1,param);
-     
-     break;  
+     break;
+  
     
      }
    
@@ -597,14 +562,11 @@ else if(gear == 3)
     	if(param1 == 0x01)
 	 {
  	   param1 = 0x00;
-           param = 0xff;
+           param =0xf4;
  	 }
-        else if(param1 == 0x00)
-         { 
-            param1= (0xff);
-            param = 0xff;
-          }   
-   }
+
+    }   
+
    param -= 0x10;
 
    checkSum = ((op+len+RW+param+param1)&0x00ff);
