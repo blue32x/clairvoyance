@@ -498,17 +498,17 @@ else if(gear==3)
      break;
     }
    
-   if(param == 0x00)
+   if(param == 0x01)
    {
     	if(param1 == 0x01)
 	 {
  	   param1 = 0x00;
-           param =0xff;
+          
  	 }
         else if(param1 = 0x00)
          {
            param1 = 0xff;
-           param =0xff;
+         
          }   
    }
    param -= 0x01;
