@@ -579,7 +579,7 @@ else if(gear == 3)
    gear=1 ;
    break;
 
-    case '2':
+   case '2':
    gear=2 ;
    break;
 
@@ -652,7 +652,63 @@ else if(gear == 3)
 
    break;
 
+ case '7':	//ggamback left
+ 
+  op = 0xA1;
+  len = 0x03;
+  RW = 0x01;
+  param = 0x02  ;
+  checkSum = 0xA7;
+          
+  serialPutchar (fd, op) ;
+  serialPutchar (fd, len) ;
+  serialPutchar (fd, RW) ;
+  serialPutchar (fd, param) ;
+  serialPutchar (fd, checkSum) ;
+  break;
 
+ case '9':	//ggamback right
+  	    op = 0xA1;
+  	    len = 0x03;
+ 	    RW = 0x01;  
+            param = 0x01 ;
+            checkSum = 0xA6 ;
+            serialPutchar (fd, op) ;
+ 	    serialPutchar (fd, len) ;
+	    serialPutchar (fd, RW) ;
+ 	    serialPutchar (fd, param) ;
+ 	    serialPutchar (fd, checkSum) ;
+ 	    break;
+ case '8':	//all on off
+	count++;
+        op = 0xA1;
+	 len = 0x03;
+ 	 RW = 0x01;
+	 
+ 	if ( (count%2) == 1 )  //all on
+          {  
+            param = 0x03;
+            checkSum = 0xA8;
+           
+           }
+        if ( (count%2) == 0 )  //all off
+           {
+            param = 0x00 ; 
+            checkSum = 0xA5 ;
+           
+            }
+   
+  serialPutchar (fd, op) ;
+  serialPutchar (fd, len) ;
+  serialPutchar (fd, RW) ;
+  serialPutchar (fd, param) ;
+  serialPutchar (fd, checkSum) ;
+   break;
+
+ //case '4'://ggambback
+ //case '5'://ggambback
+// case '6'://ggambback
+ //case '0'://buzzer
 
 
 
