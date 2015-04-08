@@ -483,9 +483,9 @@ else if(gear==3)
    	len=0x04;
  	RW=0x01;
   
-  if(gear ==1)
+  if(gear == 1 )
 {
-   if( (param == 0x00) && (param1 == (0xff) ) )
+   if( (param == 0x00) && ( param1 == (0xff) ) )
     {
      
      serialPutchar (fd, op) ;
@@ -503,12 +503,14 @@ else if(gear==3)
     	if(param1 == 0x01)
 	 {
  	   param1 = 0x00;
+           param = 0xff;
           
  	 }
-        else if(param1 = 0x00)
+        else if(param1 == 0x00)
          {
            param1 = 0xff;
-         
+           param = 0xff;
+           
          }   
    }
    param -= 0x01;
