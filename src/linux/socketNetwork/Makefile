@@ -1,11 +1,11 @@
 CC = gcc
-TARGETS = client server
+TARGETS = client server Main
 
 .PHONY: all
 all: $(TARGETS)
 
 $(TARGETS): %:%.o
-	$(CC) -lm -o $@ $^
+	$(CC) -lm -lwiringPi -o $@ $^
 
 .PHONY: clean
 clean:

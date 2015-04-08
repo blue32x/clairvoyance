@@ -354,22 +354,22 @@ void steering(int fd) // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 degree)
   serialPutchar (fd, checkSum) ;
 }
 //////////////////////////////////////////////////
-void joystick(int fd) //up =^[[A down =^[[B  l= ^[[D  r= ^[[C  
+void joystick(int fd, char key) //up =^[[A down =^[[B  l= ^[[D  r= ^[[C  
 {
- char key=0;
+// char key=0;
  char gear=1;
  int count=0;
  unsigned char op=0x91;
  unsigned char len=0x04;
  unsigned char RW=0x01;
- unsigned char param=0x00 ;
- unsigned char param1=0x00 ;
+ static unsigned char param=0x00 ;
+ static unsigned char param1=0x00 ;
  unsigned int checkSum;
 
- while(key!='i')
-{
+//while(key!='i')
+//{
 
- key=getch();
+// key=getch();
  
  	switch(key)
  	{ 
@@ -577,21 +577,22 @@ else if(gear == 3)
    break;
 
 /// steering       +1 = 0.1 degree ,MaxLeft=03e8 , middle=05dc , MaxRight = 07d0 
+/*
    case 'a':  //left 
 
   op = 0xA3;
   len = 0x04;
   RW = 0x01;
-  param2 = 0x05 ;
-  param1 = 0xdc ;
+ // param4 = 0x05 ;
+ // param3 = 0xdc ;
 
   if(param1 < 0x05)
 {
-  param2 -= 0x01;
-  param1 = 0xff;
+//  param4 -= 0x01;
+//  param3 = 0xff;
 
 }
-  param2-=0x05
+//  param4-=0x05
   
   
 
@@ -605,6 +606,7 @@ else if(gear == 3)
   serialPutchar (fd, checkSum) ;
 } 
  
+*/
 
    break;
 
@@ -615,7 +617,9 @@ else if(gear == 3)
 
 
 
-}}}
+} //switch end
+//} //while end
+} //function end
 //////////////////////////////////////////////////
 
 
@@ -624,95 +628,19 @@ void menu()
   printf("_____________________________________________\n");
   printf("|               control board               |\n");
   printf("|      0.   menu()                          |\n");
-  printf("|      1.   ggambback(int fd)                     |\n");
+  printf("|      1.   ggambback(int fd)               |\n");
   printf("|      2.   lgiht()                         |\n");
-  printf("|      3.   PositionControlOnOff(int fd)          |\n");
-  printf("|      4.   SpeedControlOnOff(int fd)             |\n");
-  printf("|      5.   Desire_speed(int fd)                  |\n");
-  printf("|      6.   buzzer(int fd)                        |\n");
-  printf("|      7.   steering(int fd)                      |\n");
-  printf("|      8.   Speed_proportional(int fd)            |\n");
-  printf("|      9.   Speed_integral(int fd)                |\n");
-  printf("|      10.  Speed_differental(int fd)             |\n");
+  printf("|      3.   PositionControlOnOff(int fd)    |\n");
+  printf("|      4.   SpeedControlOnOff(int fd)       |\n");
+  printf("|      5.   Desire_speed(int fd)            |\n");
+  printf("|      6.   buzzer(int fd)                  |\n");
+  printf("|      7.   steering(int fd)                |\n");
+  printf("|      8.   Speed_proportional(int fd)      |\n");
+  printf("|      9.   Speed_integral(int fd)          |\n");
+  printf("|      10.  Speed_differental(int fd)       |\n");
   printf("|      11.  current speed()                 |\n");
   printf("|      12.  joystick                        |\n");
   printf("|      13.   exit                           |\n");
   printf("|___________________________________________|\n");
 }
 ////////////////////////////////////////////////////////
-
-int main ()
-{
-  int num=0;
-
-  if ((fd = serialOpen ("/dev/ttyAMA0", 19200)) < 0)
-  {
-    fprintf (stderr, "Unable to open serial device: %s\n", strerror (errno)) ;
-    return 1 ;
-  }
-
-  if (wiringPiSetup () == -1)
-  {
-    fprintf (stdout, "Unable to start wiringPi: %s\n", strerror (errno)) ;
-    return 1 ;
-  }
- 
-  menu();
-  
-
-  while(num!=13)
-  {
-   printf("select numer : ");
-   scanf("%d",&num);
-
- switch(num)
-{ 
-  case 0:
-         menu();
-         break;
-  case 1:
- 	 ggambback(int fd);
- 	 break;
-  case 2:
- 	 light(int fd);
-  	 break;
-  case 3:
-  	PositionControlOnOff(int fd);
-	break;
-  case 4:
-        SpeedControlOnOff(int fd); 
-        break;
-  case 5: 
-  	Desire_speed(int fd); 
-  	break;
-  case 6:
-  	buzzer(int fd); 
-        break;
-  case 7:
-	steering(int fd);
-	break;
-  case 8:
-        Speed_proportional(int fd);
-        break;
-  case 9: 
-        Speed_integral(int fd);
-        break;
-  case 10:
-        Speed_differental(int fd);
-        break;
-  case 11:
-        ReadSpeed(int fd);
-        break;
-  case 12:
-        joystick(int fd);
-        break;
-}
-}
-
-
-
-  return 0 ;
-}
-
-
-  
