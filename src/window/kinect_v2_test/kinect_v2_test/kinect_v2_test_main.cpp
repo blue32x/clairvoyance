@@ -1,4 +1,5 @@
-﻿//헤더부분
+﻿
+//헤더부분
 #include "stdafx.h" //stdafx 헤더파일 참조
 
 //safeRelease함수를 정의????
@@ -11,6 +12,8 @@ inline void SafeRelease( Interface *& pInterfaceToRelease )
 		pInterfaceToRelease = NULL;
 	}
 }
+
+
 /*******************************************************************************
 			Kinect for Windows SDK v2 의 테이터 취득의 흐름
 
@@ -19,6 +22,9 @@ inline void SafeRelease( Interface *& pInterfaceToRelease )
 ********************************************************************************/
 
 
+#define depthWidth 512
+#define depthHeight 424
+/*
 //http://www.buildinsider.net/small/kinectv2cpp/02
 int main()
 {
@@ -82,7 +88,7 @@ int main()
 	//Frame ~ Data
 	//color
 	////////////////////////////////////////////////////////////////////////////////////
-	int colorWidth =1920; //image의 크기
+	int colorWidth = 1920; //image의 크기
 	int colorHeight = 1080;
 	unsigned int colorBufferSize = colorWidth * colorHeight * 4 * sizeof(unsigned char); //color 이미지의 테이터 크기.
 
@@ -175,10 +181,14 @@ int main()
 				{
 					unsigned int index = y * depthWidth + x;
 					ColorSpacePoint point = colorSpacePoints[index];
-					int colorX = static_cast<int>(std::floor(point.X));
-					int colorY = static_cast<int>(std::floor(point.Y));
+
+					// round down to the nearest pixel
+					int colorX = static_cast<int>(std::floor(point.X + 0.5));
+					int colorY = static_cast<int>(std::floor(point.Y + 0.5));
 					unsigned short depth = depthBufferMat.at<unsigned short>(y,x);
 					
+
+					// make sure the pixel is part of the image
 					if( ( colorX >= 0 ) && ( colorX < colorWidth ) && ( colorY >= 0 ) && ( colorY < colorHeight ))// && ( depth >= minDepth ) && ( depth <= maxDepth ) )
 					{
 						coordinateMapperMat.at<cv::Vec4b>( y, x ) = colorBufferMat.at<cv::Vec4b>( colorY, colorX );
@@ -227,8 +237,9 @@ int main()
 	return 0;
 }
 
+*/
 
-/*
+
 //color + depth 영상 출력 
 //http://www.buildinsider.net/small/kinectv2cpp/02
 int main()
@@ -312,8 +323,8 @@ int main()
 	//depth
 	//////////////////////////////////////////////////////////////////////////////////////
 	
-	int depthWidth = 512;
-	int depthHeight= 424;
+	//int depthWidth = 512;
+	//int depthHeight= 424;
 	unsigned int depthBufferSize = depthWidth * depthHeight * sizeof(unsigned short);
 
 	//Depth 데이터를 처리하기 위해 OpendCV의 cv::Mat 형을 준비한다.
@@ -386,10 +397,10 @@ int main()
 		}
 
 
-
-		//Mapping (Depth to Color)
-		std::vector<ColorSpacePoint> colorSpacePoints(depthWidth * depthHeight);
-		hResult = pCoordinateMapper->MapDepthFrameToColorSpace(depthWidth * depthHeight, reinterpret_cast<UINT16 *>( depthBufferMat.data ), depthWidth * depthHeight, &colorSpacePoints[0] );
+		//Mapping Frame
+		//  using arry
+		ColorSpacePoint colorSpacePoints[depthHeight][depthWidth];
+		hResult = pCoordinateMapper->MapDepthFrameToColorSpace(depthWidth * depthHeight, reinterpret_cast<UINT16 *>(depthBufferMat.data), depthWidth * depthHeight, &colorSpacePoints[0][0]);
 		if(SUCCEEDED(hResult))
 		{
 			coordinateMapperMat = cv::Scalar(0,0,0,0);
@@ -397,22 +408,20 @@ int main()
 			{
 				for(int x = 0; x < depthWidth; x++)
 				{
-					unsigned int index = y * depthWidth + x;
-					ColorSpacePoint point = colorSpacePoints[index];
-					int colorX = static_cast<int>(std::floor(point.X));
-					int colorY = static_cast<int>(std::floor(point.Y));
-					unsigned short depth = depthBufferMat.at<unsigned short>(y,x);
-					
-					if( ( colorX >= 0 ) && ( colorX < colorWidth ) && ( colorY >= 0 ) && ( colorY < colorHeight ))// && ( depth >= minDepth ) && ( depth <= maxDepth ) )
-					{
-						coordinateMapperMat.at<cv::Vec4b>( y, x ) = colorBufferMat.at<cv::Vec4b>( colorY, colorX );
-					}
-					
+					ColorSpacePoint point = colorSpacePoints[y][x];
 
+					int colorX = static_cast<int>(std::floor(point.X+0.5));
+					int colorY = static_cast<int>(std::floor(point.Y+0.5));
+					unsigned short depth = depthBufferMat.at<unsigned short>(y,x);
+
+					if( (colorX >= 0) && ( colorX < colorWidth) && ( colorY >= 0) && (colorY < colorHeight) && (depth >= minDepth) && ( depth <= maxDepth))
+					{
+						coordinateMapperMat.at<cv::Vec4b>(y,x) = colorBufferMat.at<cv::Vec4b>(colorY,colorX);
+					}
 				}
 			}
 		}
-
+		
 
 
 
@@ -451,5 +460,4 @@ int main()
 
 	return 0;
 }
-*/
 
