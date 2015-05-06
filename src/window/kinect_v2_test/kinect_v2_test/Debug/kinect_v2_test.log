@@ -1,4 +1,4 @@
-﻿빌드 시작: 2015-05-04 오후 8:40:11
+﻿빌드 시작: 2015-05-06 오후 6:18:06
      1>2 노드의 "C:\Users\sh\Documents\GitHub\clairvoyance\src\window\kinect_v2_test\kinect_v2_test\kinect_v2_test.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\VCWizards\AppWiz\Generic\Application\templates\1042" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt kinect_v2_test_main.cpp
@@ -13,4 +13,4 @@
 
 빌드했습니다.
 
-경과 시간: 00:00:03.22
+경과 시간: 00:00:03.24
