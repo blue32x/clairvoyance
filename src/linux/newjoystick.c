@@ -498,18 +498,17 @@ else if(gear==3)
      break;
     }
    
-   if(param == 0x01)
+   if(param == 0x00)
    {
     	if(param1 == 0x01)
 	 {
  	   param1 = 0x00;
-           param = 0xff;
+        
           
  	 }
         else if(param1 == 0x00)
          {
            param1 = 0xff;
-           param = 0xff;
            
          }   
    }
@@ -664,16 +663,25 @@ else if(gear == 3)
  
   if( (param4 == 0x03) && (param3 < 0xe8) )
   { 
+  param3 =0xe8;
+  checkSum =((op+len+RW+param3+param4) & 0x00ff);
+  
+  serialPutchar (fd, op) ;
+  serialPutchar (fd, len) ;
+  serialPutchar (fd, RW) ;
+  serialPutchar (fd, param3) ;
+  serialPutchar (fd, param4) ;
+  serialPutchar (fd, checkSum) ;
   break; 
   }
  
-  if(param3 < 0x10)
+  if(param3 < 0x64)
 {
   param4 -= 0x01;
   param3 = 0xff;
 
 }
-  param3-=0x10;
+  param3-=0x64;
   
   
 
@@ -696,16 +704,26 @@ else if(gear == 3)
  
   if( (param4 == 0x07) && (param3 > 0xd0) )
   { 
+  param3=0xd0; 
+  checkSum =((op+len+RW+param3+param4) & 0x00ff);
+  
+  serialPutchar (fd, op) ;
+  serialPutchar (fd, len) ;
+  serialPutchar (fd, RW) ;
+  serialPutchar (fd, param3) ;
+  serialPutchar (fd, param4) ;
+  serialPutchar (fd, checkSum) ;
+
   break; 
   }
  
-  if(param3 > 0xef)
+  if(param3 > 0x9b)
 {
   param4 += 0x01;
   param3 = 0x00;
 
 }
-  param3 += 0x10;
+  param3 += 0x64;
   
   
 
@@ -907,8 +925,8 @@ void menu()
   printf("|      0.   menu()                           |\n");
   printf("|      1.   ggambback()                      |\n");
   printf("|           key = 7(left), 8(all), 9(right)  |\n");
-  printf("|      2.   lgiht()                          |\n");
-  printf("|           key = 4(left), 5(all), 6(right)  |\n");
+  printf("|      2.   light()                          |\n");
+  printf("|           key = 4(forward), 5(all), 6(back)|\n");
   printf("|      3.   PositionControlOnOff()           |\n");
   printf("|      4.   SpeedControlOnOff()              |\n");
   printf("|      5.   Desire_speed()                   |\n");
