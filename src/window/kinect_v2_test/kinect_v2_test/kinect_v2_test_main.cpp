@@ -32,13 +32,20 @@ inline void SafeRelease( Interface *& pInterfaceToRelease )
 //1로 바꿔주면 원본, 1이상이면 영상의 크기를 줄여주어 
 //속도를 빠르게 해준다.
 //추후에 멀티쓰레드 혹은 분산처리로 해결 가능성을 보인다.
-#define SPEEDBOOST 4
+#define SPEEDBOOST 3
 
 
 //color + depth 영상 출력 
 //http://www.buildinsider.net/small/kinectv2cpp/02
 int main()
 {
+
+
+	double color_R, color_G, color_B;
+	double ycbcr_Y, ycbcr_Cb, ycbcr_Cr;
+
+	//깜빡임 효과를 줄 변수
+	int blingbling = 0;
 
 	//Sensor를 얻을 수 있다.
 	///////////////////////////////////////////////////////////////////////////////////
@@ -224,46 +231,68 @@ int main()
 
 
 
-		//hiv이미지로 변환
-		
-		cv::Mat hsvimage(colorHeight/SPEEDBOOST,colorWidth/SPEEDBOOST,CV_8UC4);
-		cv::cvtColor(colorCoordinateMapperMat, hsvimage, CV_BGR2HSV,4);
+		//blingbling
+		//color 이미지 영상에 깜빡이는 효과를 주기 위하여 blingbling 변수 컨트롤
+		if(blingbling < 12)
+		{
+			blingbling++;
+		}
+		else
+		{
+			blingbling /= 13;
+		}
 
 
 		///his이미지 변환을 통한 color 이미지 처리
 		
-		for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
+		if(blingbling < 6)
 		{
-			for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
+			for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
 			{
-				DepthSpacePoint dPoint = depthSpacePoints[y][x];
-				int depthX = static_cast<int>(dPoint.X);
-				int depthY = static_cast<int>(dPoint.Y);
-				if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
+				for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
 				{
+					DepthSpacePoint dPoint = depthSpacePoints[y][x];
+					int depthX = static_cast<int>(dPoint.X);
+					int depthY = static_cast<int>(dPoint.Y);
 					
-					if(depthMat.at<uchar>(depthY,depthX)  >= 235)
+					if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
 					{
-						
-						//hsvimage.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 0.1;
-						colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 250;
-						//colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[0] =0;
-						//colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[1] = 0;
-					}
+	
+						if(depthMat.at<uchar>(depthY,depthX)  >= 235)
+						{
+							
+							
+							//colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 250;
+							color_B = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[0] ;
+							color_G = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[1] ;
+							color_R = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] ;
+
+							ycbcr_Y = (299*color_R + 587*color_G + 114*color_B)/1000;
+							ycbcr_Cb = 0.5643*(color_B - ycbcr_Y) + 128;
+							ycbcr_Cr = 0.7132*(color_R - ycbcr_Y) + 128;
+
+							ycbcr_Y += 30;
+
+							color_R = (1000*ycbcr_Y + 1402*(ycbcr_Cr-128))/1000;
+							color_G = (1000*ycbcr_Y - 714*(ycbcr_Cr-128) - 334*(ycbcr_Cb-128))/1000;
+							color_B = (1000*ycbcr_Y + 1772*(ycbcr_Cb-128))/1000;
+
+							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[0] = (uchar)color_B;
+							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[1] = (uchar)color_G;
+							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = (uchar)color_R;
+							
+						}
+
 					
-				}
-			}
-		}
-		
+					}//if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
+				}//for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
+			}//for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
+		}//if(blingbling < 6)
 		
 
 
 
 
-		//hiv -> bgr 이미지로 변환
-		//cv::cvtColor(hsvimage, colorCoordinateMapperMat, CV_HSV2BGR,4);
-		
-		
 		cv::resize(colorCoordinateMapperMat,colorMat,cv::Size(),1,1);
 		
 	
