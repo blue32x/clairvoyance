@@ -4,7 +4,7 @@
  
 #define BUF_SIZE 1024
 #define PORT 6061
-#define IP "192.168.0.20"
+#define IP "192.168.0.82"
  
 int main() 
 { 

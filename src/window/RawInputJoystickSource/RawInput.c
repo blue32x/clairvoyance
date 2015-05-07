@@ -10,6 +10,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
+#include <stdio.h>
+
 #include <Windows.h>
 #include <tchar.h>
 #define _USE_MATH_DEFINES
@@ -20,6 +22,7 @@
 #define ARRAY_SIZE(x)	(sizeof(x) / sizeof((x)[0]))
 #define WC_MAINFRAME	TEXT("MainFrame")
 #define MAX_BUTTONS		128
+#define MAX_BUFFER_SIZE	1024
 #define CHECK(exp)		{ if(!(exp)) goto Error; }
 #define SAFE_FREE(p)	{ if(p) { HeapFree(hHeap, 0, p); (p) = NULL; } }
 
@@ -34,7 +37,20 @@ LONG lAxisZ;
 LONG lAxisRz;
 LONG lHat;
 INT  g_NumberOfButtons;
+char m_cText[100];
 
+void SendJoystickValues()
+{
+	char buffer[MAX_BUFFER_SIZE];
+	sprintf(buffer,"%ld/%ld/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",
+			lAxisX,lAxisY,bButtonStates[0],bButtonStates[1],
+			bButtonStates[2],bButtonStates[3],bButtonStates[4],
+			bButtonStates[5],bButtonStates[6],bButtonStates[7],
+			bButtonStates[8],bButtonStates[9],bButtonStates[10],bButtonStates[11]);
+	printf("%s\n",buffer);
+
+	//Send buffer to rasp-pi on bluetooth network
+}
 
 void ParseRawInput(PRAWINPUT pRawInput)
 {
@@ -289,10 +305,12 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
+	
 	HWND hWnd;
 	MSG msg;
 	WNDCLASSEX wcex;
-
+	AllocConsole();
+	freopen("CONOUT$", "wt", stdout);
 	//
 	// Register window class
 	//
@@ -329,7 +347,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
+		SendJoystickValues();
+		//printf("%ld %ld %d \n",lAxisX,lAxisY,bButtonStates[1]);
 	}
-
+	FreeConsole();
 	return (int)msg.wParam;
+	
+	
+	
 }
+
+/*
+BOOL bButtonStates[MAX_BUTTONS];
+LONG lAxisX;
+LONG lAxisY;
+LONG lAxisZ;
+LONG lAxisRz;
+LONG lHat;
+INT  g_NumberOfButtons;
+*/
