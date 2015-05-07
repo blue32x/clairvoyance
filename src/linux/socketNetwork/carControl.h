@@ -8,7 +8,7 @@
 
 #define BUFFER_SIZE 1024
 
-// symblos for gear values
+// symbols for gear values
 #define REV_G 0
 #define GEAR1 1
 #define GEAR2 1.2
@@ -21,41 +21,41 @@
 // global variables
 int gear = GEAR1;
 unsigned char speedParam = 0x00;
-unsigned char sppedParam2 = 0x00;
+unsigned char speedParam2 = 0x00;
 
 void speedControl(int fd, int delta)
 {
-	unsigned char op = 0x91;
+    unsigned char op = 0x91;
 	unsigned char len = 0x04;
 	unsigned char RW = 0x01;
 	unsigned char checkSum;
 	
 	// above 2 digits of hexdecimal
-	if(sppedParam2 == 0xff && delta > 0)
+	if(speedParam2 == 0xff && delta > 0)
 	{
 		speedParam += 0x01;
 		speedParam2 = delta;
 	}
-	else if(sppedParam2 == 0x00 && < 0)
+	else if(speedParam2 == 0x00 && delta < 0)
 	{
 		speedParam -= 0x01;
-		speedParam2 = 0xff - delta;
+		speedParam2 = 0xff + delta;
 	}
 	else
 	{
 		// below 2 digits of hexdecimal
-		sppedParam2 += delta;
+		speedParam2 += delta;
 	}
 
 	printf("%x,  %x\n", speedParam, speedParam2);		// For debug
 
-	checkSum = ((op + len + RW + speedParam2 + sppedParam) & 0x00ff);
+	checkSum = ((op + len + RW + speedParam2 + speedParam) & 0x00ff);
 
 	serialPutchar(fd, op);
 	serialPutchar(fd, len);
 	serialPutchar(fd, RW);
 	serialPutchar(fd, speedParam2);
-	serialPutchar(fd, sppedParam1);
+	serialPutchar(fd, speedParam);
 	serialPutchar(fd, checkSum);
 }
 
@@ -117,7 +117,7 @@ void accelControl(int fd, long value)
 {
 	//if accel value(=brake value, Y-axis value) is less than 0, increase current speed based on gear value.
 	if(value < 0)
-		speedControl(fd, -value * gear * /* x Constant */);
+		speedControl(fd, -value * gear /* x Constant */);
 }
 
 void brakeControl(int fd, long value)

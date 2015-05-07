@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 	struct sockaddr_in server_addr;
 	char buff[BUF_SIZE];
 
-	int menuNum = -1;
+	char input;
 	int fd;
 
 	/* Initailize socket network and connect socket */
@@ -60,62 +60,15 @@ int main(int argc, char** argv)
 		return 1 ;
 	}
 
-	/* Print menu */
-	menu();
-
-	while(menuNum != 13)
+	while((input = getche()) != 'i')
 	{
-		printf("select menu : ");
-		scanf("%d", &menuNum);
-
-		switch(menuNum)
-		{
-		case 0:
-			menu();
-			break;
-		case 1:
-			ggambback(fd);
-			break;
-		case 2:
-			light(fd);
-			break;
-		case 3:
-			PositionControlOnOff(fd);
-			break;
-		case 4:
-			SpeedControlOnOff(fd);
-			break;
-		case 5:
-			Desire_speed(fd);
-			break;
-		case 6:
-			buzzer(fd);
-			break;
-		case 7:
-			steering(fd);
-			break;
-		case 8:
-			Speed_proportional(fd);
-			break;
-		case 9:
-			Speed_integral(fd);
-			break;
-		case 10:
-			Speed_differental(fd);
-			break;
-		case 11:
-			ReadSpeed(fd);
-			break;
-		case 12:
-			do
-			{
-				/* Read socket */
-				read(client_socket, buff, BUF_SIZE);
-				printf("%s\n", buff);
-				joystick(fd, buff[0]);
-			}while(buff[0] != 'i');
-			break;
-		}
+		if(input == 'w')
+			speedControl(fd, 1);
+		if(input == 's')
+			speedControl(fd, -1);
+		/* Read socket */
+		//read(client_socket, buff, BUF_SIZE);
+		//printf("%s\n", buff);
 	}
 
 	close(client_socket);
