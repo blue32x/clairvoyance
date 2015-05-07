@@ -1,5 +1,5 @@
 CC = gcc
-TARGETS = clientMain
+TARGETS = client server
 
 .PHONY: all
 all: $(TARGETS)
@@ -9,4 +9,4 @@ $(TARGETS): %:%.o
 
 .PHONY: clean
 clean:
-	rm *.o clientMain
+	rm *.o client server
