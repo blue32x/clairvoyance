@@ -140,8 +140,6 @@ int main()
 	//////////////////////////////////////////////////////////////////////////////////////
 
 
-
-
 	//get Coordinate Mapper
 	///////////////////////////////////////////////////////////////////////////////////////
 	ICoordinateMapper * pCoordinateMapper;
@@ -164,7 +162,6 @@ int main()
 	unsigned short minDepth, maxDepth;
 	pDepthSource->get_DepthMinReliableDistance(&minDepth);
 	pDepthSource->get_DepthMaxReliableDistance(&maxDepth);
-
 
 
 	//Frame을 생성하고 color와 depth image를 출력한다.
@@ -195,10 +192,22 @@ int main()
 			//Frame에서 Depth데이터를 검색한다.
 			//Depth 데이터가 저장된 배열의 포인터를 얻을 수 있다. 여기서 Depth 데이터를 시각화 하기 위한 변환처리에 편리한 cv::Mat 형으로 받고있다.
 			hResult = pDepthFrame -> AccessUnderlyingBuffer(&depthBufferSize, reinterpret_cast<UINT16**> (&depthBufferMat.data));
-			
+
+
 			if(SUCCEEDED(hResult))
 			{
 				depthBufferMat.convertTo(depthMat,CV_8U, -255.0f / 8000.0f, 255.0f); //Depth데이터를 이미지로 표시하기 위해 16bit에서 8bit로 변환한다.
+
+				/*
+				for(int i=0; i<depthWidth; i++)
+				{
+					for(int j=0; j<depthHeight; j++)
+					{
+						int depth = depthMat.at<uchar>(i,j);
+						cout << "depth: " << depth << endl;
+					}
+				}
+				*/
 			}
 		}
 
@@ -221,6 +230,7 @@ int main()
 
 					int depthX = static_cast<int>(dPoint.X);
 					int depthY = static_cast<int>(dPoint.Y);
+
 					colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST) = colorBufferMat.at<cv::Vec4b>(y,x);
 					
 					
@@ -243,35 +253,54 @@ int main()
 		}
 
 
-		///his이미지 변환을 통한 color 이미지 처리
-		
-		if(blingbling < 6)
+	
+
+		if(/*blingbling < 6*/ 1)
 		{
 			for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
 			{
 				for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
 				{
-					DepthSpacePoint dPoint = depthSpacePoints[y][x];
-					int depthX = static_cast<int>(dPoint.X);
-					int depthY = static_cast<int>(dPoint.Y);
+					DepthSpacePoint dPoint = depthSpacePoints[y][x]; //depthmap 좌표를 받아온다.
+					int depthX = static_cast<int>(dPoint.X); //depthX에 depthmap 좌표 x값을 저장한다.
+					int depthY = static_cast<int>(dPoint.Y); //depthY에 depthmap 좌표 y값을 저장한다.
 					
+
+					//depthmap 좌표가 만들어질 영상의 좌표보다 작으면 안되기 때문에 범위 설정을 해준다.
 					if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
 					{
-	
-						if(depthMat.at<uchar>(depthY,depthX)  >= 235)
+						//color영상을 영상처리하기 위하여 RGB모델을 YCbCr모델로 바꿔주어 영상의 명암값 Y를 뽑아내야한다.
+						//우선 BRG을 받아와 변수에 각각 저장한다.
+						color_B = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[0] ; //픽셀의 Blue color 값 저장
+						color_G = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[1] ; //픽셀의 Green color 값 저장
+						color_R = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] ; //픽셀의 Red color 값 저장
+
+						//RGB -> YCbCr 변환공식을 이용하여 변환한다.
+						ycbcr_Y = (299*color_R + 587*color_G + 114*color_B)/1000;
+						ycbcr_Cb = 0.5643*(color_B - ycbcr_Y) + 128;
+						ycbcr_Cr = 0.7132*(color_R - ycbcr_Y) + 128;
+
+
+						//변환된 값을 갖고 영상처리를 시작한다.
+						//235 이상의 거리에 있는 값을에 명암을 20 더해준다.
+						if(depthMat.at<uchar>(depthY,depthX)  >= 235 && ycbcr_Y < 195)
 						{
 							
-							
+
+							/////////////// 거리 계산 /////////////////////////////////////////////	
+
+							int depth = depthMat.at<uchar>(depthY,depthX);
+							double depthValue = (double)(-3.6)*(double)(depth)/(double)255 + 4.0;
+
+							cout << depth << ",   " << depthValue << endl;
+							////////////////////////////////////////////////////////////////////////
+
+
 							//colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 250;
-							color_B = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[0] ;
-							color_G = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[1] ;
-							color_R = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] ;
 
-							ycbcr_Y = (299*color_R + 587*color_G + 114*color_B)/1000;
-							ycbcr_Cb = 0.5643*(color_B - ycbcr_Y) + 128;
-							ycbcr_Cr = 0.7132*(color_R - ycbcr_Y) + 128;
 
-							ycbcr_Y += 30;
+
+							ycbcr_Y +=20;
 
 							color_R = (1000*ycbcr_Y + 1402*(ycbcr_Cr-128))/1000;
 							color_G = (1000*ycbcr_Y - 714*(ycbcr_Cr-128) - 334*(ycbcr_Cb-128))/1000;
@@ -282,7 +311,24 @@ int main()
 							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = (uchar)color_R;
 							
 						}
+						
+						//180 ~ 200사이의 거리 값을 갖는 좌표에 명암값을 20 빼준다.
+						if(depthMat.at<uchar>(depthY,depthX)  >= 180 && depthMat.at<uchar>(depthY,depthX)  < 200  && ycbcr_Y > 90)
+						{
+							
+							//colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 250;
 
+							ycbcr_Y -=20;
+
+							color_R = (1000*ycbcr_Y + 1402*(ycbcr_Cr-128))/1000;
+							color_G = (1000*ycbcr_Y - 714*(ycbcr_Cr-128) - 334*(ycbcr_Cb-128))/1000;
+							color_B = (1000*ycbcr_Y + 1772*(ycbcr_Cb-128))/1000;
+
+							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[0] = (uchar)color_B;
+							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[1] = (uchar)color_G;
+							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = (uchar)color_R;
+							
+						}
 					
 					}//if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
 				}//for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
