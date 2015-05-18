@@ -13,12 +13,6 @@ using namespace std;
 
 wchar_t buf[256];
 
-void GetLastErrorMessage(const DWORD lastError)
-{
-	FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, NULL, lastError, 
-              MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buf, 256, NULL);
-}
-
 int _tmain(int argc, _TCHAR* argv[])
 {
 	WORD wVersionRequested = 0x202;
@@ -26,22 +20,21 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (0 == WSAStartup(wVersionRequested, &m_data))
 	{
 		SOCKET s = socket(AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM);
-		const DWORD lastError = ::GetLastError();
-		
+
 		if (s == INVALID_SOCKET)
 		{
-			GetLastErrorMessage(lastError);
-			printf("Failed to get bluetooth socket! %s\n", buf);
+			printf("Failed to get bluetooth socket! \n");
 			exit(1);
 		}
+
 		WSAPROTOCOL_INFO protocolInfo;
 		int protocolInfoSize = sizeof(protocolInfo);
 
-		if (0 != getsockopt(s, SOL_SOCKET, SO_PROTOCOL_INFO, 
-			(char*)&protocolInfo, &protocolInfoSize))
+		if (0 != getsockopt(s, SOL_SOCKET, SO_PROTOCOL_INFO, (char*)&protocolInfo, &protocolInfoSize))
 		{
 			exit(1);
 		}
+
 		SOCKADDR_BTH address;
 		address.addressFamily = AF_BTH;
 		address.btAddr = 0;
@@ -51,8 +44,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		if (0 != bind(s, pAddr, sizeof(SOCKADDR_BTH)))
 		{
-			GetLastErrorMessage(GetLastError());
-			printf("%s\n", buf);
+			printf("Failed to bind! \n");
+			exit(1);
 		}
 		else
 		{
@@ -66,13 +59,14 @@ int _tmain(int argc, _TCHAR* argv[])
 		int size = sizeof(SOCKADDR_BTH);
 		if (0 != getsockname(s, pAddr, &size))
 		{
-			GetLastErrorMessage(GetLastError());
-			printf("%s\n", buf);
+			printf("Failed to get socket name! \n");
+			exit(1);
 		}
+
 		if (0 != listen(s, 10))
 		{
-			GetLastErrorMessage(GetLastError());
-			printf("%s\n", buf);
+			printf("Failed to listen! \n");
+			exit(1);
 		}
 
 		WSAQUERYSET service;
@@ -97,9 +91,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		if (0 != WSASetService(&service, RNRSERVICE_REGISTER, 0))
 		{
-			printf("Service registration failed....");
-			GetLastErrorMessage(GetLastError());
-			printf("%d\n", buf);
+			printf("Service registration failed....\n");
 		}
 		else
 		{    
@@ -122,13 +114,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		int r = recv(s2,(char*)buffer, sizeof(buffer), 0);
 		printf("%s\n",buffer);
 
-		closesocket(s2);
 		if (0 != WSASetService(&service, RNRSERVICE_DELETE, 0))
 		{
-			GetLastErrorMessage(GetLastError());
-			printf("%s\n", buf);
+			printf("Failed to set up WSA Service! \n");
+			exit(1);
 		}
 		closesocket(s);
+		closesocket(s2);
 		WSACleanup();
 	}
 }
