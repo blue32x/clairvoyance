@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <wiringPi.h>
 #include <wiringSerial.h>
-#include "getch.h"
 
 #define BUFFER_SIZE 1024
 
@@ -25,6 +24,7 @@ unsigned char speedParam2 = 0x00;
 
 void speedControl(int fd, int delta)
 {
+    // max speed is 01F4 (500)
     unsigned char op = 0x91;
 	unsigned char len = 0x04;
 	unsigned char RW = 0x01;
@@ -117,7 +117,7 @@ void accelControl(int fd, long value)
 {
 	//if accel value(=brake value, Y-axis value) is less than 0, increase current speed based on gear value.
 	if(value < 0)
-		speedControl(fd, -value * gear /* x Constant */);
+		speedControl(fd, -(float)value * (float)gear /* x Constant */);
 }
 
 void brakeControl(int fd, long value)
