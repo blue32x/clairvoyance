@@ -1,5 +1,6 @@
 // rfcommServer.cpp : 콘솔 응용 프로그램에 대한 진입점을 정의합니다.
-//
+// from Code Project
+
 #include "stdafx.h"
 #include <WinSock2.h>
 #include <ws2bth.h>
@@ -10,8 +11,6 @@ using namespace std;
 
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "irprops.lib")
-
-wchar_t buf[256];
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -124,4 +123,3 @@ int _tmain(int argc, _TCHAR* argv[])
 		WSACleanup();
 	}
 }
-
