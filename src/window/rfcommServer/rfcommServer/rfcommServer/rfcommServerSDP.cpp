@@ -30,7 +30,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	sa.btAddr = 0;
 	sa.port = BT_PORT_ANY;
 	if( SOCKET_ERROR == bind( server, (const sockaddr*) &sa, sizeof(SOCKADDR_BTH)) ) {
-			ExitProcess(2);
+		int error = WSAGetLastError();
+		printf("%d\n", error);
+		ExitProcess(2);
 	}
 	listen( server, 1 );
 	// check which port we¡¯re listening on

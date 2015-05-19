@@ -1,0 +1,20 @@
+﻿빌드 시작: 2015-05-19 오후 2:41:10
+     1>2 노드의 "C:\Users\user\Downloads\Bluetooth connection sample\C++\bthcxn.vcxproj" 프로젝트(Build 대상)입니다.
+     1>InitializeBuildStatus:
+         "AlwaysCreate"이(가) 지정되었기 때문에 "Debug\bthcxn.unsuccessfulbuild"을(를) 만들고 있습니다.
+       ClCompile:
+         모든 출력이 최신 상태입니다.
+       ResourceCompile:
+         모든 출력이 최신 상태입니다.
+       Link:
+         C:\Program Files\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"Debug\bthcxn.exe" /INCREMENTAL /NOLOGO ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"Debug\bthcxn.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"Debug\bthcxn.lib" /MACHINE:X86 /SAFESEH Debug\BthCxn.res
+         Debug\bthcxn.obj
+         bthcxn.vcxproj -> C:\Users\user\Downloads\Bluetooth connection sample\C++\Debug\bthcxn.exe
+       FinalizeBuildStatus:
+         "Debug\bthcxn.unsuccessfulbuild" 파일을 삭제하고 있습니다.
+         "Debug\bthcxn.lastbuildstate"에 연결(touching)하고 있습니다.
+     1>"C:\Users\user\Downloads\Bluetooth connection sample\C++\bthcxn.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
+
+빌드했습니다.
+
+경과 시간: 00:00:01.55
