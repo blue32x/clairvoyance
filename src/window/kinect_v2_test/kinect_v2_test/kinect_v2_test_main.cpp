@@ -1,9 +1,29 @@
-﻿
-//헤더부분
-#include "stdafx.h" //stdafx 헤더파일 참조
+﻿/******************************************************************************************************
 
-//safeRelease함수를 정의????
-//쓰임새는 main함수에서 살펴봐야할듯
+								국민대학교
+								컴퓨터공학부
+								천리안(clairvoyance)
+								Kinect v2의 depth map을 활용한 자동차 후방 영상 개선
+								지도교수 : 한재일
+								조장 : 최승혁
+								조원 : 신태섭 박성우 신동호 박민욱 최성현
+								version 2.74
+
+******************************************************************************************************/
+
+//opencv header
+#include<cv.h>
+#include<highgui.h>
+
+//kinect header
+#include<Kinect.h>
+
+//.c header
+#include<stdio.h>
+
+
+//Kinect sdk pointer Release를 위한 함수
+//Interface로 구성되어 어떤 함수가 와도 처리가 가능
 template<class Interface>
 inline void SafeRelease( Interface *& pInterfaceToRelease )
 {
@@ -22,11 +42,10 @@ inline void SafeRelease( Interface *& pInterfaceToRelease )
 ********************************************************************************/
 
 
-#define depthWidth 512
-#define depthHeight 424
-#define colorWidth 1920
-#define colorHeight 1080
-
+#define depthWidth 512 //Kinect v2 depth map width
+#define depthHeight 424 //Kinect v2 depth map height
+#define colorWidth 1920 //Kinect v2 color camera width
+#define colorHeight 1080 //Kinect v2 color camera height
 
 //coordinate 이미지 영상을 줄여주는 변수
 //1로 바꿔주면 원본, 1이상이면 영상의 크기를 줄여주어 
@@ -34,19 +53,94 @@ inline void SafeRelease( Interface *& pInterfaceToRelease )
 //추후에 멀티쓰레드 혹은 분산처리로 해결 가능성을 보인다.
 #define SPEEDBOOST 3
 
+#define NORMALIMAGE '0'
+#define FINDNEAR '1'
+#define GRAIMAGE '2'
+#define BLINGBLING '3'
+#define REDPOINT '4'
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////이부분만 고치면 이미지 처리가 된다//////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+void calibration_image_processing_gra(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat)
+{
+	
+	
+}
+
+void calibration_image_processing_red(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat)
+{
+	for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
+	{
+		for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
+		{
+			DepthSpacePoint dPoint = depthSpacePoints[y][x]; //depthmap 좌표를 받아온다.
+			int depthX = static_cast<int>(dPoint.X); //depthX에 depthmap 좌표 x값을 저장한다.
+			int depthY = static_cast<int>(dPoint.Y); //depthY에 depthmap 좌표 y값을 저장한다.
+			if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
+			{
+				if(depthMat.at<UINT16>(depthY,depthX) % 5 == 0)
+				{
+					colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 175;
+				}
+			}
+		}
+	}
+}
+void calibration_image_processing_near(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat)
+{
+	for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
+	{
+		for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
+		{
+			DepthSpacePoint dPoint = depthSpacePoints[y][x]; //depthmap 좌표를 받아온다.
+			int depthX = static_cast<int>(dPoint.X); //depthX에 depthmap 좌표 x값을 저장한다.
+			int depthY = static_cast<int>(dPoint.Y); //depthY에 depthmap 좌표 y값을 저장한다.
+			if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
+			{
+				if(depthMat.at<UINT16>(depthY,depthX) < 700 && depthMat.at<UINT16>(depthY,depthX) != 0)
+				{
+					colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 220;
+				}
+			}
+		}
+	}
+}
+
+void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat)
+{
+	for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
+	{
+		for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
+		{
+			DepthSpacePoint dPoint = depthSpacePoints[y][x]; //depthmap 좌표를 받아온다.
+			int depthX = static_cast<int>(dPoint.X); //depthX에 depthmap 좌표 x값을 저장한다.
+			int depthY = static_cast<int>(dPoint.Y); //depthY에 depthmap 좌표 y값을 저장한다.
+			if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
+			{
+				if(depthMat.at<UINT16>(depthY,depthX) < 700 && depthMat.at<UINT16>(depthY,depthX) != 0)
+				{
+					colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 220;
+				}
+			}
+		}
+	}
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
 //color + depth 영상 출력 
 //http://www.buildinsider.net/small/kinectv2cpp/02
-int main()
+
+//main functio start
+int main(void)
 {
-
-
-	double color_R, color_G, color_B;
-	double ycbcr_Y, ycbcr_Cb, ycbcr_Cr;
-
-	//깜빡임 효과를 줄 변수
-	int blingbling = 0;
-
 	//Sensor를 얻을 수 있다.
 	///////////////////////////////////////////////////////////////////////////////////
 	IKinectSensor * pSensor;  //Kinect v2 대우를 위한 Sensor인터페이스.
@@ -160,10 +254,14 @@ int main()
 
 
 	unsigned short minDepth, maxDepth;
+
 	pDepthSource->get_DepthMinReliableDistance(&minDepth);
 	pDepthSource->get_DepthMaxReliableDistance(&maxDepth);
 
 
+	char mode_detec;
+	char mode=FINDNEAR;
+	int bling_var = 0;
 	//Frame을 생성하고 color와 depth image를 출력한다.
 	///////////////////////////////////////////////////////////////////////////////////////
 	while(1)
@@ -196,18 +294,8 @@ int main()
 
 			if(SUCCEEDED(hResult))
 			{
-				depthBufferMat.convertTo(depthMat,CV_8U, -255.0f / 8000.0f, 255.0f); //Depth데이터를 이미지로 표시하기 위해 16bit에서 8bit로 변환한다.
-
-				/*
-				for(int i=0; i<depthWidth; i++)
-				{
-					for(int j=0; j<depthHeight; j++)
-					{
-						int depth = depthMat.at<uchar>(i,j);
-						cout << "depth: " << depth << endl;
-					}
-				}
-				*/
+				//depthBufferMat.convertTo(depthMat,CV_8U, -255.0f / 8000.0f, 255.0f); //Depth데이터를 이미지로 표시하기 위해 16bit에서 8bit로 변환한다.
+				depthBufferMat.convertTo(depthMat,CV_8U, -255.0f / 8000.0f, 255.0f);
 			}
 		}
 
@@ -238,107 +326,80 @@ int main()
 			}
 			
 		}
+		/*
+		#define NORMALIMAGE 0
+		#define FINDNEAR 1
+		#define GRAIMAGE 2
+		#define BLINGBLING 3
+		*/
 
+		//모드를 선택한다.
+		//영상 출력중에 입력키를 받는다.
+		mode_detec = cv::waitKey( 1 );
 
-
-		//blingbling
-		//color 이미지 영상에 깜빡이는 효과를 주기 위하여 blingbling 변수 컨트롤
-		if(blingbling < 12)
+		//받은 입력mode_detec이 효과를 원하는 키일 경우
+		//mode에 값을 넣어준다.
+		if(mode_detec== VK_ESCAPE)
 		{
-			blingbling++;
+			break;
 		}
-		else
+		else if(mode_detec == NORMALIMAGE)
 		{
-			blingbling /= 13;
+			mode= NORMALIMAGE; //0을 누를 경우 영상처리 되지 않은 이미지 출력
+		}
+		else if(mode_detec == GRAIMAGE)
+		{
+			mode = GRAIMAGE; //2를 누를 경우 gradation image 출력
+		}
+		else if(mode_detec == BLINGBLING)
+		{
+			mode = BLINGBLING; // 3을 누를 경우 깜빡이는 image 출력
+		}
+		else if(mode_detec ==REDPOINT)
+		{
+			mode = REDPOINT; // 4를 누를 경우 붉은 색으로 등고선 표시
+		}
+		else if(mode_detec ==FINDNEAR)
+		{
+			mode = FINDNEAR; // 1을 누르면 가까운 경우 붉은 색으로 표시
 		}
 
-
-	
-
-		if(/*blingbling < 6*/ 1)
+		//만약 mode에서 선택영상을 받는 경우
+		//선택된 mode에 따라 영상처리 함수를 실행시킨다.
+		if(mode == NORMALIMAGE)
 		{
-			for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
+			//처리 과정 X
+		}
+		else if(mode == REDPOINT)
+		{
+			calibration_image_processing_red(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
+		}
+		else if(mode == FINDNEAR)
+		{
+			calibration_image_processing_near(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
+		}
+		else if(mode == BLINGBLING)
+		{
+			bling_var += 1;
+			if(bling_var > 30)
 			{
-				for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
-				{
-					DepthSpacePoint dPoint = depthSpacePoints[y][x]; //depthmap 좌표를 받아온다.
-					int depthX = static_cast<int>(dPoint.X); //depthX에 depthmap 좌표 x값을 저장한다.
-					int depthY = static_cast<int>(dPoint.Y); //depthY에 depthmap 좌표 y값을 저장한다.
-					
-
-					//depthmap 좌표가 만들어질 영상의 좌표보다 작으면 안되기 때문에 범위 설정을 해준다.
-					if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
-					{
-						//color영상을 영상처리하기 위하여 RGB모델을 YCbCr모델로 바꿔주어 영상의 명암값 Y를 뽑아내야한다.
-						//우선 BRG을 받아와 변수에 각각 저장한다.
-						color_B = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[0] ; //픽셀의 Blue color 값 저장
-						color_G = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[1] ; //픽셀의 Green color 값 저장
-						color_R = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] ; //픽셀의 Red color 값 저장
-
-						//RGB -> YCbCr 변환공식을 이용하여 변환한다.
-						ycbcr_Y = (299*color_R + 587*color_G + 114*color_B)/1000;
-						ycbcr_Cb = 0.5643*(color_B - ycbcr_Y) + 128;
-						ycbcr_Cr = 0.7132*(color_R - ycbcr_Y) + 128;
-
-
-						//변환된 값을 갖고 영상처리를 시작한다.
-						//235 이상의 거리에 있는 값을에 명암을 20 더해준다.
-						if(depthMat.at<uchar>(depthY,depthX)  >= 235 && ycbcr_Y < 195)
-						{
-							
-
-							/////////////// 거리 계산 /////////////////////////////////////////////	
-
-							int depth = depthMat.at<uchar>(depthY,depthX);
-							double depthValue = (double)(-3.6)*(double)(depth)/(double)255 + 4.0;
-
-							cout << depth << ",   " << depthValue << endl;
-							////////////////////////////////////////////////////////////////////////
-
-
-							//colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 250;
-
-
-
-							ycbcr_Y +=20;
-
-							color_R = (1000*ycbcr_Y + 1402*(ycbcr_Cr-128))/1000;
-							color_G = (1000*ycbcr_Y - 714*(ycbcr_Cr-128) - 334*(ycbcr_Cb-128))/1000;
-							color_B = (1000*ycbcr_Y + 1772*(ycbcr_Cb-128))/1000;
-
-							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[0] = (uchar)color_B;
-							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[1] = (uchar)color_G;
-							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = (uchar)color_R;
-							
-						}
-						
-						//180 ~ 200사이의 거리 값을 갖는 좌표에 명암값을 20 빼준다.
-						if(depthMat.at<uchar>(depthY,depthX)  >= 180 && depthMat.at<uchar>(depthY,depthX)  < 200  && ycbcr_Y > 90)
-						{
-							
-							//colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 250;
-
-							ycbcr_Y -=20;
-
-							color_R = (1000*ycbcr_Y + 1402*(ycbcr_Cr-128))/1000;
-							color_G = (1000*ycbcr_Y - 714*(ycbcr_Cr-128) - 334*(ycbcr_Cb-128))/1000;
-							color_B = (1000*ycbcr_Y + 1772*(ycbcr_Cb-128))/1000;
-
-							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[0] = (uchar)color_B;
-							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[1] = (uchar)color_G;
-							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = (uchar)color_R;
-							
-						}
-					
-					}//if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
-				}//for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
-			}//for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
-		}//if(blingbling < 6)
+				bling_var = 0;
+			}
+			if(bling_var > 15)
+			{
+				calibration_image_processing_bling(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
+			}
+		}
+		else if(mode == GRAIMAGE)
+		{
+			calibration_image_processing_gra(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
+		}
+		//영상처리를 위한 함수
 		
 
-
-
-
+		//resize가 필요한 경우를 위한 코드
+		//resize가 필요 없을 경우에는 이 코드부분을 지우고
+		//colorCoordinateMapperMat을 출력 시켜주면 된다.
 		cv::resize(colorCoordinateMapperMat,colorMat,cv::Size(),1,1);
 		
 	
@@ -352,12 +413,8 @@ int main()
 		cv::imshow("Depth", depthMat);
 		//cv::imshow("CoordinateMapper",colorCoordinateMapperMat);
 
-		//break;
-
-		if( cv::waitKey( 30 ) == VK_ESCAPE )
-		{
-			break;
-		}
+		
+		
 	}
 	////////////////////////////////////////////////////////////////////////////////////
 
@@ -380,4 +437,3 @@ int main()
 
 	return 0;
 }
-
