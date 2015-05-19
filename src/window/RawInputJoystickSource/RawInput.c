@@ -1,15 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
-//
 // Raw Input API sample showing joystick support
-//
-// Author: Alexander B?ken
-// Date:   04/22/2011
-//
-// Copyright 2011 Alexander B?ken
-//
-///////////////////////////////////////////////////////////////////////////////
-
-
 #include <stdio.h>
 
 #include <Windows.h>
@@ -17,7 +6,6 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <hidsdi.h>
-
 
 #define ARRAY_SIZE(x)	(sizeof(x) / sizeof((x)[0]))
 #define WC_MAINFRAME	TEXT("MainFrame")
@@ -155,7 +143,6 @@ Error:
 	SAFE_FREE(pValueCaps);
 }
 
-
 void DrawButton(HDC hDC, int i, int x, int y, BOOL bPressed)
 {
 	HBRUSH hOldBrush, hBr;
@@ -183,7 +170,6 @@ void DrawButton(HDC hDC, int i, int x, int y, BOOL bPressed)
 	}
 }
 
-
 void DrawCrosshair(HDC hDC, int x, int y, LONG xVal, LONG yVal)
 {
 	Rectangle(hDC, x, y, x + 256, y + 256);
@@ -192,7 +178,6 @@ void DrawCrosshair(HDC hDC, int x, int y, LONG xVal, LONG yVal)
 	MoveToEx(hDC, x + xVal + 128, y + yVal - 5 + 128, NULL);
 	LineTo(hDC, x + xVal + 128, y + yVal + 5 + 128);
 }
-
 
 void DrawDPad(HDC hDC, int x, int y, LONG value)
 {
@@ -220,7 +205,6 @@ void DrawDPad(HDC hDC, int x, int y, LONG value)
 		}
 	}
 }
-
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -302,7 +286,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	
@@ -348,21 +331,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 		SendJoystickValues();
-		//printf("%ld %ld %d \n",lAxisX,lAxisY,bButtonStates[1]);
 	}
 	FreeConsole();
 	return (int)msg.wParam;
-	
-	
-	
 }
-
-/*
-BOOL bButtonStates[MAX_BUTTONS];
-LONG lAxisX;
-LONG lAxisY;
-LONG lAxisZ;
-LONG lAxisRz;
-LONG lHat;
-INT  g_NumberOfButtons;
-*/
