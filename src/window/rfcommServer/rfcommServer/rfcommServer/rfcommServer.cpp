@@ -86,28 +86,28 @@ void ParseRawInput(PRAWINPUT pRawInput)
 	//
 
 	// Button caps
-	//CHECK( HidP_GetCaps(pPreparsedData, &Caps) == HIDP_STATUS_SUCCESS )
+	CHECK( HidP_GetCaps(pPreparsedData, &Caps) == HIDP_STATUS_SUCCESS )
 		CHECK( pButtonCaps = (PHIDP_BUTTON_CAPS)HeapAlloc(hHeap, 0, sizeof(HIDP_BUTTON_CAPS) * Caps.NumberInputButtonCaps) );
 
 	capsLength = Caps.NumberInputButtonCaps;
-	//CHECK( HidP_GetButtonCaps(HidP_Input, pButtonCaps, &capsLength, pPreparsedData) == HIDP_STATUS_SUCCESS )
+	CHECK( HidP_GetButtonCaps(HidP_Input, pButtonCaps, &capsLength, pPreparsedData) == HIDP_STATUS_SUCCESS )
 		g_NumberOfButtons = pButtonCaps->Range.UsageMax - pButtonCaps->Range.UsageMin + 1;
 
 	// Value caps
 	CHECK( pValueCaps = (PHIDP_VALUE_CAPS)HeapAlloc(hHeap, 0, sizeof(HIDP_VALUE_CAPS) * Caps.NumberInputValueCaps) );
 	capsLength = Caps.NumberInputValueCaps;
-	//CHECK( HidP_GetValueCaps(HidP_Input, pValueCaps, &capsLength, pPreparsedData) == HIDP_STATUS_SUCCESS )
+	CHECK( HidP_GetValueCaps(HidP_Input, pValueCaps, &capsLength, pPreparsedData) == HIDP_STATUS_SUCCESS )
 
 		//
 		// Get the pressed buttons
 		//
 
 		usageLength = g_NumberOfButtons;
-	/*CHECK(
+	CHECK(
 		HidP_GetUsages(
 		HidP_Input, pButtonCaps->UsagePage, 0, usage, &usageLength, pPreparsedData,
 		(PCHAR)pRawInput->data.hid.bRawData, pRawInput->data.hid.dwSizeHid
-		) == HIDP_STATUS_SUCCESS );*/
+		) == HIDP_STATUS_SUCCESS );
 
 	ZeroMemory(bButtonStates, sizeof(bButtonStates));
 	for(i = 0; i < usageLength; i++)
@@ -119,11 +119,11 @@ void ParseRawInput(PRAWINPUT pRawInput)
 
 	for(i = 0; i < Caps.NumberInputValueCaps; i++)
 	{
-		/*CHECK(
+		CHECK(
 			HidP_GetUsageValue(
 			HidP_Input, pValueCaps[i].UsagePage, 0, pValueCaps[i].Range.UsageMin, &value, pPreparsedData,
 			(PCHAR)pRawInput->data.hid.bRawData, pRawInput->data.hid.dwSizeHid
-			) == HIDP_STATUS_SUCCESS );*/
+			) == HIDP_STATUS_SUCCESS );
 
 		switch(pValueCaps[i].Range.UsageMin)
 		{
@@ -315,7 +315,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	WORD wVersionRequested;
 	WSADATA wsaData;
 	wVersionRequested = MAKEWORD( 2, 0 );
-	
+
 	AllocConsole();
 
 	if( WSAStartup( wVersionRequested, &wsaData ) != 0 ) {
@@ -396,10 +396,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	HWND hWnd;
 	MSG msg;
 	WNDCLASSEX wcex;
-	FILE ** newstreamptr = NULL;
-	
+	FILE * newstream;
+
 	//freopen("CONOUT$", "wt", stdout);
-	freopen_s(newstreamptr, "CONOUT$","wt", stdout);
+	freopen_s(&newstream, "CONOUT$","wt", stdout);
 	//
 	// Register window class
 	//

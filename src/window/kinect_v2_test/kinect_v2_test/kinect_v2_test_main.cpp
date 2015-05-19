@@ -63,12 +63,57 @@ inline void SafeRelease( Interface *& pInterfaceToRelease )
 //////////////////////////////이부분만 고치면 이미지 처리가 된다//////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
+//가까운 것은 밝게, 어두운 것은 어둡게 
 void calibration_image_processing_gra(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat)
 {
-	
+	double colorR, colorG, colorB;
+	int depth_var;
+
+	for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
+	{
+		for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
+		{
+			DepthSpacePoint dPoint = depthSpacePoints[y][x]; //depthmap 좌표를 받아온다.
+			int depthX = static_cast<int>(dPoint.X); //depthX에 depthmap 좌표 x값을 저장한다.
+			int depthY = static_cast<int>(dPoint.Y); //depthY에 depthmap 좌표 y값을 저장한다.
+			if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
+			{
+				//color RGB를 받아온다.
+				colorB = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[0];
+				colorG = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[1];
+				colorR = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2];
+				depth_var =depthMat.at<uchar>(depthY,depthX) ;
+				if(depth_var != 0 || depth_var != 255)
+				{
+					colorB = colorB*  (1.8 - ( 255-depth_var ) * 1.7 / 255);
+					if(colorB > 255)
+					{
+						colorB = 254;
+					}
+
+					colorG = colorG * (1.8 - ( 255 -depth_var) * 1.7 / 255);
+					if(colorG > 255)
+					{
+						colorG = 254;
+					}
+
+					colorR = colorR * (1.8 - ( 255-depth_var ) * 1.7 / 255);
+					if(colorR > 255)
+					{
+						colorR = 254;
+					}
+				}
+				colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[0] = colorB;
+				colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[1] = colorG;
+				colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
+				
+			}
+		}
+	}
 	
 }
 
+//붉은색 선으로 등고선 처리를 해준다.
 void calibration_image_processing_red(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat)
 {
 	for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
@@ -80,7 +125,7 @@ void calibration_image_processing_red(cv::Mat colorCoordinateMapperMat, DepthSpa
 			int depthY = static_cast<int>(dPoint.Y); //depthY에 depthmap 좌표 y값을 저장한다.
 			if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
 			{
-				if(depthMat.at<UINT16>(depthY,depthX) % 5 == 0)
+				if(depthMat.at<UINT16>(depthY,depthX) % 100 < 10 )
 				{
 					colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 175;
 				}
@@ -88,6 +133,8 @@ void calibration_image_processing_red(cv::Mat colorCoordinateMapperMat, DepthSpa
 		}
 	}
 }
+
+//가장 가까운 물체를 붉은색으로 표시해준다.
 void calibration_image_processing_near(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat)
 {
 	for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
@@ -108,6 +155,7 @@ void calibration_image_processing_near(cv::Mat colorCoordinateMapperMat, DepthSp
 	}
 }
 
+//가장 가까운 물체가 밝고 어둡고 깜빡이는 효과를 넣는다.
 void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat)
 {
 	for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
@@ -121,7 +169,7 @@ void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthS
 			{
 				if(depthMat.at<UINT16>(depthY,depthX) < 700 && depthMat.at<UINT16>(depthY,depthX) != 0)
 				{
-					colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 220;
+					colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 200;
 				}
 			}
 		}
@@ -258,6 +306,7 @@ int main(void)
 	pDepthSource->get_DepthMinReliableDistance(&minDepth);
 	pDepthSource->get_DepthMaxReliableDistance(&maxDepth);
 
+	std::cout << minDepth << " " << maxDepth << std::endl;
 
 	char mode_detec;
 	char mode=FINDNEAR;
@@ -392,7 +441,7 @@ int main(void)
 		}
 		else if(mode == GRAIMAGE)
 		{
-			calibration_image_processing_gra(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
+			calibration_image_processing_gra(colorCoordinateMapperMat, depthSpacePoints, depthMat);
 		}
 		//영상처리를 위한 함수
 		
