@@ -1,646 +1,248 @@
-// This source being implemented by Park minwook.
-//
-//
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
-#include "getch.h"
-
 #include <wiringPi.h>
 #include <wiringSerial.h>
 
+#define BUFFER_SIZE 1024
 
-/////////////////////////////////////////////////////////////////////////
+// symbols for gear values
+#define REV_G 0
+#define GEAR1 1
+#define GEAR2 1.2
+#define GEAR3 1.3
+#define GEAR4 1.4
+#define GEAR_UP -1
+#define GEAR_DW -2
+#define GEAR_RE -3
 
-void SpeedControlOnOff(int fd)
+// global variables
+int gear = GEAR1;
+unsigned char speedParam = 0x00;
+unsigned char speedParam2 = 0x00;
+
+void speedControl(int fd, int delta)
 {
-
-  unsigned char op = 0x90;
-  unsigned char len = 0x03;
-  unsigned char RW = 0x01;
-  unsigned char param ;
-  unsigned char checkSum ;
-  int sel_SpeedControlOnOff=0;
- 
-  printf(" SpeedControlOnOff( off=0, on =1 ) : ");
-  scanf("%d",&sel_SpeedControlOnOff);
- 
- switch(sel_SpeedControlOnOff)
-{
-    case 0: 
-            param = 0x00 ; 
-            checkSum = 0x94 ;
-            break;
-    case 1: 
-            param = 0x01 ;
-            checkSum = 0x95 ;
-            break;
-}
-   
-  serialPutchar (fd, op) ;
-  serialPutchar (fd, len) ;
-  serialPutchar (fd, RW) ;
-  serialPutchar (fd, param) ;
-  serialPutchar (fd, checkSum) ;
-}
-
-////////////////////////////////////////////////////////////////////////////
-void PositionControlOnOff(int fd)
-{
-  unsigned char op = 0x96;
-  unsigned char len = 0x03;
-  unsigned char RW = 0x01;
-  unsigned char param ;
-  unsigned char checkSum;
-  int sel_PositionControlOnOff=0; 
-  printf(" PositionControlOnOff( off=0, on =1 ) : ");
-  scanf("%d",&sel_PositionControlOnOff);
-
- switch(sel_PositionControlOnOff)
-{
-    case 0: 
-            param = 0x00 ; 
-            checkSum = 0x9A ;
-            break;
-    case 1: 
-            param = 0x01 ;
-            checkSum = 0x9B ;
-            break;
-}
-   
-  serialPutchar (fd, op) ;
-  serialPutchar (fd, len) ;
-  serialPutchar (fd, RW) ;
-  serialPutchar (fd, param) ;
-  serialPutchar (fd, checkSum) ;
-}
-////////////////////////////////////////////////////////
-void Desire_speed(int fd)  ///speed =encoder tic * 10/s   ex)1000=0x0064 * 10 
-{
-  unsigned char op = 0x91;
-  unsigned char len = 0x04;
-  unsigned char RW = 0x01;
-  int speed1=0;
-  int speed2=0;
-  unsigned char param ;
-  unsigned char param1 ;
-  unsigned int checkSum;
-  
-  printf(" max speed is 01F4 (500) \n");
-  printf(" input Speed value twice(ex:0x00 and 0x64 means speed 0x0064 : ");
-  scanf("%x %x",&speed1,&speed2);
-  param=(speed2 & speed2);
-  param1=(speed1 & speed1);
-  
-   printf("d speed %d %d \n",param1,param);
-   printf("x speed %x %x \n",param1,param);
-    printf("u speed %u %u \n",param1,param);
-   printf("c speed %c %c \n",param1,param);
-  
-  checkSum =((op+len+RW+param+param1)&0x00ff);
-  checkSum = (unsigned char)checkSum; 
-
-  serialPutchar (fd, op) ;
-  serialPutchar (fd, len) ;
-  serialPutchar (fd, RW) ;
-  serialPutchar (fd, param) ;
-  serialPutchar (fd, param1) ;
-  serialPutchar (fd, checkSum) ;
- 
-}
-//////////////////////////////////////////////////
-////////////////////////////////////////////////////////
-void ReadSpeed(int fd)  ///
-{
-  unsigned char op = 0x91;
-  unsigned char len = 0x02;
-  unsigned char RW = 0x02;
-  unsigned char checkSum=0x95;
-  
-  printf(" current speed is\n");
- 
-  
-
-  serialPutchar (fd, op) ;
-  serialPutchar (fd, len) ;
-  serialPutchar (fd, RW) ;
-
-  serialPutchar (fd, checkSum) ;
- 
-}
-//////////////////////////////////////////////////
-void Speed_proportional(int fd) // 1 ~/ ~ 10 ~ / 50 
-{
-  unsigned char op = 0x92;
-  unsigned char len = 0x03;
-  unsigned char RW = 0x01;
-  unsigned char param1 ;
-  //unsigned char param2;
-  unsigned char checkSum;
-  int Speed_proportional1 = 0;
-  //int Speed_proportional2 = 0;
-
-  printf(" acceleration= min(0) < normal(0x0a) < max(0x32) \n");
-  printf(" input accel value : ");
-  scanf("%x",&Speed_proportional1);
-  param1 = (Speed_proportional1 & Speed_proportional1) ;
- // param2 = Speed_proportional2;
-  checkSum =((op+len+RW+param1) & 0x00ff);
-  
-  printf("d speed %d  \n",param1);
-   printf("x speed %x  \n",param1);
-    printf("u speed %u \n",param1);
-   printf("c speed %c  \n",param1);
-  
-  serialPutchar (fd, op) ;
-  serialPutchar (fd, len) ;
-  serialPutchar (fd, RW) ;
-  serialPutchar (fd, param1) ;
-  //serialPutchar (fd, param2) ;
-  serialPutchar (fd, checkSum) ;
-}
-//////////////////////////////////////////////////
-
-void Speed_integral(int fd) // 1 ~/ ~ 10 ~ / 50 
-{
-  unsigned char op = 0x93;
-  unsigned char len = 0x03;
-  unsigned char RW = 0x01;
-  unsigned char param ;
-  unsigned char checkSum;
-  int Speed_integral = 0;
-   
-  printf(" acceleration= min(0) < normal(0x0a) < max(0x32) \n");
-  printf(" input accel value : ");
-  scanf("%x",&Speed_integral);
-  param =Speed_integral;
-  checkSum =((op+len+RW+param) & 0x00ff);
-  
-   printf("d speed %d  \n",param);
-   printf("x speed %x  \n",param);
-    printf("u speed %u \n",param);
-   printf("c speed %c  \n",param);
-  
-  serialPutchar (fd, op) ;
-  serialPutchar (fd, len) ;
-  serialPutchar (fd, RW) ;
-  serialPutchar (fd, param) ;
-  serialPutchar (fd, checkSum) ;
-}
-//////////////////////////////////////////////////
-
-void Speed_differental(int fd) // 1 ~/ ~ 10 ~ / 50 
-{
-  unsigned char op = 0x94;
-  unsigned char len = 0x03;
-  unsigned char RW = 0x01;
-  unsigned char param ;
-  unsigned char checkSum;
-  int Speed_differental = 0;
-   
-  printf(" acceleration= min(0) < normal(0x0a) < max(0x32) \n");
-  printf(" input accel value : ");
-  scanf("%x",&Speed_differental);
-  param = Speed_differental;
-  checkSum =((op+len+RW+param) & 0x00ff);
-  
-   printf("d speed %d  \n",param);
-   printf("x speed %x  \n",param);
-   printf("u speed %u \n",param);
-   printf("c speed %c  \n",param);
-  
-  serialPutchar (fd, op) ;
-  serialPutchar (fd, len) ;
-  serialPutchar (fd, RW) ;
-  serialPutchar (fd, param) ;
-  serialPutchar (fd, checkSum) ;
-}
-//////////////////////////////////////////////////////////////////////////
-void ggambback(int fd)
-{
-  unsigned char op = 0xA1;
-  unsigned char len = 0x03;
-  unsigned char RW = 0x01;
-  unsigned char param ;
-  unsigned char checkSum ;
-  int sel_ggambback=0;
-  
-  printf("  GGAM BBACK( off=0, right=1 ,left =2 ,all on = 3 ) : ");
-  scanf("%d",&sel_ggambback);
- 
- switch(sel_ggambback)
-{
-    case 0: 
-            param = 0x00 ; 
-            checkSum = 0xA5 ;
-            break;
-    case 1: 
-            param = 0x01 ;
-            checkSum = 0xA6 ;
-            break;
-    case 2: 
-            param = 0x02  ;
-            checkSum = 0xA7;
-            break;
-    case 3: 
-            param = 0x03;
-            checkSum = 0xA8;
-            break;
-     
-}
-
-
-
-  serialPutchar (fd, op) ;
-  serialPutchar (fd, len) ;
-  serialPutchar (fd, RW) ;
-  serialPutchar (fd, param) ;
-  serialPutchar (fd, checkSum) ;
-
-}
-//////////////////////////////////////////////////////////////////////////////
-void light(int fd)
-{
-  unsigned char op = 0xA0;
-  unsigned char len = 0x03;
-  unsigned char RW = 0x01;
-  unsigned char param ;
-  unsigned char checkSum ;
-  int sel_light=0;
-  printf("  light( off=0, forward=1 , back =2 ,all on = 3 ) : ");
-  scanf("%d",&sel_light);
-  
- switch(sel_light)
-{
-    case 0: 
-            param = 0x00 ; 
-            checkSum = 0xA4 ;
-            break;
-    case 1: 
-            param = 0x01 ;
-            checkSum = 0xA5 ;
-            break;
-    case 2: 
-            param = 0x02  ;
-            checkSum = 0xA6 ;
-            break;
-    case 3: 
-            param = 0x03;
-            checkSum = 0xA7 ;
-            break;
-     
-}
-
-
-
-  serialPutchar (fd, op) ;
-  serialPutchar (fd, len) ;
-  serialPutchar (fd, RW) ;
-  serialPutchar (fd, param) ;
-  serialPutchar (fd, checkSum) ;
-
-}
-//////////////////////////////////////////////////
-void buzzer(int fd) //value*0.01seceond
-{
-  unsigned char op = 0xA2;
-  unsigned char len = 0x03;
-  unsigned char RW = 0x01;
-  int buzzer_time=0;
-  unsigned char param ;
-  unsigned char checkSum ;
-  
-  
-  printf(" buzzer time = value *0.01 s \n");
-  printf(" Max value is 255(0xFF)\n");
-  printf(" input buzzer time value : ");
-  scanf("%x",&buzzer_time);
-  param = buzzer_time;
-  checkSum =((op+len+RW+param)&0x00ff);
-  
-  serialPutchar (fd, op) ;
-  serialPutchar (fd, len) ;
-  serialPutchar (fd, RW) ;
-  serialPutchar (fd, param) ;
-  serialPutchar (fd, checkSum) ;
-}
-//////////////////////////////////////////////////
-
-void steering(int fd) // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 degree)
-{
-  unsigned char op = 0xA3;
-  unsigned char len = 0x04;
-  unsigned char RW = 0x01;
-  unsigned char param1 ;
-  unsigned char param2 ;
-  unsigned char checkSum;
-  int steering_value1 = 0;
-  int steering_value2 = 0;
-   
-  printf(" steering= left(1000) < middle(1500) < right(2000) \n");
-  printf(" +1 = 0.1 degree ,MaxLeft=03e8 , middle=05dc , MaxRight = 07d0 \n");
-  printf(" input steering value twice(0x00 & 0x64 means 0x0064 : ");
-  scanf("%x %x",&steering_value1,&steering_value2);
-  param1 = steering_value2;
-  param2 = steering_value1;
-  checkSum =((op+len+RW+param1+param2) & 0x00ff);
-  
-  serialPutchar (fd, op) ;
-  serialPutchar (fd, len) ;
-  serialPutchar (fd, RW) ;
-  serialPutchar (fd, param1) ;
-  serialPutchar (fd, param2) ;
-  serialPutchar (fd, checkSum) ;
-}
-//////////////////////////////////////////////////
-void joystick(int fd, char key) //up =^[[A down =^[[B  l= ^[[D  r= ^[[C  
-{
-// char key=0;
- char gear=1;
- int count=0;
- unsigned char op=0x91;
- unsigned char len=0x04;
- unsigned char RW=0x01;
- static unsigned char param=0x00 ;
- static unsigned char param1=0x00 ;
- unsigned int checkSum;
-
-//while(key!='i')
-//{
-
-// key=getch();
- 
- 	switch(key)
- 	{ 
- 	 case 'w':
-	if (gear==1)
+    // max speed is 01F4 (500)
+    unsigned char op = 0x91;
+	unsigned char len = 0x04;
+	unsigned char RW = 0x01;
+	unsigned char checkSum;
+	
+	// above 2 digits of hexdecimal
+	if(speedParam2 == 0xff && delta > 0)
 	{
-  		 if( (param==0xf4)&& (param1==0x01) )
-   		 { break;}
-   
-  		 if(param==0xf4)
-  		 {
-   		 param1+=0x01;
-   		 param = 0x00;
-   		 }   
-  	 param += 0x01;
-   	 checkSum = ((op+len+RW+param+param1)&0x00ff);
-  	 checkSum = (unsigned char)checkSum; 
-  	 serialPutchar (fd, op) ;
-  	 serialPutchar (fd, len) ;
-  	 serialPutchar (fd, RW) ;
-  	 serialPutchar (fd, param) ;
-  	 serialPutchar (fd, param1) ;
-  	 serialPutchar (fd, checkSum) ;
-  	 printf("current speed %x %x \n",param1,param);
-  	 break;
+		speedParam += 0x01;
+		speedParam2 = delta;
 	}
-else if(gear==2)
-{
-  if( (param > 0xe9)&& (param1==0x01) )
-     {
-      param=0xf4;  
-      break; 
-      }
-  else if( param>0xe9 )
-   {
-    param1 += 0x01;
-    param  = 0x00;
-    }   
-   param += 0x05;
-   checkSum = ((op+len+RW+param+param1)&0x00ff);
-   checkSum = (unsigned char)checkSum; 
-   serialPutchar (fd, op) ;
-   serialPutchar (fd, len) ;
-   serialPutchar (fd, RW) ;
-   serialPutchar (fd, param) ;
-   serialPutchar (fd, param1) ;
-   serialPutchar (fd, checkSum) ;
-   printf("current speed %x %x \n",param1,param);
-   break;
-}
-else if(gear==3)
-{
-  if( (param > 0xe4)&& (param1==0x01) )
-    {
-     param=0xf4; 
-     break;
-     }   
-  if( param > 0xe4 )
-   {
-    param1 += 0x01;
-    param = 0x00;
-    }   
-   param += 0x10;
-   checkSum = ((op+len+RW+param+param1)&0x00ff);
-   checkSum = (unsigned char)checkSum; 
-   serialPutchar (fd, op) ;
-   serialPutchar (fd, len) ;
-   serialPutchar (fd, RW) ;
-   serialPutchar (fd, param) ;
-   serialPutchar (fd, param1) ;
-   serialPutchar (fd, checkSum) ;
-   printf("current speed %x %x \n",param1,param);
-   break;
-}
-         
-  case 's':
-  if(gear ==1)
-{
-   if( (param==0x00)&& (param1==0x00) )
-    { break;}
-   
-   if(param==0x01)
-   {
-    	if(param1 == 0x01)
-	 {
- 	   param1 = 0x00;
-           param =0xf4;
- 	 }
+	else if(speedParam2 == 0x00 && delta < 0)
+	{
+		speedParam -= 0x01;
+		speedParam2 = 0xff + delta;
+	}
+	else
+	{
+		// below 2 digits of hexdecimal
+		speedParam2 += delta;
+	}
 
-    }   
+	printf("%x,  %x\n", speedParam, speedParam2);		// For debug
 
-   param -= 0x01;
+	checkSum = ((op + len + RW + speedParam2 + speedParam) & 0x00ff);
 
-   checkSum = ((op+len+RW+param+param1)&0x00ff);
-   checkSum = (unsigned char)checkSum; 
-   serialPutchar (fd, op) ;
-   serialPutchar (fd, len) ;
-   serialPutchar (fd, RW) ;
-   serialPutchar (fd, param) ;
-   serialPutchar (fd, param1) ;
-   serialPutchar (fd, checkSum) ;
-   printf("current speed %x %x \n",param1,param);
-   break;
+	serialPutchar(fd, op);
+	serialPutchar(fd, len);
+	serialPutchar(fd, RW);
+	serialPutchar(fd, speedParam2);
+	serialPutchar(fd, speedParam);
+	serialPutchar(fd, checkSum);
 }
 
-else if(gear == 2)
+void steeringControl(int fd, long value) // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 degree)
 {
-  if( (param <= 0x05)&& (param1==0x00) )
-    {   
-        param = 0x00;
-     
- 	
-        checkSum = ((op+len+RW+param+param1)&0x00ff);
-        checkSum = (unsigned char)checkSum; 
-        serialPutchar (fd, op) ;
-        serialPutchar (fd, len) ;
-        serialPutchar (fd, RW) ;
-        serialPutchar (fd, param) ;
-        serialPutchar (fd, param1) ;
-        serialPutchar (fd, checkSum) ;
-        
-       
-        break;
-       }
-   
-   if(param <= 0x05)
-   {
-    	if(param1 == 0x01)
-	 {
- 	   param1 = 0x00;
-           param =0xf4;
- 	 }
-    
-    }   
+	// steer value's range is -128 ~ 0 ~ 127
+	// but steer param can have 1000(0x03e8, most left) ~ 1500(0x05dc, middle) ~ 2000(0x07d0, most right)
+	// so, we need to that value convert to params
 
-   param -= 0x05;
+	unsigned char op = 0xA3;
+	unsigned char len = 0x04;
+	unsigned char RW = 0x01;
+	unsigned char param;
+	unsigned char param2;
+	unsigned char checkSum;
 
-   checkSum = ((op+len+RW+param+param1)&0x00ff);
-   checkSum = (unsigned char)checkSum; 
-   serialPutchar (fd, op) ;
-   serialPutchar (fd, len) ;
-   serialPutchar (fd, RW) ;
-   serialPutchar (fd, param) ;
-   serialPutchar (fd, param1) ;
-   serialPutchar (fd, checkSum) ;
+	char strParam[] = "ff";
+	char strHex[BUFFER_SIZE];
+	char *ptr;
+	float ratio = 500/127;
 
-   break;
+	// We consider to equal -128 to -127 for same range.
+	if(value == -128)
+		value = -127;
 
+	if(value == 0)
+	{
+		value = 1500;
+	}
+	else
+	{
+		value = 1500 + (float)value * ratio;
+	}
+
+	sprintf(strHex, "%x", value);
+	printf("%s\n", strHex);					// For Debug
+
+	strParam[0] = '0';
+	strParam[1] = strHex[0];
+	param = strtol(strParam, &ptr, 16);
+	printf("%s, %x\n", strParam, param);	// For Debug
+
+	strParam[0] = strHex[1];
+	strParam[1] = strHex[2];
+	param2 = strtol(strParam, &ptr, 16);
+	printf("%s, %x\n", strParam, param2);	// For Debug
+	
+	checkSum = ((op + len + RW + param2 + param) & 0x00ff);
+
+	serialPutchar(fd, op);
+	serialPutchar(fd, len);
+	serialPutchar(fd, RW);
+	serialPutchar(fd, param2);
+	serialPutchar(fd, param);
+	serialPutchar(fd, checkSum);
 }
-else if(gear == 3)
+
+void accelControl(int fd, long value)
 {
-  if( (param < 0x11) && (param1==0x00) )
-    {
-     param = 0x00;
-   
-     
-     checkSum = ((op+len+RW+param+param1)&0x00ff);
-     checkSum = (unsigned char)checkSum; 
-     serialPutchar (fd, op) ;
-     serialPutchar (fd, len) ;
-     serialPutchar (fd, RW) ;
-     serialPutchar (fd, param) ;
-     serialPutchar (fd, param1) ;
-     serialPutchar (fd, checkSum) ;
-     printf("current speed %x %x \n",param1,param);
-     break;
-  
-    
-     }
-   
-   if(param <= 0x10)
-   {
-    	if(param1 == 0x01)
-	 {
- 	   param1 = 0x00;
-           param =0xf4;
- 	 }
-
-    }   
-
-   param -= 0x10;
-
-   checkSum = ((op+len+RW+param+param1)&0x00ff);
-   checkSum = (unsigned char)checkSum; 
-   serialPutchar (fd, op) ;
-   serialPutchar (fd, len) ;
-   serialPutchar (fd, RW) ;
-   serialPutchar (fd, param) ;
-   serialPutchar (fd, param1) ;
-   serialPutchar (fd, checkSum) ;
-   printf("current speed %x %x \n",param1,param);
-   break;
+	//if accel value(=brake value, Y-axis value) is less than 0, increase current speed based on gear value.
+	if(value < 0)
+		speedControl(fd, -(float)value * (float)gear /* x Constant */);
 }
-   /////// gear
-   case '1':
-   gear=1 ;
-   break;
 
-    case '2':
-   gear=2 ;
-   break;
-
-   case '3':
-   gear=3 ;
-   break;
-
-/// steering       +1 = 0.1 degree ,MaxLeft=03e8 , middle=05dc , MaxRight = 07d0 
-/*
-   case 'a':  //left 
-
-  op = 0xA3;
-  len = 0x04;
-  RW = 0x01;
- // param4 = 0x05 ;
- // param3 = 0xdc ;
-
-  if(param1 < 0x05)
+void brakeControl(int fd, long value)
 {
-//  param4 -= 0x01;
-//  param3 = 0xff;
-
+	//if brake value is more than 0, decrease current speed, sharply.
+	if(value > 0)
+		speedControl(fd, -value /* x Constant */);
+	//else if brake value(=accel value, Y-axis value) is 0, decrease current speed, naturally.
+	else if(value == 0)
+		speedControl(fd, -10);
 }
-//  param4-=0x05
-  
-  
 
-  checkSum =((op+len+RW+param1+param2) & 0x00ff);
-  
-  serialPutchar (fd, op) ;
-  serialPutchar (fd, len) ;
-  serialPutchar (fd, RW) ;
-  serialPutchar (fd, param1) ;
-  serialPutchar (fd, param2) ;
-  serialPutchar (fd, checkSum) ;
-} 
- 
-*/
-
-   break;
-
-
-
-
-
-
-
-
-} //switch end
-//} //while end
-} //function end
-//////////////////////////////////////////////////
-
-
-void menu() 
+void flickerControl(int fd, unsigned char param)
 {
-  printf("_____________________________________________\n");
-  printf("|               control board               |\n");
-  printf("|      0.   menu()                          |\n");
-  printf("|      1.   ggambback(int fd)               |\n");
-  printf("|      2.   lgiht()                         |\n");
-  printf("|      3.   PositionControlOnOff(int fd)    |\n");
-  printf("|      4.   SpeedControlOnOff(int fd)       |\n");
-  printf("|      5.   Desire_speed(int fd)            |\n");
-  printf("|      6.   buzzer(int fd)                  |\n");
-  printf("|      7.   steering(int fd)                |\n");
-  printf("|      8.   Speed_proportional(int fd)      |\n");
-  printf("|      9.   Speed_integral(int fd)          |\n");
-  printf("|      10.  Speed_differental(int fd)       |\n");
-  printf("|      11.  current speed()                 |\n");
-  printf("|      12.  joystick                        |\n");
-  printf("|      13.   exit                           |\n");
-  printf("|___________________________________________|\n");
+	/*
+	unsigned char op = 0xA1;
+	unsigned char len = 0x03;
+	unsigned char RW = 0x01;
+	unsigned char param;
+	unsigned char checkSum;
+
+	switch(sel_ggambback)
+	{
+	case 0: 
+		param = 0x00 ; 
+		checkSum = 0xA5 ;
+		break;
+	case 1: 
+		param = 0x01 ;
+		checkSum = 0xA6 ;
+		break;
+	case 2: 
+		param = 0x02  ;
+		checkSum = 0xA7;
+		break;
+	case 3: 
+		param = 0x03;
+		checkSum = 0xA8;
+		break;
+	}
+	serialPutchar(fd, op);
+	serialPutchar(fd, len);
+	serialPutchar(fd, RW);
+	serialPutchar(fd, param);
+	serialPutchar(fd, checkSum);
+	*/
 }
-////////////////////////////////////////////////////////
+
+void lightControl(int fd, unsigned char param)
+{
+	/*
+	unsigned char op = 0xA0;
+	unsigned char len = 0x03;
+	unsigned char RW = 0x01;
+	unsigned char param ;
+	unsigned char checkSum ;
+	int sel_light=0;
+
+	switch(sel_light)
+	{
+	case 0: 
+		param = 0x00 ; 
+		checkSum = 0xA4 ;
+		break;
+	case 1: 
+		param = 0x01 ;
+		checkSum = 0xA5 ;
+		break;
+	case 2: 
+		param = 0x02  ;
+		checkSum = 0xA6 ;
+		break;
+	case 3: 
+		param = 0x03;
+		checkSum = 0xA7 ;
+		break;
+
+	}
+
+	serialPutchar (fd, op) ;
+	serialPutchar (fd, len) ;
+	serialPutchar (fd, RW) ;
+	serialPutchar (fd, param) ;
+	serialPutchar (fd, checkSum) ;
+	*/
+}
+
+void gearControl(int fd, int gearCommand)
+{
+	if(gearCommand == GEAR_RE)
+		gear = REV_G;
+
+	if(gearCommand == GEAR_UP)
+	{
+		if(gear == GEAR1)
+			gear = GEAR2;
+		if(gear == GEAR2)
+			gear = GEAR3;
+		if(gear == GEAR3)
+			gear = GEAR4;
+	}
+	if(gearCommand == GEAR_DW)
+	{
+		if(gear == GEAR4)
+			gear = GEAR3;
+		if(gear == GEAR3)
+			gear = GEAR2;
+		if(gear == GEAR2)
+			gear = GEAR1;
+	}
+}
+
+void soundControl(int fd) 
+{
+	unsigned char op = 0xA2;
+	unsigned char len = 0x03;
+	unsigned char RW = 0x01;
+	unsigned char param = 0x01;
+	unsigned char checkSum;
+
+	checkSum = ((op + len + RW + param) & 0x00ff);
+
+	serialPutchar(fd, op);
+	serialPutchar(fd, len);
+	serialPutchar(fd, RW);
+	serialPutchar(fd, param);
+	serialPutchar(fd, checkSum);
+}
