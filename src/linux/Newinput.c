@@ -13,7 +13,7 @@ int main()
 	int joy_fd, *axis=NULL, num_of_axis=0, num_of_buttons=0, x;
 	char *button=NULL, name_of_joystick[80];
 	struct js_event js;
-
+        struct js_event js1;
 	if( ( joy_fd = open( JOY_DEV , O_RDONLY)) == -1 )
 	{
 		printf( "Couldn't open joystick\n" );
@@ -33,10 +33,12 @@ int main()
 		, num_of_buttons );
 
 	fcntl( joy_fd, F_SETFL, O_NONBLOCK );	/* use non-blocking mode */
-
-	while( 1 ) 	/* infinite loop */
+        
+        
+	
+ 	do 	/* infinite loop */
 	{
-
+            
 			/* read the joystick state */
 		read(joy_fd, &js, sizeof(struct js_event));
 		
@@ -54,13 +56,14 @@ int main()
 			/* print the results */
 		printf( "X: %6d  Y: %6d  ", axis[0], axis[1] );
 				
-		//for( x=0 ; x<num_of_buttons ; ++x )
-		//printf("B%d: %d  ", x, button[x] );
-                system("clear");
+		for( x=0 ; x<num_of_buttons ; ++x )
+		printf("B%d: %d  ", x, button[x] );
+                
 		printf("\r");
 		fflush(stdout);
-       
-	}
+        read(joy_fd, &js, sizeof(struct js_event));
+        js1=js;
+	}while(js != js1)
 
 	close( joy_fd );	/* too bad we never get here */
 	return 0;
