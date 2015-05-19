@@ -33,6 +33,12 @@ int main(int argc, char **argv)
 		printf("sended [%s]\n", buf);
 	}
 
+	// read data from the server
+	bytes_read = read(s, buf, sizeof(buf));
+	if( bytes_read > 0 ) {
+		printf("received [%s]\n", buf);
+	}
+
 	close(s);
 	return 0;
 }
