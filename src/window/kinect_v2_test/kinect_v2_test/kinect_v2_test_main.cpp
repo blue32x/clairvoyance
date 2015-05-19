@@ -22,6 +22,7 @@
 //.c header
 #include<stdio.h>
 
+#include<mmsystem.h>
 
 //Kinect sdk pointer Release를 위한 함수
 //Interface로 구성되어 어떤 함수가 와도 처리가 가능
@@ -52,7 +53,7 @@ inline void SafeRelease( Interface *& pInterfaceToRelease )
 //1로 바꿔주면 원본, 1이상이면 영상의 크기를 줄여주어 
 //속도를 빠르게 해준다.
 //추후에 멀티쓰레드 혹은 분산처리로 해결 가능성을 보인다.
-#define SPEEDBOOST 3
+#define SPEEDBOOST 8
 
 #define NORMALIMAGE '0'
 #define FINDNEAR '2'
@@ -286,9 +287,21 @@ void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthS
 //color + depth 영상 출력 
 //http://www.buildinsider.net/small/kinectv2cpp/02
 
+//영상의 Frame을 출력하기 위한 전역변수
+long nmrTotalFrames = 0;
+
+//kinect에서 가장 가까운 물체까지의 거리를 나타내줄 전역변수
+int myMinDepth = 4500;
+
+DWORD startTime = 0;
+
 //main functio start
 int main(void)
 {
+	//FPS를 표시해 줄 Font 및 문자열 버퍼 초기화
+	char strBuffer[64] = {0,}; //화면에 출력할 스트링을 저장할 버퍼
+	startTime = timeGetTime(); //시작을 나타낸다.
+
 	//Sensor를 얻을 수 있다.
 	///////////////////////////////////////////////////////////////////////////////////
 	IKinectSensor * pSensor;  //Kinect v2 대우를 위한 Sensor인터페이스.
@@ -415,6 +428,10 @@ int main(void)
 	///////////////////////////////////////////////////////////////////////////////////////
 	while(1)
 	{
+
+		//가장 가까운 거리를 구하기 위해 myMinDepth를 초기화해 준다.
+		myMinDepth = 4500;
+
 		//colorFrame
 		IColorFrame * pColorFrame = nullptr; //color 이미지를 얻기 위한 Frame 인터페이스
 		hResult = pColorReader -> AcquireLatestFrame(&pColorFrame); //Reader에서 최신 Frame을 얻을 수 있다.
@@ -440,6 +457,16 @@ int main(void)
 			//Depth 데이터가 저장된 배열의 포인터를 얻을 수 있다. 여기서 Depth 데이터를 시각화 하기 위한 변환처리에 편리한 cv::Mat 형으로 받고있다.
 			hResult = pDepthFrame -> AccessUnderlyingBuffer(&depthBufferSize, reinterpret_cast<UINT16**> (&depthBufferMat.data));
 
+			for(int y=0; y < depthHeight; y++)
+			{
+				for(int x = 0; x < depthWidth; x++)
+				{
+					if(myMinDepth > depthBufferMat.at<UINT16>(y,x) &&depthBufferMat.at<UINT16>(y,x) != 0 )
+					 {
+						 myMinDepth= depthBufferMat.at<UINT16>(y,x);
+					 }
+				}
+			}
 
 			if(SUCCEEDED(hResult))
 			{
@@ -554,6 +581,24 @@ int main(void)
 		cv::resize(colorCoordinateMapperMat,colorMat,cv::Size(),1,1);
 		
 	
+
+		nmrTotalFrames++;
+		SafeRelease(pDepthFrame); 
+		SafeRelease(pColorFrame); //Frame을 풀어놓는다.
+		//내부 버퍼가 해제되어 다음 데이터를 검색 할 수있는 산태가 된다.
+		//Show window
+		float fps=(float)((nmrTotalFrames*1000.0)/(timeGetTime()-startTime));
+		cv::Point mypoint;
+		mypoint.x=10;
+		mypoint.y=40;
+		//itoa(fps,strBuffer,10);
+		sprintf_s(strBuffer,"%.2lf fps %d cm",fps,myMinDepth/10);
+		//sprintf_s(strBuffer,"%.2lf fps",fps);
+		//fps를 이미지 버퍼에 출력한다.
+		cv::putText(colorMat,strBuffer,mypoint,2,1.2,cv::Scalar::all(255));
+
+
+
 
 		SafeRelease(pDepthFrame); 
 		SafeRelease(pColorFrame); //Frame을 풀어놓는다.
