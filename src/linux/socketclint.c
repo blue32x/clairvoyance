@@ -62,6 +62,7 @@ int main(int argc, char **argv)
                         if( (joystick[13] - Data13 = 1) )//back gear
                          {
 			    back_gear++;
+			 }
 			if(  back_gear%2 = 1) )//back gear
                          {
 			   

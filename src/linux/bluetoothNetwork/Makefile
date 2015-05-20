@@ -1,5 +1,5 @@
 CC = gcc
-TARGETS = simpleScan rfcomm-server rfcomm-client
+TARGETS = rfcomm-client
 
 .PHONY: all
 all: $(TARGETS)
@@ -9,4 +9,4 @@ $(TARGETS): %:%.o
 
 .PHONY: clean
 clean:
-	rm *.o simpleScan rfcomm-server rfcomm-client
+	rm *.o rfcomm-client
