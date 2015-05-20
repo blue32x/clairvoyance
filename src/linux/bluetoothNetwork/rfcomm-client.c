@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include <sys/socket.h>
@@ -18,8 +19,13 @@ int main(int argc, char **argv)
 	struct sockaddr_rc addr = { 0 };
 	int s, status, bytes_read;
 	char buf[1024];
+
 	char **joystickData;
 	size_t numData;
+
+	long Data2, Data4, Data6, Data7, Data13;
+	long rf_count, lf_count, fl_count, bl_count, back_gear;
+	rf_count=lf_count=fl_count=bl_count=back_gear=0;
 
 	/* Initailize serial network */
 	if((fd = serialOpen ("/dev/ttyAMA0", 19200)) < 0)
@@ -75,7 +81,58 @@ int main(int argc, char **argv)
 			printf("\n");
 
 			/* control model car by raw data */
+			///// Control Speed
+			if((atol(joystick[13]) - Data13) == 1)				//back gear
+			{
+				back_gear++;
+			}
+			if(back_gear%2 == 1)								//back gear
+			{
+				back_speedControl(fd, atol(joystickData[0]));
+			}
+			else 
+			{
+				speedControl(fd, atol(joystickData[0]));
+			}
 
+			///// Control Steer
+			steeringControl(fd, atol(joystickData[0]));
+
+			///// Control Flicker
+			if((atol(joystick[7]) - Data7) == 1)				//Right flicker
+			{ 
+				rf_count++; 
+				right_flicker(fd, rf_count);
+			}
+			if((atol(joystick[6]) - Data6) == 1)				//Left flicker
+			{	
+				lf_count++;
+				left_flicker(fd, lf_count);
+			}
+
+			///// Control Light
+			if((atol(joystick[2]) - Data2) == 1)				//forward_light
+			{	
+				fl_count++;
+				forward_light(fd, fl_count);
+			}
+			if((atol(joystick[4]) - Data4) == 1)				//backward_light
+			{	
+				bl_count++;
+				back_light(fd, bl_count);  
+			}
+
+			///// Control Buzzer
+			if(atol(joystickData[3]) == 1)
+			{
+				soundControl(fd);
+			}
+
+			Data2 = atol(joystick[2]);
+			Data4 = atol(joystick[4]); 	
+			Data6 = atol(joystick[6]); 
+			Data7 = atol(joystick[7]);
+			Data13 = atol(joystick[13]); 
 
 			/* clean up heap allocation for after strplit() */
 			for (i = 0; i < numData; i++) {
@@ -86,6 +143,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
+
 	close(s);
 	close(fd);
 	return 0;

@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 	}
 
 	// read data from the server
-	
+
 	while(1)
 	{
 		bytes_read = read(s, buf, sizeof(buf));
@@ -56,37 +56,37 @@ int main(int argc, char **argv)
 				free(joystickData);
 			}
 
-///    0 = steer /// 1= speed // 6 == leftFlick//7=right flick
-///    3 = buzzer // 2=forward light //4= backward light //13 == back speed  
-                        
-                        if( (joystick[13] - Data13 = 1) )//back gear
-                         {
-			    back_gear++;
-			 }
+			///    0 = steer /// 1= speed // 6 == leftFlick//7=right flick
+			///    3 = buzzer // 2=forward light //4= backward light //13 == back speed  
+
+			if( (joystick[13] - Data13 = 1) )//back gear
+			{
+				back_gear++;
+			}
 			if(  back_gear%2 = 1) )//back gear
-                         {
-			   
-		          back_speedControl(fd, joystickData[0]);
-                         }
- 			else 
-                         {
-			  speedControl(fd, joystickData[0]);
-			 }
-                        
+			{
+
+				back_speedControl(fd, joystickData[0]);
+			}
+			else 
+			{
+				speedControl(fd, joystickData[0]);
+			}
+
 			steeringControl(fd, joystickData[0]);
-			
+
 			if((joystick[7]-Data7)=1)//Right flicker
 			{ 
 				rf_count++; 
 				right_flicker(int fd,int rf_count) ;
 			}
-                    
+
 			if((joystick[6]-Data6)=1)//Right flicker
 			{	
 				lf_count++;
 				left_flicker(int fd,int lf_count);
-			  }
-				 
+			}
+
 			if((joystick[2]-Data2)=1) //forward_light
 			{	
 				rl_count++;	
@@ -96,20 +96,20 @@ int main(int argc, char **argv)
 			{	
 				ll_count++;
 				back_light(int fd,int ll_count);  
-			 }
-                        
-			
-			if( joystickData[3] == 1 )
-			{
-			soundControl(int fd);
 			}
 
-                 Data2=joystick[2]; //compare
-		 Data4=joystick[4]; 	
-                 Data6=joystick[6]; 
-    		 Data7=joystick[7];
-                 Data13=joystick[13]; 
-                
+
+			if( joystickData[3] == 1 )
+			{
+				soundControl(int fd);
+			}
+
+			Data2=joystick[2]; //compare
+			Data4=joystick[4]; 	
+			Data6=joystick[6]; 
+			Data7=joystick[7];
+			Data13=joystick[13]; 
+
 		}
 	}
 	close(s);

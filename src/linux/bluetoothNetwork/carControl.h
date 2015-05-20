@@ -1,4 +1,3 @@
-//pmw playing
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -8,31 +7,16 @@
 
 #define BUFFER_SIZE 1024
 
-// symbols for gear values
-#define REV_G 0
-#define GEAR1 1
-#define GEAR2 1.2
-#define GEAR3 1.3
-#define GEAR4 1.4
-#define GEAR_UP -1
-#define GEAR_DW -2
-#define GEAR_RE -3
-
 // global variables
-int gear = GEAR1;
 unsigned char speedParam = 0x00;
 unsigned char speedParam2 = 0x00;
 
-
-void speedControl(int fd, long value) 
+void speedControl(int fd, int value)
 {
-	// max speed is 01F4 (500) 256 =0100
-
+	// max speed is 01F4 (500)
 	unsigned char op = 0x91;
 	unsigned char len = 0x04;
 	unsigned char RW = 0x01;
-	unsigned char speedparam;
-	unsigned char speedparam2;
 	unsigned char checkSum;
 
 	char strParam[] = "ff";
@@ -47,7 +31,6 @@ void speedControl(int fd, long value)
 		sprintf(strHex, "%x", value);
 		speedparam = 0;
 
-
 		strParam[0] = strHex[0];
 		strParam[1] = strHex[1];
 		speedparam2 = strtol(strParam, &ptr, 16);
@@ -59,7 +42,6 @@ void speedControl(int fd, long value)
 		{
 			value=500;
 		}
-
 		sprintf(strHex, "%x", value);
 		strParam[0] = '0';
 		strParam[1] = strHex[0];
@@ -72,8 +54,7 @@ void speedControl(int fd, long value)
 		printf("%s, %x\n", strParam, speedparam2);	// For Debug
 	}
 
-	printf("%x,  %x\n", speedParam, speedParam2);		// For debug
-
+	printf("%x,  %x\n", speedParam, speedParam2);	// For debug
 
 	checkSum = ((op + len + RW + speedParam2 + speedParam) & 0x00ff);
 
@@ -84,13 +65,12 @@ void speedControl(int fd, long value)
 	serialPutchar(fd, speedParam);
 	serialPutchar(fd, checkSum);
 }
+
 void back_speedControl(int fd, long value) //ff ff < ff 00
 {
 	unsigned char op = 0x91;
 	unsigned char len = 0x04;
 	unsigned char RW = 0x01;
-	unsigned char speedparam;
-	unsigned char speedparam2;
 	unsigned char checkSum;
 
 	char strParam[] = "ff";
@@ -114,9 +94,6 @@ void back_speedControl(int fd, long value) //ff ff < ff 00
 	printf("%s, %x\n", strParam, speedparam2);	// For Debug
 
 }
-
-
-
 
 void steeringControl(int fd, long value) // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 degree)
 {
@@ -172,7 +149,7 @@ void steeringControl(int fd, long value) // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 deg
 	serialPutchar(fd, checkSum);
 }
 
-void right_flicker(int fd,int f_count)
+void right_flicker(int fd, long f_count)
 {
 
 	unsigned char op = 0xA1;
@@ -207,7 +184,7 @@ void right_flicker(int fd,int f_count)
 	serialPutchar(fd, checkSum);
 
 }
-void left_flicker(int fd,int f_count)
+void left_flicker(int fd, long f_count)
 {
 
 	unsigned char op = 0xA1;
@@ -234,7 +211,7 @@ void left_flicker(int fd,int f_count)
 	serialPutchar(fd, checkSum);	
 }
 
-void forward_light(int fd,int l_count)
+void forward_light(int fd, long l_count)
 {
 
 	unsigned char op = 0xA0;
@@ -264,7 +241,7 @@ void forward_light(int fd,int l_count)
 	serialPutchar (fd, checkSum) ;
 
 }
-void back_light(int fd,int l_count)
+void back_light(int fd, long l_count)
 {
 
 	unsigned char op = 0xA0;
