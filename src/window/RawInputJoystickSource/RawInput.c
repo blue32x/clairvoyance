@@ -1,8 +1,9 @@
 // Raw Input API sample showing joystick support
 #include <stdio.h>
-
-#include <Windows.h>
+#include <windows.h>
 #include <tchar.h>
+#include <conio.h>
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <hidsdi.h>
@@ -10,9 +11,11 @@
 #define ARRAY_SIZE(x)	(sizeof(x) / sizeof((x)[0]))
 #define WC_MAINFRAME	TEXT("MainFrame")
 #define MAX_BUTTONS		128
-#define MAX_BUFFER_SIZE	1024
+#define BUF_SIZE	256
 #define CHECK(exp)		{ if(!(exp)) goto Error; }
 #define SAFE_FREE(p)	{ if(p) { HeapFree(hHeap, 0, p); (p) = NULL; } }
+
+#pragma comment(lib, "hid.lib")
 
 //
 // Global variables
@@ -27,14 +30,24 @@ LONG lHat;
 INT  g_NumberOfButtons;
 char m_cText[100];
 
+HANDLE hMapFile;
+LPCTSTR pBuf;
+TCHAR szName[]=TEXT("Global\\MyFileMappingObject");
+TCHAR szMsg[]=TEXT("Message from first process.");
+
+void CreateSharedMemory()
+{
+	
+}
+
 void SendJoystickValues()
 {
-	char buffer[MAX_BUFFER_SIZE];
+	char buffer[BUF_SIZE];
 	sprintf(buffer,"%ld/%ld/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",
-			lAxisX,lAxisY,bButtonStates[0],bButtonStates[1],
-			bButtonStates[2],bButtonStates[3],bButtonStates[4],
-			bButtonStates[5],bButtonStates[6],bButtonStates[7],
-			bButtonStates[8],bButtonStates[9],bButtonStates[10],bButtonStates[11]);
+		lAxisX,lAxisY,bButtonStates[0],bButtonStates[1],
+		bButtonStates[2],bButtonStates[3],bButtonStates[4],
+		bButtonStates[5],bButtonStates[6],bButtonStates[7],
+		bButtonStates[8],bButtonStates[9],bButtonStates[10],bButtonStates[11]);
 	printf("%s\n",buffer);
 
 	//Send buffer to rasp-pi on bluetooth network
@@ -71,26 +84,26 @@ void ParseRawInput(PRAWINPUT pRawInput)
 
 	// Button caps
 	CHECK( HidP_GetCaps(pPreparsedData, &Caps) == HIDP_STATUS_SUCCESS )
-	CHECK( pButtonCaps = (PHIDP_BUTTON_CAPS)HeapAlloc(hHeap, 0, sizeof(HIDP_BUTTON_CAPS) * Caps.NumberInputButtonCaps) );
+		CHECK( pButtonCaps = (PHIDP_BUTTON_CAPS)HeapAlloc(hHeap, 0, sizeof(HIDP_BUTTON_CAPS) * Caps.NumberInputButtonCaps) );
 
 	capsLength = Caps.NumberInputButtonCaps;
 	CHECK( HidP_GetButtonCaps(HidP_Input, pButtonCaps, &capsLength, pPreparsedData) == HIDP_STATUS_SUCCESS )
-	g_NumberOfButtons = pButtonCaps->Range.UsageMax - pButtonCaps->Range.UsageMin + 1;
+		g_NumberOfButtons = pButtonCaps->Range.UsageMax - pButtonCaps->Range.UsageMin + 1;
 
 	// Value caps
 	CHECK( pValueCaps = (PHIDP_VALUE_CAPS)HeapAlloc(hHeap, 0, sizeof(HIDP_VALUE_CAPS) * Caps.NumberInputValueCaps) );
 	capsLength = Caps.NumberInputValueCaps;
 	CHECK( HidP_GetValueCaps(HidP_Input, pValueCaps, &capsLength, pPreparsedData) == HIDP_STATUS_SUCCESS )
 
-	//
-	// Get the pressed buttons
-	//
+		//
+		// Get the pressed buttons
+		//
 
-	usageLength = g_NumberOfButtons;
+		usageLength = g_NumberOfButtons;
 	CHECK(
 		HidP_GetUsages(
-			HidP_Input, pButtonCaps->UsagePage, 0, usage, &usageLength, pPreparsedData,
-			(PCHAR)pRawInput->data.hid.bRawData, pRawInput->data.hid.dwSizeHid
+		HidP_Input, pButtonCaps->UsagePage, 0, usage, &usageLength, pPreparsedData,
+		(PCHAR)pRawInput->data.hid.bRawData, pRawInput->data.hid.dwSizeHid
 		) == HIDP_STATUS_SUCCESS );
 
 	ZeroMemory(bButtonStates, sizeof(bButtonStates));
@@ -105,8 +118,8 @@ void ParseRawInput(PRAWINPUT pRawInput)
 	{
 		CHECK(
 			HidP_GetUsageValue(
-				HidP_Input, pValueCaps[i].UsagePage, 0, pValueCaps[i].Range.UsageMin, &value, pPreparsedData,
-				(PCHAR)pRawInput->data.hid.bRawData, pRawInput->data.hid.dwSizeHid
+			HidP_Input, pValueCaps[i].UsagePage, 0, pValueCaps[i].Range.UsageMin, &value, pPreparsedData,
+			(PCHAR)pRawInput->data.hid.bRawData, pRawInput->data.hid.dwSizeHid
 			) == HIDP_STATUS_SUCCESS );
 
 		switch(pValueCaps[i].Range.UsageMin)
@@ -288,16 +301,50 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	
 	HWND hWnd;
 	MSG msg;
 	WNDCLASSEX wcex;
+	
+	hMapFile = CreateFileMapping(
+		INVALID_HANDLE_VALUE,    // use paging file
+		NULL,                    // default security
+		PAGE_READWRITE,          // read/write access
+		0,                       // maximum object size (high-order DWORD)
+		BUF_SIZE,				 // maximum object size (low-order DWORD)
+		szName);                 // name of mapping object
+
+	if (hMapFile == NULL)
+	{
+		_tprintf(TEXT("Could not create file mapping object (%d).\n"),
+			GetLastError());
+		return;
+	}
+	pBuf = (LPTSTR) MapViewOfFile(hMapFile,   // handle to map object
+		FILE_MAP_ALL_ACCESS, // read/write permission
+		0,
+		0,
+		BUF_SIZE);
+
+	if (pBuf == NULL)
+	{
+		_tprintf(TEXT("Could not map view of file (%d).\n"),
+			GetLastError());
+
+		CloseHandle(hMapFile);
+		return;
+	}
+
+	CopyMemory((PVOID)pBuf, szMsg, (_tcslen(szMsg) * sizeof(TCHAR)));
+	_getch();
+
 	AllocConsole();
+
+
 	freopen("CONOUT$", "wt", stdout);
+
 	//
 	// Register window class
 	//
-
 	wcex.cbSize        = sizeof(WNDCLASSEX);
 	wcex.cbClsExtra    = 0;
 	wcex.cbWndExtra    = 0;
@@ -313,11 +360,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if(!RegisterClassEx(&wcex))
 		return -1;
+	
+	//
+	// Create Named Shared Memory
+	//
+	CreateSharedMemory();
 
 	//
 	// Create window
 	//
-
 	hWnd = CreateWindow(WC_MAINFRAME, TEXT("Joystick using Raw Input API"), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
 	ShowWindow(hWnd, nShowCmd);
 	UpdateWindow(hWnd);
@@ -325,13 +376,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//
 	// Message loop
 	//
-
 	while(GetMessage(&msg, NULL, 0, 0))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 		SendJoystickValues();
 	}
+
 	FreeConsole();
+	UnmapViewOfFile(pBuf);
+	CloseHandle(hMapFile);
+
 	return (int)msg.wParam;
 }

@@ -1,19 +1,16 @@
-﻿빌드 시작: 2015-05-20 오전 1:03:54
-     1>2 노드의 "C:\Users\sh\Documents\GitHub\clairvoyance\src\window\rfcommServer\rfcommServer\rfcommServer\rfcommServer.vcxproj" 프로젝트(Build 대상)입니다.
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\rfcommServer.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt rfcommServer.cpp
-         rfcommServer.cpp
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\sh\Documents\GitHub\clairvoyance\src\window\rfcommServer\rfcommServer\Debug\rfcommServer.exe" /INCREMENTAL /NOLOGO hid.lib Ws2_32.lib irprops.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\sh\Documents\GitHub\clairvoyance\src\window\rfcommServer\rfcommServer\Debug\rfcommServer.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\sh\Documents\GitHub\clairvoyance\src\window\rfcommServer\rfcommServer\Debug\rfcommServer.lib" /MACHINE:X86 Debug\rfcommServer.obj
+﻿빌드 시작: 2015-05-20 오전 4:02:18
+     1>2 노드의 "C:\Users\DPLAB\clairvoyance\src\window\rfcommServer\rfcommServer\rfcommServer\rfcommServer.vcxproj" 프로젝트(Build 대상)입니다.
+     1>Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\DPLAB\clairvoyance\src\window\rfcommServer\rfcommServer\Debug\rfcommServer.exe" /INCREMENTAL /NOLOGO hid.lib Ws2_32.lib irprops.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\DPLAB\clairvoyance\src\window\rfcommServer\rfcommServer\Debug\rfcommServer.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\DPLAB\clairvoyance\src\window\rfcommServer\rfcommServer\Debug\rfcommServer.lib" /MACHINE:X86 Debug\rfcommServer.obj
          Debug\stdafx.obj
      1>rfcommServer.obj : error LNK2019: "long __stdcall HidP_GetCaps(struct _HIDP_PREPARSED_DATA *,struct _HIDP_CAPS *)" (?HidP_GetCaps@@YGJPAU_HIDP_PREPARSED_DATA@@PAU_HIDP_CAPS@@@Z) 외부 기호(참조 위치: "void __cdecl ParseRawInput(struct tagRAWINPUT *)" (?ParseRawInput@@YAXPAUtagRAWINPUT@@@Z) 함수)에서 확인하지 못했습니다.
      1>rfcommServer.obj : error LNK2019: "long __stdcall HidP_GetButtonCaps(enum _HIDP_REPORT_TYPE,struct _HIDP_BUTTON_CAPS *,unsigned short *,struct _HIDP_PREPARSED_DATA *)" (?HidP_GetButtonCaps@@YGJW4_HIDP_REPORT_TYPE@@PAU_HIDP_BUTTON_CAPS@@PAGPAU_HIDP_PREPARSED_DATA@@@Z) 외부 기호(참조 위치: "void __cdecl ParseRawInput(struct tagRAWINPUT *)" (?ParseRawInput@@YAXPAUtagRAWINPUT@@@Z) 함수)에서 확인하지 못했습니다.
      1>rfcommServer.obj : error LNK2019: "long __stdcall HidP_GetValueCaps(enum _HIDP_REPORT_TYPE,struct _HIDP_VALUE_CAPS *,unsigned short *,struct _HIDP_PREPARSED_DATA *)" (?HidP_GetValueCaps@@YGJW4_HIDP_REPORT_TYPE@@PAU_HIDP_VALUE_CAPS@@PAGPAU_HIDP_PREPARSED_DATA@@@Z) 외부 기호(참조 위치: "void __cdecl ParseRawInput(struct tagRAWINPUT *)" (?ParseRawInput@@YAXPAUtagRAWINPUT@@@Z) 함수)에서 확인하지 못했습니다.
      1>rfcommServer.obj : error LNK2019: "long __stdcall HidP_GetUsages(enum _HIDP_REPORT_TYPE,unsigned short,unsigned short,unsigned short *,unsigned long *,struct _HIDP_PREPARSED_DATA *,char *,unsigned long)" (?HidP_GetUsages@@YGJW4_HIDP_REPORT_TYPE@@GGPAGPAKPAU_HIDP_PREPARSED_DATA@@PADK@Z) 외부 기호(참조 위치: "void __cdecl ParseRawInput(struct tagRAWINPUT *)" (?ParseRawInput@@YAXPAUtagRAWINPUT@@@Z) 함수)에서 확인하지 못했습니다.
      1>rfcommServer.obj : error LNK2019: "long __stdcall HidP_GetUsageValue(enum _HIDP_REPORT_TYPE,unsigned short,unsigned short,unsigned short,unsigned long *,struct _HIDP_PREPARSED_DATA *,char *,unsigned long)" (?HidP_GetUsageValue@@YGJW4_HIDP_REPORT_TYPE@@GGGPAKPAU_HIDP_PREPARSED_DATA@@PADK@Z) 외부 기호(참조 위치: "void __cdecl ParseRawInput(struct tagRAWINPUT *)" (?ParseRawInput@@YAXPAUtagRAWINPUT@@@Z) 함수)에서 확인하지 못했습니다.
-     1>C:\Users\sh\Documents\GitHub\clairvoyance\src\window\rfcommServer\rfcommServer\Debug\rfcommServer.exe : fatal error LNK1120: 5개의 확인할 수 없는 외부 참조입니다.
-     1>"C:\Users\sh\Documents\GitHub\clairvoyance\src\window\rfcommServer\rfcommServer\rfcommServer\rfcommServer.vcxproj" 프로젝트를 빌드했습니다(Build 대상). - 실패
+     1>C:\Users\DPLAB\clairvoyance\src\window\rfcommServer\rfcommServer\Debug\rfcommServer.exe : fatal error LNK1120: 5개의 확인할 수 없는 외부 참조입니다.
+     1>"C:\Users\DPLAB\clairvoyance\src\window\rfcommServer\rfcommServer\rfcommServer\rfcommServer.vcxproj" 프로젝트를 빌드했습니다(Build 대상). - 실패
 
 빌드하지 못했습니다.
 
-경과 시간: 00:00:00.85
+경과 시간: 00:00:00.25
