@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 {
 	int client_socket;
 	struct sockaddr_in server_addr;
-	char buff[BUF_SIZE];
+	char buf[BUF_SIZE];
 
 	int fd;
 	char **joystickData;
@@ -67,15 +67,93 @@ int main(int argc, char** argv)
 		return 1 ;
 	}
 
-	while((input = getche()) != 'i')
+	// read data from the server
+	while(1)
 	{
-		if(input == 'w')
-			speedControl(fd, 1);
-		if(input == 's')
-			speedControl(fd, -1);
-		/* Read socket */
-		//read(client_socket, buff, BUF_SIZE);
-		//printf("%s\n", buff);
+		bytes_read = read(client_socket, buf, sizeof(buf));
+		if( bytes_read > 0 )
+		{
+			size_t i;
+			long joystickData13 = 0;
+
+			/* check received string data */
+			printf("received [%s]\n", buf);
+
+			/* split received string to string array and check */
+			joystickData = strsplit(buf, "/", &numData);
+			for (i = 0; i < numData; i++) {
+				printf("%s-", joystickData[i]);
+			}
+			printf("\n");
+
+			joystickData13 = atol(joystickData[13]);
+			if(joystickData13 != 0)
+			{
+				joystickData13 = 1;
+			}
+
+			/* control model car by raw data */
+			///// Control Speed
+			if((joystickData13 - Data13) == 1)					//back gear
+			{
+				back_gear++;
+			}
+			if(back_gear%2 == 1)								//back gear
+			{
+				back_speedControl(fd, atol(joystickData[1]));
+			}
+			else 
+			{
+				speedControl(fd, atol(joystickData[1]));
+			}
+
+			///// Control Steer
+			steeringControl(fd, atol(joystickData[0]));
+
+			///// Control Flicker
+			if((atol(joystickData[7]) - Data7) == 1)			//Right flicker
+			{ 
+				rf_count++; 
+				right_flicker(fd, rf_count);
+			}
+			if((atol(joystickData[6]) - Data6) == 1)			//Left flicker
+			{	
+				lf_count++;
+				left_flicker(fd, lf_count);
+			}
+
+			///// Control Light
+			if((atol(joystickData[2]) - Data2) == 1)			//forward_light
+			{	
+				fl_count++;
+				forward_light(fd, fl_count);
+			}
+			if((atol(joystickData[4]) - Data4) == 1)			//backward_light
+			{	
+				bl_count++;
+				back_light(fd, bl_count);  
+			}
+
+			///// Control Buzzer
+			if(atol(joystickData[3]) == 1)
+			{
+				soundControl(fd);
+			}
+
+			Data2 = atol(joystickData[2]);
+			Data4 = atol(joystickData[4]); 	
+			Data6 = atol(joystickData[6]); 
+			Data7 = atol(joystickData[7]);
+			Data13 = joystickData13; 
+
+			/* clean up heap allocation for after strplit() */
+			for (i = 0; i < numData; i++) {
+				free(joystickData[i]);
+			}
+			if (joystickData != NULL) {
+				free(joystickData);
+			}
+		}
 	}
 
 	close(client_socket);
