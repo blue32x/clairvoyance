@@ -20,6 +20,7 @@ int main(int argc, char **argv)
 	int s, status, bytes_read;
 	char buf[1024];
 
+	int fd;
 	char **joystickData;
 	size_t numData;
 
@@ -82,11 +83,11 @@ int main(int argc, char **argv)
 
 			/* control model car by raw data */
 			///// Control Speed
-			if((atol(joystick[13]) - Data13) == 1)				//back gear
+			if((atol(joystickData[13]) - Data13) == 1)			//back gear
 			{
 				back_gear++;
 			}
-			if(back_gear%2 == 1)								//back gear
+			if(back_gear%2 == 1)						//back gear
 			{
 				back_speedControl(fd, atol(joystickData[0]));
 			}
@@ -99,24 +100,24 @@ int main(int argc, char **argv)
 			steeringControl(fd, atol(joystickData[0]));
 
 			///// Control Flicker
-			if((atol(joystick[7]) - Data7) == 1)				//Right flicker
+			if((atol(joystickData[7]) - Data7) == 1)			//Right flicker
 			{ 
 				rf_count++; 
 				right_flicker(fd, rf_count);
 			}
-			if((atol(joystick[6]) - Data6) == 1)				//Left flicker
+			if((atol(joystickData[6]) - Data6) == 1)			//Left flicker
 			{	
 				lf_count++;
 				left_flicker(fd, lf_count);
 			}
 
 			///// Control Light
-			if((atol(joystick[2]) - Data2) == 1)				//forward_light
+			if((atol(joystickData[2]) - Data2) == 1)			//forward_light
 			{	
 				fl_count++;
 				forward_light(fd, fl_count);
 			}
-			if((atol(joystick[4]) - Data4) == 1)				//backward_light
+			if((atol(joystickData[4]) - Data4) == 1)			//backward_light
 			{	
 				bl_count++;
 				back_light(fd, bl_count);  
@@ -128,11 +129,11 @@ int main(int argc, char **argv)
 				soundControl(fd);
 			}
 
-			Data2 = atol(joystick[2]);
-			Data4 = atol(joystick[4]); 	
-			Data6 = atol(joystick[6]); 
-			Data7 = atol(joystick[7]);
-			Data13 = atol(joystick[13]); 
+			Data2 = atol(joystickData[2]);
+			Data4 = atol(joystickData[4]); 	
+			Data6 = atol(joystickData[6]); 
+			Data7 = atol(joystickData[7]);
+			Data13 = atol(joystickData[13]); 
 
 			/* clean up heap allocation for after strplit() */
 			for (i = 0; i < numData; i++) {

@@ -29,12 +29,12 @@ void speedControl(int fd, int value)
 	if( value < 256 )
 	{       
 		sprintf(strHex, "%x", value);
-		speedparam = 0;
+		speedParam = 0;
 
 		strParam[0] = strHex[0];
 		strParam[1] = strHex[1];
-		speedparam2 = strtol(strParam, &ptr, 16);
-		printf("%s, %x\n", strParam, speedparam2);	// For Debug
+		speedParam2 = strtol(strParam, &ptr, 16);
+		printf("%s, %x\n", strParam, speedParam2);	// For Debug
 	}
 	else 
 	{
@@ -45,13 +45,13 @@ void speedControl(int fd, int value)
 		sprintf(strHex, "%x", value);
 		strParam[0] = '0';
 		strParam[1] = strHex[0];
-		speedparam = strtol(strParam, &ptr, 16);
-		printf("%s, %x\n", strParam, speedparam);	// For Debug
+		speedParam = strtol(strParam, &ptr, 16);
+		printf("%s, %x\n", strParam, speedParam);	// For Debug
 
 		strParam[0] = strHex[1];
 		strParam[1] = strHex[2];
-		speedparam2 = strtol(strParam, &ptr, 16);
-		printf("%s, %x\n", strParam, speedparam2);	// For Debug
+		speedParam2 = strtol(strParam, &ptr, 16);
+		printf("%s, %x\n", strParam, speedParam2);	// For Debug
 	}
 
 	printf("%x,  %x\n", speedParam, speedParam2);	// For debug
@@ -86,12 +86,12 @@ void back_speedControl(int fd, long value) //ff ff < ff 00
 	}
 	value=255-value;
 	sprintf(strHex, "%x", value); 
-	speedparam=0xff;
+	speedParam=0xff;
 
 	strParam[0] = strHex[0];
 	strParam[1] = strHex[1];
-	speedparam2 = strtol(strParam, &ptr, 16);
-	printf("%s, %x\n", strParam, speedparam2);	// For Debug
+	speedParam2 = strtol(strParam, &ptr, 16);
+	printf("%s, %x\n", strParam, speedParam2);	// For Debug
 
 }
 
@@ -157,7 +157,7 @@ void right_flicker(int fd, long f_count)
 	unsigned char RW = 0x01;
 	unsigned char param;
 	unsigned char checkSum;
-	int f_count = f_count % 2;
+	f_count = f_count % 2;
 	switch(f_count)
 	{
 	case 0: 
@@ -192,7 +192,7 @@ void left_flicker(int fd, long f_count)
 	unsigned char RW = 0x01;
 	unsigned char param;
 	unsigned char checkSum;
-	int f_count = f_count % 2;
+	f_count = f_count % 2;
 	switch(f_count)
 	{
 	case 0: 
@@ -219,7 +219,7 @@ void forward_light(int fd, long l_count)
 	unsigned char RW = 0x01;
 	unsigned char param ;
 	unsigned char checkSum ;
-	int l_count=l_count % 2 ;
+	l_count = l_count % 2 ;
 
 	switch(l_count)
 	{
@@ -249,7 +249,7 @@ void back_light(int fd, long l_count)
 	unsigned char RW = 0x01;
 	unsigned char param ;
 	unsigned char checkSum ;
-	int l_count=l_count % 2 ;
+	l_count = l_count % 2 ;
 
 	switch(l_count)
 	{
