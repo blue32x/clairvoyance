@@ -113,14 +113,14 @@ int main()
 			_tprintf(TEXT("Could not map view of file (%d).\n"),
 				GetLastError());
 
-			CloseHandle(hMapFile);
-
-			return 1;
+			//CloseHandle(hMapFile);
+			//return 1;
 		}
 
 		// convert LPCTSTR pBuf to char [] buf
 		WideCharToMultiByte(CP_ACP, 0, pBuf, BUF_SIZE, buf, BUF_SIZE, NULL, NULL);
 		buf[strlen(buf)+1] = '\0';
+
 		int sended = 0;
 		sended = send( ClientSocket, buf, sizeof(buf), 0 );
 		if( sended > 0 ) {
