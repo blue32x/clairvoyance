@@ -53,7 +53,7 @@ inline void SafeRelease( Interface *& pInterfaceToRelease )
 //1로 바꿔주면 원본, 1이상이면 영상의 크기를 줄여주어 
 //속도를 빠르게 해준다.
 //추후에 멀티쓰레드 혹은 분산처리로 해결 가능성을 보인다.
-#define SPEEDBOOST 8
+#define SPEEDBOOST 3
 
 #define NORMALIMAGE '0'
 #define FINDNEAR '2'
@@ -257,8 +257,11 @@ void calibration_image_processing_near(cv::Mat colorCoordinateMapperMat, DepthSp
 }
 
 //가장 가까운 물체가 밝고 어둡고 깜빡이는 효과를 넣는다.
-void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat)
+void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat,int bling_var)
 {
+	int colorR;
+	int depth_var;
+
 	for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
 	{
 		for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
@@ -268,9 +271,61 @@ void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthS
 			int depthY = static_cast<int>(dPoint.Y); //depthY에 depthmap 좌표 y값을 저장한다.
 			if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
 			{
-				if(depthMat.at<UINT16>(depthY,depthX) < 700 && depthMat.at<UINT16>(depthY,depthX) != 0)
+				depth_var = depthMat.at<UINT16>(depthY,depthX);
+				if(depth_var != 0 || depth_var != 4500) // 노이즈 제거
 				{
-					colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 200;
+					colorR = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2];
+					//kinect와 물체의 거리가 1m 이하일 경우 영상처리를 해준다.
+					if( depth_var > 900 && depth_var <= 1000)
+					{
+						if(bling_var % 10 == 0)
+						{
+							colorR = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2];
+							colorR += 10;
+							if(colorR >= 255) colorR = 254;
+							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
+						}
+					}
+					else if( depth_var > 800 && depth_var <= 900)
+					{
+						if(bling_var % 8 == 0)
+						{
+							colorR = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2];
+							colorR += 30;
+							if(colorR >= 255) colorR = 254;
+							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
+						}
+					}
+					else if( depth_var > 700 && depth_var <= 800)
+					{
+						if(bling_var % 6 == 0)
+						{
+							colorR = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2];
+							colorR += 50;
+							if(colorR >= 255) colorR = 254;
+							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
+						}
+					}
+					else if( depth_var > 600 && depth_var <= 700)
+					{
+						if(bling_var % 4 == 0)
+						{
+							colorR = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2];
+							colorR += 70;
+							if(colorR >= 255) colorR = 254;
+							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
+						}
+					}
+					else if( depth_var > 500 && depth_var <= 600)
+					{
+						if(bling_var % 2 == 0)
+						{
+							colorR = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2];
+							colorR += 90;
+							if(colorR >= 255) colorR = 254;
+							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
+						}
+					}
 				}
 			}
 		}
@@ -426,6 +481,9 @@ int main(void)
 	int bling_var = 0;
 	//Frame을 생성하고 color와 depth image를 출력한다.
 	///////////////////////////////////////////////////////////////////////////////////////
+
+
+
 	while(1)
 	{
 
@@ -559,14 +617,13 @@ int main(void)
 		else if(mode == BLINGBLING)
 		{
 			bling_var += 1;
-			if(bling_var > 30)
+			if(bling_var > 100)
 			{
 				bling_var = 0;
 			}
-			if(bling_var > 15)
-			{
-				calibration_image_processing_bling(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
-			}
+			
+			calibration_image_processing_bling(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat, bling_var);
+			
 		}
 		else if(mode == GRAIMAGE)
 		{

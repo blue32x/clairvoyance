@@ -15,7 +15,7 @@ DEFINE_GUID(SAMPLE_UUID, 0x31b44148, 0x041f, 0x42f5, 0x8e, 0x73, 0x18, 0x6d, 0x5
 
 #define BUF_SIZE 256
 
-TCHAR szName[]=TEXT("Global\\MyFileMappingObject");
+TCHAR szName[]=TEXT("GlobalMyFileMappingObject");
 HANDLE hMapFile;
 LPCTSTR pBuf;
 
@@ -33,22 +33,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		_tprintf(TEXT("Could not open file mapping object (%d).\n"),
 			GetLastError());
-		return 1;
-	}
-
-	pBuf = (LPTSTR) MapViewOfFile(hMapFile, // handle to map object
-		FILE_MAP_ALL_ACCESS,  // read/write permission
-		0,
-		0,
-		BUF_SIZE);
-
-	if (pBuf == NULL)
-	{
-		_tprintf(TEXT("Could not map view of file (%d).\n"),
-			GetLastError());
-
-		CloseHandle(hMapFile);
-
 		return 1;
 	}
 
@@ -130,10 +114,29 @@ int _tmain(int argc, _TCHAR* argv[])
 	// send
 	while(1)
 	{
+		pBuf = (LPTSTR) MapViewOfFile(hMapFile, // handle to map object
+			FILE_MAP_ALL_ACCESS,  // read/write permission
+			0,
+			0,
+			BUF_SIZE);
+
+		if (pBuf == NULL)
+		{
+			_tprintf(TEXT("Could not map view of file (%d).\n"),
+				GetLastError());
+
+			CloseHandle(hMapFile);
+
+			return 1;
+		}
+
+		// convert LPCTSTR pBuf to char [] buf
+		WideCharToMultiByte(CP_ACP, 0, pBuf, BUF_SIZE, buf, BUF_SIZE, NULL, NULL);
+		buf[strlen(buf)+1] = '\0';
 		int sended = 0;
-		sended = send( client, (const char *)pBuf, sizeof(pBuf), 0 );
+		sended = send( client, buf, sizeof(buf), 0 );
 		if( sended > 0 ) {
-			printf("sended: %s(len : %d)\n", pBuf, sended);
+			printf("sended: %s(len : %d)\n", buf, sended);
 		}
 	}
 

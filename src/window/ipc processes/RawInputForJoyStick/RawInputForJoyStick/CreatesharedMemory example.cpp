@@ -4,7 +4,7 @@
 #include <tchar.h>
 
 #define BUF_SIZE 256
-TCHAR szName[]=TEXT("Global\\MyFileMappingObject");
+TCHAR szName[]=TEXT("GlobalMyFileMappingObject");
 TCHAR szMsg[]=TEXT("Message from first process.");
 
 int _tmain()

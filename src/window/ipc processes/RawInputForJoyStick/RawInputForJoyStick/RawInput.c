@@ -32,8 +32,8 @@ char m_cText[100];
 
 HANDLE hMapFile;
 LPCTSTR pBuf;
-TCHAR szName[]=TEXT("Global\\MyFileMappingObject");
-TCHAR szMsg[]=TEXT("Message from first process.");
+TCHAR szName[]=TEXT("GlobalMyFileMappingObject");
+TCHAR szMsg[BUF_SIZE];
 
 void SendJoystickValues()
 {
@@ -45,8 +45,10 @@ void SendJoystickValues()
 		bButtonStates[8],bButtonStates[9],bButtonStates[10],bButtonStates[11]);
 	printf("%s\n",buffer);
 
-	//Write buffer for rfcommServer process
+	// convert LPCTSTR pBuf to char [] buf
 	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buffer, strlen(buffer), szMsg, BUF_SIZE);
+
+	//Write buffer for rfcommServer process
 	CopyMemory((PVOID)pBuf, szMsg, (_tcslen(szMsg) * sizeof(TCHAR)));
 }
 
@@ -81,11 +83,11 @@ void ParseRawInput(PRAWINPUT pRawInput)
 
 	// Button caps
 	CHECK( HidP_GetCaps(pPreparsedData, &Caps) == HIDP_STATUS_SUCCESS )
-		CHECK( pButtonCaps = (PHIDP_BUTTON_CAPS)HeapAlloc(hHeap, 0, sizeof(HIDP_BUTTON_CAPS) * Caps.NumberInputButtonCaps) );
+	CHECK( pButtonCaps = (PHIDP_BUTTON_CAPS)HeapAlloc(hHeap, 0, sizeof(HIDP_BUTTON_CAPS) * Caps.NumberInputButtonCaps) );
 
 	capsLength = Caps.NumberInputButtonCaps;
 	CHECK( HidP_GetButtonCaps(HidP_Input, pButtonCaps, &capsLength, pPreparsedData) == HIDP_STATUS_SUCCESS )
-		g_NumberOfButtons = pButtonCaps->Range.UsageMax - pButtonCaps->Range.UsageMin + 1;
+	g_NumberOfButtons = pButtonCaps->Range.UsageMax - pButtonCaps->Range.UsageMin + 1;
 
 	// Value caps
 	CHECK( pValueCaps = (PHIDP_VALUE_CAPS)HeapAlloc(hHeap, 0, sizeof(HIDP_VALUE_CAPS) * Caps.NumberInputValueCaps) );
@@ -96,7 +98,7 @@ void ParseRawInput(PRAWINPUT pRawInput)
 		// Get the pressed buttons
 		//
 
-		usageLength = g_NumberOfButtons;
+	usageLength = g_NumberOfButtons;
 	CHECK(
 		HidP_GetUsages(
 		HidP_Input, pButtonCaps->UsagePage, 0, usage, &usageLength, pPreparsedData,
