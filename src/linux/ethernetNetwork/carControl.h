@@ -7,47 +7,93 @@
 
 #define BUFFER_SIZE 1024
 
-// symbols for gear values
-#define REV_G 0
-#define GEAR1 1
-#define GEAR2 1.2
-#define GEAR3 1.3
-#define GEAR4 1.4
-#define GEAR_UP -1
-#define GEAR_DW -2
-#define GEAR_RE -3
-
 // global variables
-int gear = GEAR1;
 unsigned char speedParam = 0x00;
 unsigned char speedParam2 = 0x00;
 
-void speedControl(int fd, int delta)
+void speedControl(int fd, int value)
 {
-    // max speed is 01F4 (500)
-    unsigned char op = 0x91;
+	// max speed is 01F4 (500)
+	unsigned char op = 0x91;
 	unsigned char len = 0x04;
 	unsigned char RW = 0x01;
 	unsigned char checkSum;
-	
+
+	char strParam[] = "ff";
+	char strHex[BUFFER_SIZE];
+	char *ptr;
+	float ratio = 500/127;
+
+    value *= -1;
+	value = (long)((float)value*ratio);
 	// above 2 digits of hexdecimal
-	if(speedParam2 == 0xff && delta > 0)
-	{
-		speedParam += 0x01;
-		speedParam2 = delta;
+	if( value < 256 )
+	{       
+		sprintf(strHex, "%x", value);
+		speedParam = 0;
+
+		strParam[0] = strHex[0];
+		strParam[1] = strHex[1];
+		speedParam2 = strtol(strParam, &ptr, 16);
+		printf("%s, %x\n", strParam, speedParam2);	// For Debug
 	}
-	else if(speedParam2 == 0x00 && delta < 0)
+	else 
 	{
-		speedParam -= 0x01;
-		speedParam2 = 0xff + delta;
-	}
-	else
-	{
-		// below 2 digits of hexdecimal
-		speedParam2 += delta;
+		if( value > 500 )
+		{
+			value=500;
+		}
+		sprintf(strHex, "%x", value);
+		strParam[0] = '0';
+		strParam[1] = strHex[0];
+		speedParam = strtol(strParam, &ptr, 16);
+		printf("%s, %x\n", strParam, speedParam);	// For Debug
+
+		strParam[0] = strHex[1];
+		strParam[1] = strHex[2];
+		speedParam2 = strtol(strParam, &ptr, 16);
+		printf("%s, %x\n", strParam, speedParam2);	// For Debug
 	}
 
-	printf("%x,  %x\n", speedParam, speedParam2);		// For debug
+	printf("%x,  %x\n", speedParam, speedParam2);	// For debug
+
+	checkSum = ((op + len + RW + speedParam2 + speedParam) & 0x00ff);
+
+	serialPutchar(fd, op);
+	serialPutchar(fd, len);
+	serialPutchar(fd, RW);
+	serialPutchar(fd, speedParam2);
+	serialPutchar(fd, speedParam);
+	serialPutchar(fd, checkSum);
+}
+
+void back_speedControl(int fd, long value) //ff ff < ff 00
+{
+	unsigned char op = 0x91;
+	unsigned char len = 0x04;
+	unsigned char RW = 0x01;
+	unsigned char checkSum;
+
+	char strParam[] = "ff";
+	char strHex[BUFFER_SIZE];
+	char *ptr;
+	float ratio = 500/127;
+
+    value *= -1;
+	value = (long)((float)value*ratio);
+
+	if(value > 255)
+	{
+		value = 255;
+	}
+	value=255-value;
+	sprintf(strHex, "%x", value); 
+	speedParam=0xff;
+
+	strParam[0] = strHex[0];
+	strParam[1] = strHex[1];
+	speedParam2 = strtol(strParam, &ptr, 16);
+	printf("%s, %x\n", strParam, speedParam2);	// For Debug
 
 	checkSum = ((op + len + RW + speedParam2 + speedParam) & 0x00ff);
 
@@ -102,7 +148,7 @@ void steeringControl(int fd, long value) // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 deg
 	strParam[1] = strHex[2];
 	param2 = strtol(strParam, &ptr, 16);
 	printf("%s, %x\n", strParam, param2);	// For Debug
-	
+
 	checkSum = ((op + len + RW + param2 + param) & 0x00ff);
 
 	serialPutchar(fd, op);
@@ -113,33 +159,16 @@ void steeringControl(int fd, long value) // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 deg
 	serialPutchar(fd, checkSum);
 }
 
-void accelControl(int fd, long value)
+void right_flicker(int fd, long f_count)
 {
-	//if accel value(=brake value, Y-axis value) is less than 0, increase current speed based on gear value.
-	if(value < 0)
-		speedControl(fd, -(float)value * (float)gear /* x Constant */);
-}
 
-void brakeControl(int fd, long value)
-{
-	//if brake value is more than 0, decrease current speed, sharply.
-	if(value > 0)
-		speedControl(fd, -value /* x Constant */);
-	//else if brake value(=accel value, Y-axis value) is 0, decrease current speed, naturally.
-	else if(value == 0)
-		speedControl(fd, -10);
-}
-
-void flickerControl(int fd, unsigned char param)
-{
-	/*
 	unsigned char op = 0xA1;
 	unsigned char len = 0x03;
 	unsigned char RW = 0x01;
 	unsigned char param;
 	unsigned char checkSum;
-
-	switch(sel_ggambback)
+	f_count = f_count % 2;
+	switch(f_count)
 	{
 	case 0: 
 		param = 0x00 ; 
@@ -163,20 +192,46 @@ void flickerControl(int fd, unsigned char param)
 	serialPutchar(fd, RW);
 	serialPutchar(fd, param);
 	serialPutchar(fd, checkSum);
-	*/
+
+}
+void left_flicker(int fd, long f_count)
+{
+
+	unsigned char op = 0xA1;
+	unsigned char len = 0x03;
+	unsigned char RW = 0x01;
+	unsigned char param;
+	unsigned char checkSum;
+	f_count = f_count % 2;
+	switch(f_count)
+	{
+	case 0: 
+		param = 0x00 ; 
+		checkSum = 0xA5 ;
+		break;
+	case 1: 
+		param = 0x02  ;
+		checkSum = 0xA7;
+		break;	
+	}
+	serialPutchar(fd, op);
+	serialPutchar(fd, len);
+	serialPutchar(fd, RW);
+	serialPutchar(fd, param);
+	serialPutchar(fd, checkSum);	
 }
 
-void lightControl(int fd, unsigned char param)
+void forward_light(int fd, long l_count)
 {
-	/*
+
 	unsigned char op = 0xA0;
 	unsigned char len = 0x03;
 	unsigned char RW = 0x01;
 	unsigned char param ;
 	unsigned char checkSum ;
-	int sel_light=0;
+	l_count = l_count % 2 ;
 
-	switch(sel_light)
+	switch(l_count)
 	{
 	case 0: 
 		param = 0x00 ; 
@@ -186,14 +241,6 @@ void lightControl(int fd, unsigned char param)
 		param = 0x01 ;
 		checkSum = 0xA5 ;
 		break;
-	case 2: 
-		param = 0x02  ;
-		checkSum = 0xA6 ;
-		break;
-	case 3: 
-		param = 0x03;
-		checkSum = 0xA7 ;
-		break;
 
 	}
 
@@ -202,32 +249,37 @@ void lightControl(int fd, unsigned char param)
 	serialPutchar (fd, RW) ;
 	serialPutchar (fd, param) ;
 	serialPutchar (fd, checkSum) ;
-	*/
+
 }
-
-void gearControl(int fd, int gearCommand)
+void back_light(int fd, long l_count)
 {
-	if(gearCommand == GEAR_RE)
-		gear = REV_G;
 
-	if(gearCommand == GEAR_UP)
+	unsigned char op = 0xA0;
+	unsigned char len = 0x03;
+	unsigned char RW = 0x01;
+	unsigned char param ;
+	unsigned char checkSum ;
+	l_count = l_count % 2 ;
+
+	switch(l_count)
 	{
-		if(gear == GEAR1)
-			gear = GEAR2;
-		if(gear == GEAR2)
-			gear = GEAR3;
-		if(gear == GEAR3)
-			gear = GEAR4;
+	case 0: 
+		param = 0x00 ; 
+		checkSum = 0xA4 ;
+		break;
+
+	case 1: 
+		param = 0x02  ;
+		checkSum = 0xA6 ;
+		break;	
 	}
-	if(gearCommand == GEAR_DW)
-	{
-		if(gear == GEAR4)
-			gear = GEAR3;
-		if(gear == GEAR3)
-			gear = GEAR2;
-		if(gear == GEAR2)
-			gear = GEAR1;
-	}
+
+	serialPutchar (fd, op) ;
+	serialPutchar (fd, len) ;
+	serialPutchar (fd, RW) ;
+	serialPutchar (fd, param) ;
+	serialPutchar (fd, checkSum) ;
+
 }
 
 void soundControl(int fd) 

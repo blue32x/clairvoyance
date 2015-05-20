@@ -24,6 +24,7 @@ void speedControl(int fd, int value)
 	char *ptr;
 	float ratio = 500/127;
 
+    value *= -1;
 	value = (long)((float)value*ratio);
 	// above 2 digits of hexdecimal
 	if( value < 256 )
@@ -78,6 +79,7 @@ void back_speedControl(int fd, long value) //ff ff < ff 00
 	char *ptr;
 	float ratio = 500/127;
 
+    value *= -1;
 	value = (long)((float)value*ratio);
 
 	if(value > 255)
@@ -93,6 +95,14 @@ void back_speedControl(int fd, long value) //ff ff < ff 00
 	speedParam2 = strtol(strParam, &ptr, 16);
 	printf("%s, %x\n", strParam, speedParam2);	// For Debug
 
+	checkSum = ((op + len + RW + speedParam2 + speedParam) & 0x00ff);
+
+	serialPutchar(fd, op);
+	serialPutchar(fd, len);
+	serialPutchar(fd, RW);
+	serialPutchar(fd, speedParam2);
+	serialPutchar(fd, speedParam);
+	serialPutchar(fd, checkSum);
 }
 
 void steeringControl(int fd, long value) // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 degree)

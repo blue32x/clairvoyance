@@ -11,6 +11,7 @@
 #include <wiringPi.h>
 #include <wiringSerial.h>
 
+#include "util.h"
 #include "carControl.h"
 
 #define BUF_SIZE 1024
@@ -23,8 +24,14 @@ int main(int argc, char** argv)
 	struct sockaddr_in server_addr;
 	char buff[BUF_SIZE];
 
-	char input;
 	int fd;
+	char **joystickData;
+	size_t numData;
+
+	long Data2, Data4, Data6, Data7, Data13;
+	long rf_count, lf_count, fl_count, bl_count, back_gear;
+	Data2=Data4=Data6=Data7=Data13=0;
+	rf_count=lf_count=fl_count=bl_count=back_gear=0;
 
 	/* Initailize socket network and connect socket */
 	client_socket = socket(PF_INET, SOCK_STREAM, 0);
