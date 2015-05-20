@@ -1,23 +1,20 @@
-﻿빌드 시작: 2015-05-18 오후 5:18:53
-     1>2 노드의 "C:\Users\user\Desktop\chunrian\clairvoyance\src\window\RawInputJoystickSource\Raw Input.vcxproj" 프로젝트(Build 대상)입니다.
-     1>InitializeBuildStatus:
-         "AlwaysCreate"이(가) 지정되었기 때문에 "Debug\Raw Input.unsuccessfulbuild"을(를) 만들고 있습니다.
-       ClCompile:
-         C:\Program Files\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TC /analyze- /errorReport:prompt RawInput.c
+﻿빌드 시작: 2015-05-20 오전 11:57:23
+     1>2 노드의 "C:\Users\DPLAB\clairvoyance\src\window\RawInputJoystickSource\Raw Input.vcxproj" 프로젝트(Build 대상)입니다.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TC /analyze- /errorReport:prompt RawInput.c
          RawInput.c
-     1>c:\users\user\desktop\chunrian\clairvoyance\src\window\rawinputjoysticksource\rawinput.c(49): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files\microsoft visual studio 11.0\vc\include\stdio.h(357) : 'sprintf' 선언을 참조하십시오.
-     1>c:\users\user\desktop\chunrian\clairvoyance\src\window\rawinputjoysticksource\rawinput.c(313): warning C4996: 'freopen': This function or variable may be unsafe. Consider using freopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files\microsoft visual studio 11.0\vc\include\stdio.h(233) : 'freopen' 선언을 참조하십시오.
+     1>c:\users\dplab\clairvoyance\src\window\rawinputjoysticksource\rawinput.c(50): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 11.0\vc\include\stdio.h(357) : 'sprintf' 선언을 참조하십시오.
+     1>c:\users\dplab\clairvoyance\src\window\rawinputjoysticksource\rawinput.c(320): warning C4033: 'WinMain'은(는) 값을 반환해야 합니다.
+     1>c:\users\dplab\clairvoyance\src\window\rawinputjoysticksource\rawinput.c(334): warning C4033: 'WinMain'은(는) 값을 반환해야 합니다.
+     1>c:\users\dplab\clairvoyance\src\window\rawinputjoysticksource\rawinput.c(343): warning C4996: 'freopen': This function or variable may be unsafe. Consider using freopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 11.0\vc\include\stdio.h(233) : 'freopen' 선언을 참조하십시오.
+     1>c:\users\dplab\clairvoyance\src\window\rawinputjoysticksource\rawinput.c(391): warning C4715: 'WinMain' : 모든 제어 경로에서 값을 반환하지는 않습니다.
        Link:
-         C:\Program Files\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\user\Desktop\chunrian\clairvoyance\src\window\RawInputJoystickSource\Debug\Raw Input.exe" /INCREMENTAL /NOLOGO hid.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\user\Desktop\chunrian\clairvoyance\src\window\RawInputJoystickSource\Debug\Raw Input.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\user\Desktop\chunrian\clairvoyance\src\window\RawInputJoystickSource\Debug\Raw Input.lib" /MACHINE:X86 Debug\RawInput.obj
-         LINK : C:\Users\user\Desktop\chunrian\clairvoyance\src\window\RawInputJoystickSource\Debug\Raw Input.exe을(를) 찾을 수 없거나 마지막 증분 링크에 의해 빌드되지 않았습니다. 전체 링크를 수행하고 있습니다.
-         Raw Input.vcxproj -> C:\Users\user\Desktop\chunrian\clairvoyance\src\window\RawInputJoystickSource\Debug\Raw Input.exe
-       FinalizeBuildStatus:
-         "Debug\Raw Input.unsuccessfulbuild" 파일을 삭제하고 있습니다.
-         "Debug\Raw Input.lastbuildstate"에 연결(touching)하고 있습니다.
-     1>"C:\Users\user\Desktop\chunrian\clairvoyance\src\window\RawInputJoystickSource\Raw Input.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\DPLAB\clairvoyance\src\window\RawInputJoystickSource\Debug\Raw Input.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\DPLAB\clairvoyance\src\window\RawInputJoystickSource\Debug\Raw Input.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\DPLAB\clairvoyance\src\window\RawInputJoystickSource\Debug\Raw Input.lib" /MACHINE:X86 Debug\RawInput.obj
+         Raw Input.vcxproj -> C:\Users\DPLAB\clairvoyance\src\window\RawInputJoystickSource\Debug\Raw Input.exe
+     1>"C:\Users\DPLAB\clairvoyance\src\window\RawInputJoystickSource\Raw Input.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
 
 빌드했습니다.
 
-경과 시간: 00:00:04.31
+경과 시간: 00:00:02.01
