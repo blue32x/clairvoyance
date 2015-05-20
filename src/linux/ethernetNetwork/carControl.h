@@ -133,7 +133,7 @@ void steeringControl(int fd, long value) // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 deg
 	}
 	else
 	{
-		value = 1500 + (float)value * ratio;
+		value = 1500 - (float)value * ratio;
 	}
 
 	sprintf(strHex, "%x", value);

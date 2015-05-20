@@ -21,6 +21,7 @@
 int main(int argc, char** argv)
 {
 	int client_socket;
+	int bytes_read;
 	struct sockaddr_in server_addr;
 	char buf[BUF_SIZE];
 
