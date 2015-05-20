@@ -26,6 +26,7 @@ int main(int argc, char **argv)
 
 	long Data2, Data4, Data6, Data7, Data13;
 	long rf_count, lf_count, fl_count, bl_count, back_gear;
+	Data2=Data4=Data6=Data7=Data13=0;
 	rf_count=lf_count=fl_count=bl_count=back_gear=0;
 
 	/* Initailize serial network */
@@ -87,13 +88,13 @@ int main(int argc, char **argv)
 			{
 				back_gear++;
 			}
-			if(back_gear%2 == 1)						//back gear
+			if(back_gear%2 == 1)								//back gear
 			{
-				back_speedControl(fd, atol(joystickData[0]));
+				back_speedControl(fd, atol(joystickData[1]));
 			}
 			else 
 			{
-				speedControl(fd, atol(joystickData[0]));
+				speedControl(fd, atol(joystickData[1]));
 			}
 
 			///// Control Steer
