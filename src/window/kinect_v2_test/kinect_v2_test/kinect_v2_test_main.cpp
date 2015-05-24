@@ -1,27 +1,6 @@
-﻿/******************************************************************************************************
-
-								국민대학교
-								컴퓨터공학부
-								천리안(clairvoyance)
-								Kinect v2의 depth map을 활용한 자동차 후방 영상 개선
-								지도교수 : 한재일
-								조장 : 최승혁
-								조원 : 신태섭 박성우 신동호 박민욱 최성현
-								version 2.74
-
-******************************************************************************************************/
-
-//opencv header
-#include<cv.h>
-#include<highgui.h>
-
-//kinect header
-#include<Kinect.h>
-
-//.c header
-#include<stdio.h>
-
-
+﻿#include"myheader.h"
+#include"mykinect.h"
+#include"visualprocessing.h"
 //Kinect sdk pointer Release를 위한 함수
 //Interface로 구성되어 어떤 함수가 와도 처리가 가능
 template<class Interface>
@@ -33,7 +12,7 @@ inline void SafeRelease( Interface *& pInterfaceToRelease )
 	}
 }
 
-
+static int DrawX,DrawY;
 /*******************************************************************************
 			Kinect for Windows SDK v2 의 테이터 취득의 흐름
 
@@ -42,94 +21,11 @@ inline void SafeRelease( Interface *& pInterfaceToRelease )
 ********************************************************************************/
 
 
-#define depthWidth 512 //Kinect v2 depth map width
-#define depthHeight 424 //Kinect v2 depth map height
-#define colorWidth 1920 //Kinect v2 color camera width
-#define colorHeight 1080 //Kinect v2 color camera height
-
-//coordinate 이미지 영상을 줄여주는 변수
-//1로 바꿔주면 원본, 1이상이면 영상의 크기를 줄여주어 
-//속도를 빠르게 해준다.
-//추후에 멀티쓰레드 혹은 분산처리로 해결 가능성을 보인다.
-#define SPEEDBOOST 3
-
-#define NORMALIMAGE '0'
-#define FINDNEAR '1'
-#define GRAIMAGE '2'
-#define BLINGBLING '3'
-#define REDPOINT '4'
-
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////이부분만 고치면 이미지 처리가 된다//////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
-void calibration_image_processing_gra(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat)
-{
-	
-	
-}
 
-void calibration_image_processing_red(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat)
-{
-	for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
-	{
-		for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
-		{
-			DepthSpacePoint dPoint = depthSpacePoints[y][x]; //depthmap 좌표를 받아온다.
-			int depthX = static_cast<int>(dPoint.X); //depthX에 depthmap 좌표 x값을 저장한다.
-			int depthY = static_cast<int>(dPoint.Y); //depthY에 depthmap 좌표 y값을 저장한다.
-			if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
-			{
-				if(depthMat.at<UINT16>(depthY,depthX) % 5 == 0)
-				{
-					colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 175;
-				}
-			}
-		}
-	}
-}
-void calibration_image_processing_near(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat)
-{
-	for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
-	{
-		for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
-		{
-			DepthSpacePoint dPoint = depthSpacePoints[y][x]; //depthmap 좌표를 받아온다.
-			int depthX = static_cast<int>(dPoint.X); //depthX에 depthmap 좌표 x값을 저장한다.
-			int depthY = static_cast<int>(dPoint.Y); //depthY에 depthmap 좌표 y값을 저장한다.
-			if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
-			{
-				if(depthMat.at<UINT16>(depthY,depthX) < 700 && depthMat.at<UINT16>(depthY,depthX) != 0)
-				{
-					colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 220;
-				}
-			}
-		}
-	}
-}
-
-void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat)
-{
-	for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
-	{
-		for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
-		{
-			DepthSpacePoint dPoint = depthSpacePoints[y][x]; //depthmap 좌표를 받아온다.
-			int depthX = static_cast<int>(dPoint.X); //depthX에 depthmap 좌표 x값을 저장한다.
-			int depthY = static_cast<int>(dPoint.Y); //depthY에 depthmap 좌표 y값을 저장한다.
-			if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
-			{
-				if(depthMat.at<UINT16>(depthY,depthX) < 700 && depthMat.at<UINT16>(depthY,depthX) != 0)
-				{
-					colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = 220;
-				}
-			}
-		}
-	}
-}
-//////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -138,66 +34,68 @@ void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthS
 //color + depth 영상 출력 
 //http://www.buildinsider.net/small/kinectv2cpp/02
 
+//영상의 Frame을 출력하기 위한 전역변수
+long nmrTotalFrames = 0;
+
+//kinect에서 가장 가까운 물체까지의 거리를 나타내줄 전역변수
+int myMinDepth = 4500;
+
+DWORD startTime = 0;
 //main functio start
 int main(void)
 {
+	//FPS를 표시해 줄 Font 및 문자열 버퍼 초기화
+	char strBuffer[64] = {0,}; //화면에 출력할 스트링을 저장할 버퍼
+	startTime = timeGetTime(); //시작을 나타낸다.
 	//Sensor를 얻을 수 있다.
 	///////////////////////////////////////////////////////////////////////////////////
-	IKinectSensor * pSensor;  //Kinect v2 대우를 위한 Sensor인터페이스.
+	IKinectSensor * pSensor=NULL;  //Kinect v2 대우를 위한 Sensor인터페이스.
+	IColorFrameSource * pColorSource=NULL;
+	IDepthFrameSource * pDepthSource=NULL;
+	IColorFrameReader *pColorReader=NULL;
+	IDepthFrameReader * pDepthReader=NULL;
 	HRESULT hResult = S_OK;
-	hResult = GetDefaultKinectSensor(&pSensor);  //기본 Sensor를 얻을 수 있다.
-	if(FAILED(hResult))
-	{
-		std :: cerr << "Error : GetDEfaultKinectSensor" << std ::endl;
-		return -1;
-	}
-	hResult = pSensor ->Open(); //Sensor를 연다.
-	if(FAILED(hResult))
-	{
-		std :: cerr << "Error : IKinectSensor :: opne()" << std :: endl;
-	}
-	////////////////////////////////////////////////////////////////////////////////////
+	HRESULT depthResult =S_OK;
 
-
-	//Sensor에서 Source를 가져온다.
-	////////////////////////////////////////////////////////////////////////////////////
-	IColorFrameSource * pColorSource; //color 구조를 위한 Source 인터페이스
-	hResult = pSensor -> get_ColorFrameSource(&pColorSource); //Sensor에서 Source를 가져온다.
-	if(FAILED(hResult)) //pColorSource에 kinect v2의 color 정보가 저장된 상태이다.
+	//shared memory
+	HANDLE hMemMap=NULL;
+	TCHAR szName[]=TEXT("ourStopSignal");
+	hMemMap=CreateFileMapping(INVALID_HANDLE_VALUE,
+		NULL,
+		PAGE_READWRITE,
+		0,
+		1024,
+		szName);
+	if(hMemMap ==NULL)
 	{
-		std::cerr << "Error : IKinectSensor :: get_ColorFrameSource()" << std:: endl;
 		return -1;
 	}
 
-	IDepthFrameSource * pDepthSource; //depth 구조를 위한 Source 인터페이스
-	hResult = pSensor -> get_DepthFrameSource(&pDepthSource);
-	if(FAILED(hResult))
+	lpMapping=(LPSTR)MapViewOfFile(hMemMap,
+									FILE_MAP_ALL_ACCESS,
+									0,
+									0,
+									1024);
+	if(lpMapping ==NULL)
 	{
-		std::cerr<<"Error :IKinectSensor::get_DepthFrameSource()"<<std::endl;
-		return -1;
+	_tprintf(TEXT("Could not map view of file (%d).\n"), 
+ 			GetLastError()); 
+
+ 
+ 		CloseHandle(hMemMap); 
+
+ 
+ 		return 1; 
+
 	}
-	////////////////////////////////////////////////////////////////////////////////////
 
-
-	//Source에서 Reader를 연다.
-	////////////////////////////////////////////////////////////////////////////////////
-	IColorFrameReader *pColorReader; //Color 구조를 위한 Rader 인터페이스.
-	hResult = pColorSource -> OpenReader( & pColorReader); //Source에서 Reader를 연다.
-	if(FAILED(hResult))
-	{
-		std :: cerr << "Error : IColorFrameSource :: OpenReader()" << std :: endl;
-		return -1;
-	}
-	IDepthFrameReader * pDepthReader; //depth 구조를 위한 Reader 인터페이스
-	hResult = pDepthSource -> OpenReader( & pDepthReader); //Source에서 Reader를 연다.
-	if(FAILED(hResult))
-	{
-		std::cerr << "Error : IDepthFrameSource :: OpenReader()"<<std::endl;
-		return -1;
-	}
-	////////////////////////////////////////////////////////////////////////////////////
-
-
+	mykinect _kinect(pSensor);
+	pSensor=_kinect.initialize();
+	pColorSource=_kinect.setColorSource(pColorSource);
+	pDepthSource=_kinect.setDepthSource(pDepthSource);
+	pColorReader=_kinect.setColorReader(pColorSource,pColorReader);
+	pDepthReader=_kinect.setDepthReader(pDepthSource,pDepthReader);
+	
 	//Frame ~ Data
 	//color
 	////////////////////////////////////////////////////////////////////////////////////
@@ -243,8 +141,6 @@ int main(void)
 		std::cerr << "Error : IKinectSensor::get_CoordinateMapper()" << std::endl;
 		return -1;
 	}
-
-
 	//color에 depth를 표현하기 위한 메트릭스
 	cv::Mat colorCoordinateMapperMat(colorHeight/SPEEDBOOST,colorWidth/SPEEDBOOST,CV_8UC4);
 
@@ -258,14 +154,22 @@ int main(void)
 	pDepthSource->get_DepthMinReliableDistance(&minDepth);
 	pDepthSource->get_DepthMaxReliableDistance(&maxDepth);
 
+	std::cout << minDepth << " " << maxDepth << std::endl;
 
 	char mode_detec;
-	char mode=FINDNEAR;
+	char mode = NORMALIMAGE;
 	int bling_var = 0;
 	//Frame을 생성하고 color와 depth image를 출력한다.
 	///////////////////////////////////////////////////////////////////////////////////////
+
+
+//	CopyMemory((PVOID)lpMapping,isStop,sizeof(isStop));
 	while(1)
 	{
+
+		//가장 가까운 거리를 구하기 위해 myMinDepth를 초기화해 준다.
+		myMinDepth = 4500;
+
 		//colorFrame
 		IColorFrame * pColorFrame = nullptr; //color 이미지를 얻기 위한 Frame 인터페이스
 		hResult = pColorReader -> AcquireLatestFrame(&pColorFrame); //Reader에서 최신 Frame을 얻을 수 있다.
@@ -284,13 +188,25 @@ int main(void)
 
 		//depthFrame
 		IDepthFrame * pDepthFrame = nullptr;
-		hResult = pDepthReader -> AcquireLatestFrame(&pDepthFrame);
-		if(SUCCEEDED(hResult))
+		depthResult = pDepthReader -> AcquireLatestFrame(&pDepthFrame);
+		if(SUCCEEDED(depthResult))
 		{
 			//Frame에서 Depth데이터를 검색한다.
 			//Depth 데이터가 저장된 배열의 포인터를 얻을 수 있다. 여기서 Depth 데이터를 시각화 하기 위한 변환처리에 편리한 cv::Mat 형으로 받고있다.
 			hResult = pDepthFrame -> AccessUnderlyingBuffer(&depthBufferSize, reinterpret_cast<UINT16**> (&depthBufferMat.data));
 
+			for(int y=0; y < depthHeight; y++)
+			{
+				for(int x = 0; x < depthWidth; x++)
+				{
+					if(myMinDepth > depthBufferMat.at<UINT16>(y,x) &&depthBufferMat.at<UINT16>(y,x) != 0 )
+					 {
+						 myMinDepth= depthBufferMat.at<UINT16>(y,x);
+						 DrawX=x;
+						 DrawY=y;
+					 }
+				}
+			}
 
 			if(SUCCEEDED(hResult))
 			{
@@ -302,9 +218,14 @@ int main(void)
 
 
 		//Mapping Frame	
+
+
 		//color에 depth를 표현
 		DepthSpacePoint depthSpacePoints[colorHeight][colorWidth];
-		hResult = pCoordinateMapper->MapColorFrameToDepthSpace(depthWidth * depthHeight, reinterpret_cast<UINT16 *>(depthBufferMat.data), colorWidth * colorHeight, &depthSpacePoints[0][0]);
+		if(SUCCEEDED(depthResult))
+		{
+			hResult = pCoordinateMapper->MapColorFrameToDepthSpace(depthWidth * depthHeight, reinterpret_cast<UINT16 *>(depthBufferMat.data), colorWidth * colorHeight, &depthSpacePoints[0][0]);
+		}
 		if(SUCCEEDED(hResult))
 		{
 			colorCoordinateMapperMat = cv::Scalar(0,0,0,0);
@@ -323,9 +244,17 @@ int main(void)
 					
 					
 				}
+
 			}
 			
 		}
+
+		else
+		{
+			std::cerr << "Error : IKinectSensor::missinbg frame" << std::endl;
+		}
+		
+
 		/*
 		#define NORMALIMAGE 0
 		#define FINDNEAR 1
@@ -335,7 +264,7 @@ int main(void)
 
 		//모드를 선택한다.
 		//영상 출력중에 입력키를 받는다.
-		mode_detec = cv::waitKey( 1 );
+		mode_detec = cv::waitKey( 1);
 
 		//받은 입력mode_detec이 효과를 원하는 키일 경우
 		//mode에 값을 넣어준다.
@@ -347,7 +276,7 @@ int main(void)
 		{
 			mode= NORMALIMAGE; //0을 누를 경우 영상처리 되지 않은 이미지 출력
 		}
-		else if(mode_detec == GRAIMAGE)
+		else if(mode_detec == GRAIMAGE )
 		{
 			mode = GRAIMAGE; //2를 누를 경우 gradation image 출력
 		}
@@ -369,28 +298,28 @@ int main(void)
 		if(mode == NORMALIMAGE)
 		{
 			//처리 과정 X
+			//calibration_image_processing_all(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
 		}
-		else if(mode == REDPOINT)
+		else if(mode == REDPOINT&& SUCCEEDED(depthResult))
 		{
 			calibration_image_processing_red(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
 		}
-		else if(mode == FINDNEAR)
+		else if(mode == FINDNEAR&& SUCCEEDED(depthResult))
 		{
 			calibration_image_processing_near(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
 		}
-		else if(mode == BLINGBLING)
+		else if(mode == BLINGBLING&& SUCCEEDED(depthResult))
 		{
 			bling_var += 1;
-			if(bling_var > 30)
+			if(bling_var > 100)
 			{
 				bling_var = 0;
 			}
-			if(bling_var > 15)
-			{
-				calibration_image_processing_bling(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
-			}
+			
+			calibration_image_processing_bling(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat, bling_var);
+			
 		}
-		else if(mode == GRAIMAGE)
+		else if(mode == GRAIMAGE&& SUCCEEDED(depthResult))
 		{
 			calibration_image_processing_gra(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
 		}
@@ -403,6 +332,24 @@ int main(void)
 		cv::resize(colorCoordinateMapperMat,colorMat,cv::Size(),1,1);
 		
 	
+
+		nmrTotalFrames++;
+		SafeRelease(pDepthFrame); 
+		SafeRelease(pColorFrame); //Frame을 풀어놓는다.
+		//내부 버퍼가 해제되어 다음 데이터를 검색 할 수있는 산태가 된다.
+		//Show window
+		float fps=(float)((nmrTotalFrames*1000.0)/(timeGetTime()-startTime));
+		cv::Point mypoint;
+		mypoint.x=10;
+		mypoint.y=40;
+		//itoa(fps,strBuffer,10);
+		sprintf_s(strBuffer,"%.2lf fps %d cm",fps,myMinDepth/10);
+		//sprintf_s(strBuffer,"%.2lf fps",fps);
+		//fps를 이미지 버퍼에 출력한다.
+		cv::putText(colorMat,strBuffer,mypoint,2,1.2,cv::Scalar::all(255));
+		//cv::circle(colorMat,cv::Point(DrawX,DrawY),10,cv::Scalar::all(255),2);
+
+
 
 		SafeRelease(pDepthFrame); 
 		SafeRelease(pColorFrame); //Frame을 풀어놓는다.
@@ -418,6 +365,13 @@ int main(void)
 	}
 	////////////////////////////////////////////////////////////////////////////////////
 
+
+	//releasesharedmemory
+	//CopyMemory((PVOID)lpMapping,isStop,sizeof(char));
+
+	UnmapViewOfFile(lpMapping);
+	CloseHandle(hMemMap);
+	//strcpy(lpMapping,"Control");
 	SafeRelease( pColorSource );
 	SafeRelease( pColorReader );
 	SafeRelease( pDepthSource );

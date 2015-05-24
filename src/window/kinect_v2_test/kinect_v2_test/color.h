@@ -1,0 +1,5 @@
+class Color
+{
+private:
+public:
+};

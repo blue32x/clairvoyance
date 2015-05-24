@@ -1,0 +1,5 @@
+class Depth
+{
+private:
+public:
+};
