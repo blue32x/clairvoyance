@@ -3,13 +3,60 @@
 #include <winsock2.h>
 #include <ws2bth.h>
 
+#include <windows.h>
+#include <stdio.h>
+#include <conio.h>
+#include <tchar.h>
+
 DEFINE_GUID(SAMPLE_UUID, 0x31b44148, 0x041f, 0x42f5, 0x8e, 0x73, 0x18, 0x6d, 0x5a, 0x47, 0x9f, 0xc9);
 
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "irprops.lib")
 
+#define BUF_SIZE 256
+
+TCHAR szName[]=TEXT("Global\\MyFileMappingObject");
+HANDLE hMapFile;
+LPCTSTR pBuf;
+
 int _tmain(int argc, _TCHAR* argv[])
 {
+	//
+	// Creating Named Shared Memory
+	//
+	hMapFile = OpenFileMapping(
+		FILE_MAP_ALL_ACCESS,   // read/write access
+		FALSE,                 // do not inherit the name
+		szName);               // name of mapping object
+
+	if (hMapFile == NULL)
+	{
+		_tprintf(TEXT("Could not open file mapping object (%d).\n"),
+			GetLastError());
+		return 1;
+	}
+
+	pBuf = (LPTSTR) MapViewOfFile(hMapFile, // handle to map object
+		FILE_MAP_ALL_ACCESS,  // read/write permission
+		0,
+		0,
+		BUF_SIZE);
+
+	if (pBuf == NULL)
+	{
+		_tprintf(TEXT("Could not map view of file (%d).\n"),
+			GetLastError());
+
+		CloseHandle(hMapFile);
+
+		return 1;
+	}
+
+	MessageBox(NULL, pBuf, TEXT("Process2"), MB_OK);
+
+	//
+	// Creating rfcomm socket server
+	//
 	SOCKET server;
 	SOCKADDR_BTH sa;
 	int sa_len = sizeof(sa);
@@ -32,8 +79,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	sa.btAddr = 0;
 	sa.port = BT_PORT_ANY;
 	if( SOCKET_ERROR == bind( server, (const sockaddr*) &sa, sizeof(SOCKADDR_BTH)) ) {
-		int error = WSAGetLastError();
-		printf("%d\n", error);
 		ExitProcess(2);
 	}
 	listen( server, 1 );
@@ -60,7 +105,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	serviceInfo.dwNumberOfCsAddrs = 1;
 	serviceInfo.lpcsaBuffer = &sockInfo;
 	if( SOCKET_ERROR ==	WSASetService( &serviceInfo, RNRSERVICE_REGISTER, 0 ) ) {
-			ExitProcess(2);
+		ExitProcess(2);
 	}
 	SOCKADDR_BTH ca;
 	int ca_len = sizeof(ca);
@@ -91,5 +136,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	closesocket(client);
 	closesocket(server);
+	UnmapViewOfFile(pBuf);
+	CloseHandle(hMapFile);
+
 	return 0;
 }
