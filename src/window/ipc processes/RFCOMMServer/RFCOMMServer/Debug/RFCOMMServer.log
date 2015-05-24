@@ -1,4 +1,4 @@
-﻿빌드 시작: 2015-05-20 오후 3:50:16
+﻿빌드 시작: 2015-05-21 오후 8:23:26
      1>2 노드의 "C:\Users\sh\Documents\GitHub\clairvoyance\src\window\ipc processes\RFCOMMServer\RFCOMMServer\RFCOMMServer.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt RFCOMMServer.cpp
@@ -11,4 +11,4 @@
 
 빌드했습니다.
 
-경과 시간: 00:00:00.81
+경과 시간: 00:00:01.33

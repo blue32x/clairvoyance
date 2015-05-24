@@ -13,7 +13,8 @@ DEFINE_GUID(SAMPLE_UUID, 0x31b44148, 0x041f, 0x42f5, 0x8e, 0x73, 0x18, 0x6d, 0x5
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "irprops.lib")
 
-#define BUF_SIZE 256
+// Max Data Length = 33(include null charater)
+#define BUF_SIZE 64
 
 TCHAR szName[]=TEXT("GlobalMyFileMappingObject");
 HANDLE hMapFile;
@@ -112,8 +113,21 @@ int _tmain(int argc, _TCHAR* argv[])
 	*/
 
 	// send
+	LARGE_INTEGER liCounter1, liCounter2, liFrequency;
+	QueryPerformanceFrequency(&liFrequency);
+	QueryPerformanceCounter(&liCounter1);         // Start
+	int sended = 0;
+	int count = 0;
+	double elapsedTime = 0;
 	while(1)
 	{
+		QueryPerformanceCounter(&liCounter2);         // End
+		if((elapsedTime = (double)(liCounter2.QuadPart - liCounter1.QuadPart) / (double)liFrequency.QuadPart) > (double)1)
+		{
+			printf("Time : %f, Count : %d\n", elapsedTime, count);
+			return 1;
+		}
+		count++;
 		pBuf = (LPTSTR) MapViewOfFile(hMapFile, // handle to map object
 			FILE_MAP_ALL_ACCESS,  // read/write permission
 			0,
@@ -122,18 +136,21 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		if (pBuf == NULL)
 		{
+			continue;
+			/*
 			_tprintf(TEXT("Could not map view of file (%d).\n"),
 				GetLastError());
 
 			CloseHandle(hMapFile);
 
 			return 1;
+			*/
 		}
 
 		// convert LPCTSTR pBuf to char [] buf
 		WideCharToMultiByte(CP_ACP, 0, pBuf, BUF_SIZE, buf, BUF_SIZE, NULL, NULL);
-		buf[strlen(buf)+1] = '\0';
-		int sended = 0;
+		buf[strlen(buf)] = '\0';
+
 		sended = send( client, buf, sizeof(buf), 0 );
 		if( sended > 0 ) {
 			printf("sended: %s(len : %d)\n", buf, sended);

@@ -53,7 +53,7 @@ inline void SafeRelease( Interface *& pInterfaceToRelease )
 //1로 바꿔주면 원본, 1이상이면 영상의 크기를 줄여주어 
 //속도를 빠르게 해준다.
 //추후에 멀티쓰레드 혹은 분산처리로 해결 가능성을 보인다.
-#define SPEEDBOOST 3
+#define SPEEDBOOST 1
 
 #define NORMALIMAGE '0'
 #define FINDNEAR '2'
@@ -276,7 +276,7 @@ void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthS
 				{
 					colorR = colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2];
 					//kinect와 물체의 거리가 1m 이하일 경우 영상처리를 해준다.
-					if( depth_var > 900 && depth_var <= 1000)
+					if( depth_var > 1300 && depth_var <= 1500)
 					{
 						if(bling_var % 10 == 0)
 						{
@@ -286,7 +286,7 @@ void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthS
 							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
 						}
 					}
-					else if( depth_var > 800 && depth_var <= 900)
+					else if( depth_var > 1100 && depth_var <= 1300)
 					{
 						if(bling_var % 8 == 0)
 						{
@@ -296,7 +296,7 @@ void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthS
 							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
 						}
 					}
-					else if( depth_var > 700 && depth_var <= 800)
+					else if( depth_var > 900 && depth_var <= 1100)
 					{
 						if(bling_var % 6 == 0)
 						{
@@ -306,7 +306,7 @@ void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthS
 							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
 						}
 					}
-					else if( depth_var > 600 && depth_var <= 700)
+					else if( depth_var > 700 && depth_var <= 900)
 					{
 						if(bling_var % 4 == 0)
 						{
@@ -316,7 +316,7 @@ void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthS
 							colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
 						}
 					}
-					else if( depth_var > 500 && depth_var <= 600)
+					else if( depth_var > 500 && depth_var <= 700)
 					{
 						if(bling_var % 2 == 0)
 						{
@@ -424,7 +424,7 @@ int main(void)
 	//bufferMat 원시 이미지 테이터 colorMat는 리사이즈 한 화상 데이터를 취급힌다.
 	//CV_8UC4는 부호없는 8bit정수가 4channel 나란히 1화소를 표현하는 데이터 형식이다.
 	cv::Mat colorBufferMat(colorHeight, colorWidth, CV_8UC4); 
-	cv::Mat colorMat(colorHeight/2, colorWidth/2, CV_8UC4);
+	cv::Mat colorMat(colorHeight/SPEEDBOOST, colorWidth/SPEEDBOOST, CV_8UC4);
 	
 	cv::namedWindow("Output");
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -477,13 +477,13 @@ int main(void)
 	std::cout << minDepth << " " << maxDepth << std::endl;
 
 	char mode_detec;
-	char mode=FINDNEAR;
+	char mode=NORMALIMAGE;
 	int bling_var = 0;
 	//Frame을 생성하고 color와 depth image를 출력한다.
 	///////////////////////////////////////////////////////////////////////////////////////
 
 
-
+	int delay_c = 0;
 	while(1)
 	{
 
@@ -534,11 +534,16 @@ int main(void)
 		}
 
 
+		if(delay_c < 6)
+		{
+			delay_c++;
+		}
 
 		//Mapping Frame	
 		//color에 depth를 표현
+
 		DepthSpacePoint depthSpacePoints[colorHeight][colorWidth];
-		hResult = pCoordinateMapper->MapColorFrameToDepthSpace(depthWidth * depthHeight, reinterpret_cast<UINT16 *>(depthBufferMat.data), colorWidth * colorHeight, &depthSpacePoints[0][0]);
+		hResult = pCoordinateMapper->MapColorFrameToDepthSpace(depthBufferMat.rows * depthBufferMat.cols, reinterpret_cast<UINT16 *>(depthBufferMat.data), colorWidth * colorHeight, &depthSpacePoints[0][0]);
 		if(SUCCEEDED(hResult))
 		{
 			colorCoordinateMapperMat = cv::Scalar(0,0,0,0);
