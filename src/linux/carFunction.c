@@ -23,22 +23,44 @@ int gear = GEAR1;
 unsigned char speedParam = 0x00;
 unsigned char speedParam2 = 0x00;
 
+void stopCar(int fd)
+{
+ 	unsigned char op = 0x91;
+	unsigned char len = 0x04;
+	unsigned char RW = 0x01;
+	unsigned char speedParam = 0x00;
+	unsigned char speedParam2 = 0x00;   
+	unsigned char checkSum;
+	checkSum = ((op + len + RW + speedParam2 + speedParam) & 0x00ff);
 
+	serialPutchar(fd, op);
+	serialPutchar(fd, len);
+	serialPutchar(fd, RW);
+	serialPutchar(fd, speedParam2);
+	serialPutchar(fd, speedParam);
+	serialPutchar(fd, checkSum);
+}
 void speedControl(int fd, long value) 
 {
     // max speed is 01F4 (500) 256 =0100
 
         unsigned char op = 0x91;
 	unsigned char len = 0x04;
-	unsigned char RW = 0x01;
-     
+	unsigned char RW = 0x01;   
 	unsigned char checkSum;
 
         char strParam[] = "ff";
 	char strHex[BUFFER_SIZE];
 	char *ptr;
+	if( value == 0)
+	{
+	  value=-20;
+	}
+	else
+	{
+        value=(-1*value);
+	}
 	
-        value=(-1*value)/10;
         speedparam2+=value;
         
 	if(speedparam2 < 0)
@@ -68,10 +90,6 @@ void speedControl(int fd, long value)
 	speedparam2 = strtol(strParam, &ptr, 16);
 	printf("%s, %x\n", strParam, speedparam2);
 	}
-       
-		
-
-  
 
 
 	printf("%x,  %x\n", speedParam, speedParam2);		// For debug
@@ -92,12 +110,19 @@ void back_speedControl(int fd, long value) //ff ff < ff 00
 	unsigned char len = 0x04;
 	unsigned char RW = 0x01;
 	unsigned char checkSum;
-
         char strParam[] = "ff";
 	char strHex[BUFFER_SIZE];
 	char *ptr;
 	
-	value=(-1*value)/10;
+	if( value == 0)
+	{
+	  value=-20;
+	}
+	else
+	{
+        value=(-1*value);
+	}
+	
         speedparam2+=value;
 
 	if(speedparam2 > 255)
