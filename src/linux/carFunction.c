@@ -31,8 +31,7 @@ void speedControl(int fd, long value)
         unsigned char op = 0x91;
 	unsigned char len = 0x04;
 	unsigned char RW = 0x01;
-        unsigned char speedparam;
-	unsigned char speedparam2;
+     
 	unsigned char checkSum;
 
         char strParam[] = "ff";
@@ -75,54 +74,6 @@ void speedControl(int fd, long value)
   
 
 
-
-
-
-/*
-	float ratio = 500/127;
-	
-        value = (long)((float)value*ratio);
-	// above 2 digits of hexdecimal
-	if( value < 256 )
-	{       
-		sprintf(strHex, "%x", value);
-		speedparam = 0;
-		
-
-		strParam[0] = strHex[0];
-		strParam[1] = strHex[1];
-		speedparam2 = strtol(strParam, &ptr, 16);
-		printf("%s, %x\n", strParam, speedparam2);	// For Debug
-	}
-	else 
-	{
-                if( value > 500 )
-                {
-                   value=500;
-		}
-                
-                sprintf(strHex, "%x", value);
-		strParam[0] = '0';
-		strParam[1] = strHex[0];
-		speedparam = strtol(strParam, &ptr, 16);
-		printf("%s, %x\n", strParam, speedparam);	// For Debug
-
-		strParam[0] = strHex[1];
-		strParam[1] = strHex[2];
-		speedparam2 = strtol(strParam, &ptr, 16);
-		printf("%s, %x\n", strParam, speedparam2);	// For Debug
-	}
-	*/
-
-
-
-
-
-
-
-
-
-
 	printf("%x,  %x\n", speedParam, speedParam2);		// For debug
  
        	
@@ -140,8 +91,6 @@ void back_speedControl(int fd, long value) //ff ff < ff 00
         unsigned char op = 0x91;
 	unsigned char len = 0x04;
 	unsigned char RW = 0x01;
-        unsigned char speedparam;
-	unsigned char speedparam2;
 	unsigned char checkSum;
 
         char strParam[] = "ff";
