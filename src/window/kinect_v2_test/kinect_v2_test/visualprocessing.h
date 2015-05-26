@@ -239,6 +239,7 @@ void calibration_image_processing_near(cv::Mat colorCoordinateMapperMat, DepthSp
 }
 
 //가장 가까운 물체가 밝고 어둡고 깜빡이는 효과를 넣는다.
+int count=0;
 void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat,int bling_var)
 {
 	int colorR;
@@ -309,7 +310,12 @@ void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthS
 
 						}
 					}
-					if(depth_var<530 && depth_var >=500) CopyMemory((PVOID)lpMapping,isStop,sizeof(char));
+					if(depth_var<530 && depth_var >=500){
+						CopyMemory((PVOID)lpMapping,isStop,sizeof(char));
+						//count++;
+						//if(count%10==0)
+						//printf("warnning!!!!\n ");
+					}
 				}
 			}
 		}

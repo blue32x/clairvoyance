@@ -31,13 +31,23 @@ INT  g_NumberOfButtons;
 char m_cText[100];
 
 HANDLE hMapFile;
+HANDLE hMapFile2;
+HANDLE hMapFile3;
 LPCTSTR pBuf;
+LPCTSTR pBuf2;
+LPCTSTR pBuf3;
 TCHAR szName[]=TEXT("RawData");
+TCHAR szName2[]=TEXT("ModeSig");
+TCHAR szName3[]=TEXT("StopSig");
 TCHAR szMsg[BUF_SIZE];
+TCHAR szMsg2[BUF_SIZE];
+TCHAR szMsg3[BUF_SIZE];
 
 void SendJoystickValues()
 {
 	char buffer[BUF_SIZE];
+
+	///// Send raw data to Server process
 	sprintf(buffer,"%ld/%ld/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",
 		lAxisX,lAxisY,bButtonStates[0],bButtonStates[1],
 		bButtonStates[2],bButtonStates[3],bButtonStates[4],
@@ -62,10 +72,33 @@ void SendJoystickValues()
 		CloseHandle(hMapFile);
 		return ;
 	}
-
-	//Write buffer for rfcommServer process
+	//Write buffer for server process
 	CopyMemory((PVOID)pBuf, szMsg, (_tcslen(szMsg) * sizeof(TCHAR)));
 
+
+	///// Send mode signal to kinect process
+	sprintf(buffer,"%ld", lHat);
+	printf("%s\n",buffer);
+
+	// convert LPCTSTR pBuf to char [] buf
+	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buffer, strlen(buffer), szMsg2, BUF_SIZE);
+
+	pBuf2 = (LPTSTR) MapViewOfFile(hMapFile2,   // handle to map object
+		FILE_MAP_ALL_ACCESS, // read/write permission
+		0,
+		0,
+		BUF_SIZE);
+
+	if (pBuf2 == NULL)
+	{
+		_tprintf(TEXT("Could not map view of file (%d).\n"),
+			GetLastError());
+
+		CloseHandle(hMapFile2);
+		return ;
+	}
+	//Write buffer for kinect process
+	CopyMemory((PVOID)pBuf2, szMsg2, (_tcslen(szMsg2) * sizeof(TCHAR)));
 }
 
 void ParseRawInput(PRAWINPUT pRawInput)
@@ -339,6 +372,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return 1;
 	}
 
+	hMapFile2 = CreateFileMapping(
+		INVALID_HANDLE_VALUE,    // use paging file
+		NULL,                    // default security
+		PAGE_READWRITE,          // read/write access
+		0,                       // maximum object size (high-order DWORD)
+		BUF_SIZE,				 // maximum object size (low-order DWORD)
+		szName2);                // name of mapping object
+
+	if (hMapFile2 == NULL)
+	{
+		_tprintf(TEXT("Could not create file mapping object (%d).\n"),
+			GetLastError());
+		return 1;
+	}
+
 	AllocConsole();
 
 	freopen("CONOUT$", "wt", stdout);
@@ -386,7 +434,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	FreeConsole();
 	UnmapViewOfFile(pBuf);
+	UnmapViewOfFile(pBuf2);
 	CloseHandle(hMapFile);
+	CloseHandle(hMapFile2);
 
 	return (int)msg.wParam;
 }

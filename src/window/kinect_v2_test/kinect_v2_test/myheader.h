@@ -31,6 +31,7 @@
 #include<conio.h>
 #include<tchar.h>
 
+
 #define depthWidth 512 //Kinect v2 depth map width
 #define depthHeight 424 //Kinect v2 depth map height
 #define colorWidth 1920 //Kinect v2 color camera width

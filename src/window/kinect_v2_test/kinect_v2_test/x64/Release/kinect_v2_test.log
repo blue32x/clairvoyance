@@ -1,4 +1,4 @@
-﻿빌드 시작: 2015-05-24 오후 10:47:07
+﻿빌드 시작: 2015-05-25 오후 9:45:36
      1>2 노드의 "C:\Users\csh1\Desktop\sadsadasd\kinect_v2_test\kinect_v2_test.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\VCWizards\AppWiz\Generic\Application\templates\1042" /Zi /nologo /W3 /WX- /O2 /Oi /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc110.pdb" /Gd /TP /errorReport:prompt kinect_v2_test_main.cpp
@@ -19,4 +19,4 @@
 
 빌드했습니다.
 
-경과 시간: 00:00:02.84
+경과 시간: 00:00:02.95
