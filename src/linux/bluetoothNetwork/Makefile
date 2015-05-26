@@ -1,5 +1,5 @@
 CC = gcc
-TARGETS = rfcomm-client
+TARGETS = rfcomm-client devNode
 
 .PHONY: all
 all: $(TARGETS)
@@ -9,4 +9,4 @@ $(TARGETS): %:%.o
 
 .PHONY: clean
 clean:
-	rm *.o rfcomm-client
+	rm *.o rfcomm-client devNode

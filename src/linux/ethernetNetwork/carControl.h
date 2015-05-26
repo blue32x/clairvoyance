@@ -5,7 +5,7 @@
 #include <wiringPi.h>
 #include <wiringSerial.h>
 
-#define BUFFER_SIZE 1024
+#define BUF_SIZE 64
 
 // global variables
 unsigned char speedParam = 0x00;
@@ -20,7 +20,7 @@ void speedControl(int fd, int value)
 	unsigned char checkSum;
 
 	char strParam[] = "ff";
-	char strHex[BUFFER_SIZE];
+	char strHex[BUF_SIZE];
 	char *ptr;
 	float ratio = 500/127;
 
@@ -35,7 +35,7 @@ void speedControl(int fd, int value)
 		strParam[0] = strHex[0];
 		strParam[1] = strHex[1];
 		speedParam2 = strtol(strParam, &ptr, 16);
-		printf("%s, %x\n", strParam, speedParam2);	// For Debug
+		//printf("%s, %x\n", strParam, speedParam2);	// For Debug
 	}
 	else 
 	{
@@ -47,12 +47,12 @@ void speedControl(int fd, int value)
 		strParam[0] = '0';
 		strParam[1] = strHex[0];
 		speedParam = strtol(strParam, &ptr, 16);
-		printf("%s, %x\n", strParam, speedParam);	// For Debug
+		//printf("%s, %x\n", strParam, speedParam);	// For Debug
 
 		strParam[0] = strHex[1];
 		strParam[1] = strHex[2];
 		speedParam2 = strtol(strParam, &ptr, 16);
-		printf("%s, %x\n", strParam, speedParam2);	// For Debug
+		//printf("%s, %x\n", strParam, speedParam2);	// For Debug
 	}
 
 	printf("%x,  %x\n", speedParam, speedParam2);	// For debug
@@ -75,7 +75,7 @@ void back_speedControl(int fd, long value) //ff ff < ff 00
 	unsigned char checkSum;
 
 	char strParam[] = "ff";
-	char strHex[BUFFER_SIZE];
+	char strHex[BUF_SIZE];
 	char *ptr;
 	float ratio = 500/127;
 
@@ -86,14 +86,22 @@ void back_speedControl(int fd, long value) //ff ff < ff 00
 	{
 		value = 255;
 	}
-	value=255-value;
+	value = 255-value;
 	sprintf(strHex, "%x", value); 
-	speedParam=0xff;
+
+	speedParam = 0xff;
 
 	strParam[0] = strHex[0];
 	strParam[1] = strHex[1];
 	speedParam2 = strtol(strParam, &ptr, 16);
-	printf("%s, %x\n", strParam, speedParam2);	// For Debug
+
+    if(speedParam2 == 0xff)
+    {
+        speedParam = 0x00;
+        speedParam2 = 0x00;
+    }
+
+	printf("%x, %x\n", speedParam, speedParam2);	// For Debug
 
 	checkSum = ((op + len + RW + speedParam2 + speedParam) & 0x00ff);
 
@@ -119,7 +127,7 @@ void steeringControl(int fd, long value) // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 deg
 	unsigned char checkSum;
 
 	char strParam[] = "ff";
-	char strHex[BUFFER_SIZE];
+	char strHex[BUF_SIZE];
 	char *ptr;
 	float ratio = 500/127;
 
@@ -137,17 +145,17 @@ void steeringControl(int fd, long value) // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 deg
 	}
 
 	sprintf(strHex, "%x", value);
-	printf("%s\n", strHex);					// For Debug
+	//printf("%s\n", strHex);					// For Debug
 
 	strParam[0] = '0';
 	strParam[1] = strHex[0];
 	param = strtol(strParam, &ptr, 16);
-	printf("%s, %x\n", strParam, param);	// For Debug
+	//printf("%s, %x\n", strParam, param);	// For Debug
 
 	strParam[0] = strHex[1];
 	strParam[1] = strHex[2];
 	param2 = strtol(strParam, &ptr, 16);
-	printf("%s, %x\n", strParam, param2);	// For Debug
+	//printf("%s, %x\n", strParam, param2);	// For Debug
 
 	checkSum = ((op + len + RW + param2 + param) & 0x00ff);
 

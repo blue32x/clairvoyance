@@ -11,10 +11,11 @@
 #include <wiringPi.h>
 #include <wiringSerial.h>
 
-#include "util.h"
 #include "carControl.h"
 
-#define BUF_SIZE 1024
+#define BUF_SIZE 64
+#define NUM_DATA 14
+
 #define PORT 6061
 #define IP "192.168.0.82"
 
@@ -24,15 +25,15 @@ int main(int argc, char** argv)
 	int bytes_read;
 	struct sockaddr_in server_addr;
 	char buf[BUF_SIZE];
+	char *ptr;
 
 	int fd;
-	char **joystickData;
-	size_t numData;
+	long data[NUM_DATA] = {0};
 
-	long Data2, Data4, Data6, Data7, Data13;
+	long preData2, preData4, preData6, preData7, preData13;
 	long rf_count, lf_count, fl_count, bl_count, back_gear;
-	Data2=Data4=Data6=Data7=Data13=0;
-	rf_count=lf_count=fl_count=bl_count=back_gear=0;
+	preData2 = preData4 = preData6 = preData7 = preData13 = 0;
+	rf_count = lf_count = fl_count = bl_count = back_gear = 0;
 
 	/* Initailize socket network and connect socket */
 	client_socket = socket(PF_INET, SOCK_STREAM, 0);
@@ -68,95 +69,91 @@ int main(int argc, char** argv)
 		return 1 ;
 	}
 
-	// read data from the server
+	/* read data from the server */
 	while(1)
 	{
 		bytes_read = read(client_socket, buf, sizeof(buf));
 		if( bytes_read > 0 )
 		{
-			size_t i;
-			long joystickData13 = 0;
+			int i = 0;
 
-			/* check received string data */
-			printf("received [%s]\n", buf);
+			///// check received string data
+			//printf("received [%s]\n", buf);
 
-			/* split received string to string array and check */
-			joystickData = strsplit(buf, "/", &numData);
-			for (i = 0; i < numData; i++) {
-				printf("%s-", joystickData[i]);
-			}
-			printf("\n");
+			///// split received string to string array and check
+			ptr = strtok( buf, "/");
+			data[i] = atol(ptr);
+			//printf( "print string : %s ", ptr);
+			printf( "print long type : %ld ", data[i++]);
 
-			joystickData13 = atol(joystickData[13]);
-			if(joystickData13 != 0)
+			while( ptr = strtok( NULL, "/"))
 			{
-				joystickData13 = 1;
+				data[i] = atol(ptr);
+			//	printf( "%s ", ptr);
+				printf( "%ld ", data[i++]);
+			}
+			printf( "\n");
+
+			if(data[13] != 0)
+			{
+				data[13] = 1;
 			}
 
-			/* control model car by raw data */
-			///// Control Speed
-			if((joystickData13 - Data13) == 1)					//back gear
+			///// control model car by raw data
+			// Control Speed
+			if((data[13] - preData13) == 1)				
 			{
 				back_gear++;
 			}
-			if(back_gear%2 == 1)								//back gear
+			if(back_gear%2 == 1)						
 			{
-				back_speedControl(fd, atol(joystickData[1]));
+				back_speedControl(fd, data[1]);
 			}
 			else 
 			{
-				speedControl(fd, atol(joystickData[1]));
+				speedControl(fd, data[1]);
 			}
 
-			///// Control Steer
-			steeringControl(fd, atol(joystickData[0]));
+			// Control Steer
+			steeringControl(fd, data[0]);
 
-			///// Control Flicker
-			if((atol(joystickData[7]) - Data7) == 1)			//Right flicker
+			// Control Flicker
+			if((data[7] - preData7) == 1)		//Right flicker
 			{ 
 				rf_count++; 
 				right_flicker(fd, rf_count);
 			}
-			if((atol(joystickData[6]) - Data6) == 1)			//Left flicker
+			if((data[6] - preData6) == 1)		//Left flicker
 			{	
 				lf_count++;
 				left_flicker(fd, lf_count);
 			}
 
-			///// Control Light
-			if((atol(joystickData[2]) - Data2) == 1)			//forward_light
+			// Control Light
+			if((data[2] - preData2) == 1)		//forward_light
 			{	
 				fl_count++;
 				forward_light(fd, fl_count);
 			}
-			if((atol(joystickData[4]) - Data4) == 1)			//backward_light
+			if((data[4] - preData4) == 1)		//backward_light
 			{	
 				bl_count++;
 				back_light(fd, bl_count);  
 			}
 
-			///// Control Buzzer
-			if(atol(joystickData[3]) == 1)
+			// Control Buzzer
+			if(data[3] == 1)
 			{
 				soundControl(fd);
 			}
 
-			Data2 = atol(joystickData[2]);
-			Data4 = atol(joystickData[4]); 	
-			Data6 = atol(joystickData[6]); 
-			Data7 = atol(joystickData[7]);
-			Data13 = joystickData13; 
-
-			/* clean up heap allocation for after strplit() */
-			for (i = 0; i < numData; i++) {
-				free(joystickData[i]);
-			}
-			if (joystickData != NULL) {
-				free(joystickData);
-			}
+			preData2 = data[2];
+			preData4 = data[4]; 	
+			preData6 = data[6]; 
+			preData7 = data[7];
+			preData13 = data[13]; 
 		}
 	}
-
 	close(client_socket);
 	close(fd);
 	return 0;
