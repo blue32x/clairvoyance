@@ -1,12 +1,12 @@
 #include"myheader.h"
-LPSTR  lpMapping;
-char isStop[]="sex";
 
-
+HANDLE hMapFile3;
+LPCTSTR pBuf3;
+char buffer3[BUF_SIZE] = "0";
 
 void calibration_image_processing_all(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat)
 {
-		double colorR, colorG, colorB;
+	double colorR, colorG, colorB;
 	float depth_var;
 	//#pragma omp parallel for
 	for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
@@ -34,9 +34,22 @@ void calibration_image_processing_all(cv::Mat colorCoordinateMapperMat, DepthSpa
 				colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[0] = colorB;
 				colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[1] = colorG;
 				colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
-				
+
 			}
-			if(depth_var<530 && depth_var >=500) CopyMemory((PVOID)lpMapping,isStop,sizeof(char));
+			if(depth_var<530 && depth_var >=500){
+						///// Send mode signal to kinect process
+						buffer3[0] = '1';
+
+						//Write buffer3 for kinect process
+						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
+					}
+					else{
+						///// Send mode signal to kinect process
+						buffer3[0] = '0';
+
+						//Write buffer3 for kinect process
+						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
+					}
 		}
 	}
 }
@@ -137,17 +150,30 @@ void calibration_image_processing_gra(cv::Mat colorCoordinateMapperMat, DepthSpa
 						if(colorR >= 255)colorR = 254;
 					}
 
-					if(depth_var<530 && depth_var >=500) CopyMemory((PVOID)lpMapping,isStop,sizeof(char)); 
+					if(depth_var<530 && depth_var >=500){
+						///// Send mode signal to kinect process
+						buffer3[0] = '1';
+
+						//Write buffer3 for kinect process
+						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
+					}
+					else{
+						///// Send mode signal to kinect process
+						buffer3[0] = '0';
+
+						//Write buffer3 for kinect process
+						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
+					} 
 				}
 
 				colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[0] = colorB;
 				colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[1] = colorG;
 				colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
-				
+
 			}
 		}
 	}
-	
+
 }
 
 //붉은색 선으로 등고선 처리를 해준다.
@@ -231,7 +257,20 @@ void calibration_image_processing_near(cv::Mat colorCoordinateMapperMat, DepthSp
 						if(colorR >= 255) colorR = 254;
 						colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
 					}
-					if(depth_var<530 && depth_var >=500) CopyMemory((PVOID)lpMapping,isStop,sizeof(char));
+					if(depth_var<530 && depth_var >=500){
+						///// Send mode signal to kinect process
+						buffer3[0] = '1';
+
+						//Write buffer3 for kinect process
+						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
+					}
+					else{
+						///// Send mode signal to kinect process
+						buffer3[0] = '0';
+
+						//Write buffer3 for kinect process
+						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
+					}
 				}
 			}
 		}
@@ -239,7 +278,6 @@ void calibration_image_processing_near(cv::Mat colorCoordinateMapperMat, DepthSp
 }
 
 //가장 가까운 물체가 밝고 어둡고 깜빡이는 효과를 넣는다.
-int count=0;
 void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthSpacePoint depthSpacePoints[][colorWidth], cv::Mat depthMat,int bling_var)
 {
 	int colorR;
@@ -311,10 +349,18 @@ void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthS
 						}
 					}
 					if(depth_var<530 && depth_var >=500){
-						CopyMemory((PVOID)lpMapping,isStop,sizeof(char));
-						//count++;
-						//if(count%10==0)
-						//printf("warnning!!!!\n ");
+						///// Send mode signal to kinect process
+						buffer3[0] = '1';
+
+						//Write buffer3 for kinect process
+						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
+					}
+					else{
+						///// Send mode signal to kinect process
+						buffer3[0] = '0';
+
+						//Write buffer3 for kinect process
+						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
 					}
 				}
 			}

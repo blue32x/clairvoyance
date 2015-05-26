@@ -48,3 +48,5 @@
 #define GRAIMAGE '1'
 #define BLINGBLING '3'
 #define REDPOINT '4'
+
+#define BUF_SIZE 64

@@ -36,9 +36,6 @@ HANDLE hMapFile3;
 LPCTSTR pBuf;
 LPCTSTR pBuf2;
 LPCTSTR pBuf3;
-TCHAR szName[]=TEXT("RawData");
-TCHAR szName2[]=TEXT("ModeSig");
-TCHAR szName3[]=TEXT("StopSig");
 TCHAR szMsg[BUF_SIZE];
 TCHAR szMsg2[BUF_SIZE];
 TCHAR szMsg3[BUF_SIZE];
@@ -46,14 +43,36 @@ TCHAR szMsg3[BUF_SIZE];
 void SendJoystickValues()
 {
 	char buffer[BUF_SIZE];
+	char stopSig;
+	///// Receive stop signal from kinect process
+	pBuf3 = (LPTSTR) MapViewOfFile(hMapFile3, // handle to map object
+		FILE_MAP_ALL_ACCESS,  // read/write permission
+		0,
+		0,
+		BUF_SIZE);
+
+	if (pBuf3 == NULL)
+	{
+		_tprintf(TEXT("Could not map view of hMapFile3 (%d).\n"),
+			GetLastError());
+
+		CloseHandle(hMapFile3);
+		return ;
+	}
+
+	// convert LPCTSTR pBuf to char [] buf
+	WideCharToMultiByte(CP_ACP, 0, pBuf3, BUF_SIZE, buffer, BUF_SIZE, NULL, NULL);
+	stopSig = buffer[0];
+	//printf("stop signal : %c\n", stopSig);
+
 
 	///// Send raw data to Server process
-	sprintf(buffer,"%ld/%ld/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",
-		lAxisX,lAxisY,bButtonStates[0],bButtonStates[1],
+	sprintf(buffer,"%c/%ld/%ld/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",
+		stopSig,lAxisX,lAxisY,bButtonStates[0],bButtonStates[1],
 		bButtonStates[2],bButtonStates[3],bButtonStates[4],
 		bButtonStates[5],bButtonStates[6],bButtonStates[7],
 		bButtonStates[8],bButtonStates[9],bButtonStates[10],bButtonStates[11]);
-	printf("%s\n",buffer);
+	printf("raw data : %s\n",buffer);
 
 	// convert LPCTSTR pBuf to char [] buf
 	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buffer, strlen(buffer), szMsg, BUF_SIZE);
@@ -66,7 +85,7 @@ void SendJoystickValues()
 
 	if (pBuf == NULL)
 	{
-		_tprintf(TEXT("Could not map view of file (%d).\n"),
+		_tprintf(TEXT("Could not map view of hMapFile (%d).\n"),
 			GetLastError());
 
 		CloseHandle(hMapFile);
@@ -78,7 +97,7 @@ void SendJoystickValues()
 
 	///// Send mode signal to kinect process
 	sprintf(buffer,"%ld", lHat);
-	printf("%s\n",buffer);
+	printf("mode selection : %s\n",buffer);
 
 	// convert LPCTSTR pBuf to char [] buf
 	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buffer, strlen(buffer), szMsg2, BUF_SIZE);
@@ -91,7 +110,7 @@ void SendJoystickValues()
 
 	if (pBuf2 == NULL)
 	{
-		_tprintf(TEXT("Could not map view of file (%d).\n"),
+		_tprintf(TEXT("Could not map view of hMapFile2 (%d).\n"),
 			GetLastError());
 
 		CloseHandle(hMapFile2);
@@ -99,6 +118,8 @@ void SendJoystickValues()
 	}
 	//Write buffer for kinect process
 	CopyMemory((PVOID)pBuf2, szMsg2, (_tcslen(szMsg2) * sizeof(TCHAR)));
+
+	UnmapViewOfFile(pBuf3);
 }
 
 void ParseRawInput(PRAWINPUT pRawInput)
@@ -357,32 +378,50 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//
 	// Create Named Shared Memory
 	//
+	///// For Raw data
 	hMapFile = CreateFileMapping(
 		INVALID_HANDLE_VALUE,    // use paging file
 		NULL,                    // default security
 		PAGE_READWRITE,          // read/write access
 		0,                       // maximum object size (high-order DWORD)
 		BUF_SIZE,				 // maximum object size (low-order DWORD)
-		szName);                 // name of mapping object
+		TEXT("RawData"));        // name of mapping object
 
 	if (hMapFile == NULL)
 	{
-		_tprintf(TEXT("Could not create file mapping object (%d).\n"),
+		_tprintf(TEXT("Could not create hMapFile mapping object (%d).\n"),
 			GetLastError());
 		return 1;
 	}
 
+	///// For Mode select signal
 	hMapFile2 = CreateFileMapping(
-		INVALID_HANDLE_VALUE,    // use paging file
-		NULL,                    // default security
-		PAGE_READWRITE,          // read/write access
-		0,                       // maximum object size (high-order DWORD)
-		BUF_SIZE,				 // maximum object size (low-order DWORD)
-		szName2);                // name of mapping object
+		INVALID_HANDLE_VALUE,    
+		NULL,                    
+		PAGE_READWRITE,          
+		0,                       
+		BUF_SIZE,				 
+		TEXT("ModeSig"));                
 
 	if (hMapFile2 == NULL)
 	{
-		_tprintf(TEXT("Could not create file mapping object (%d).\n"),
+		_tprintf(TEXT("Could not create hMapFile2 mapping object (%d).\n"),
+			GetLastError());
+		return 1;
+	}
+
+	///// For Stop signal
+	hMapFile3 = CreateFileMapping(
+		INVALID_HANDLE_VALUE,    
+		NULL,                    
+		PAGE_READWRITE,          
+		0,                       
+		BUF_SIZE,				 
+		TEXT("StopSig"));                
+
+	if (hMapFile3 == NULL)
+	{
+		_tprintf(TEXT("Could not create hMapFile3 mapping object (%d).\n"),
 			GetLastError());
 		return 1;
 	}
@@ -435,8 +474,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	FreeConsole();
 	UnmapViewOfFile(pBuf);
 	UnmapViewOfFile(pBuf2);
+	UnmapViewOfFile(pBuf3);
 	CloseHandle(hMapFile);
 	CloseHandle(hMapFile2);
+	CloseHandle(hMapFile3);
 
 	return (int)msg.wParam;
 }

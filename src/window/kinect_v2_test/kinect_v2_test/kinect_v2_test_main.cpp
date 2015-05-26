@@ -63,27 +63,52 @@ int main(void)
 	HRESULT hResult = S_OK;
 	HRESULT depthResult =S_OK;
 
+	HANDLE hMapFile2;
+	LPCTSTR pBuf2;
+	char buffer2[BUF_SIZE];
 
-	
-	//shared memory
-	HANDLE hMemMap=NULL;
-	TCHAR szName[]=TEXT("ourStopSignal");
-	/*
-	hMemMap=CreateFileMapping(INVALID_HANDLE_VALUE,
-		NULL,
-		PAGE_READWRITE,
-		0,
-		1024,
-		szName);
-		*/
-	 hMemMap = OpenFileMapping(FILE_MAP_ALL_ACCESS, 
-                                FALSE, 
-                                TEXT("ourStopSignal"));
-	if(hMemMap ==NULL)
+	//
+	// Open Named Shared Memory
+	//
+	hMapFile2 = OpenFileMapping(
+		FILE_MAP_ALL_ACCESS,   // read/write access
+		FALSE,                 // do not inherit the name
+		TEXT("ModeSig"));      // name of mapping object
+
+	if (hMapFile2 == NULL)
 	{
-		//return -1;
-		std::cout<<"hMemMap is not open"<<std::endl;
+		_tprintf(TEXT("Could not open hMapFile2 mapping object (%d).\n"),
+			GetLastError());
+		return 1;
 	}
+
+	hMapFile3 = OpenFileMapping(
+		FILE_MAP_ALL_ACCESS,   // read/write access
+		FALSE,                 // do not inherit the name
+		TEXT("StopSig"));      // name of mapping object
+
+	if (hMapFile3 == NULL)
+	{
+		_tprintf(TEXT("Could not open hMapFile3 mapping object (%d).\n"),
+			GetLastError());
+		return 1;
+	}
+
+	pBuf3 = (LPTSTR) MapViewOfFile(hMapFile3,   // handle to map object
+		FILE_MAP_ALL_ACCESS, // read/write permission
+		0,
+		0,
+		BUF_SIZE);
+
+	if (pBuf3 == NULL)
+	{
+		_tprintf(TEXT("Could not map view of hMapFile3 (%d).\n"),
+			GetLastError());
+
+		CloseHandle(hMapFile3);
+		return 1;
+	}
+	
 	mykinect _kinect(pSensor);
 	pSensor=_kinect.initialize();
 	pColorSource=_kinect.setColorSource(pColorSource);
@@ -156,28 +181,10 @@ int main(void)
 	int bling_var = 0;
 	//Frame을 생성하고 color와 depth image를 출력한다.
 	///////////////////////////////////////////////////////////////////////////////////////
-
-
-//	CopyMemory((PVOID)lpMapping,isStop,sizeof(isStop));
+	int loopCount = 0;
 	while(1)
 	{
-		lpMapping=(LPSTR)MapViewOfFile(hMemMap,
-									FILE_MAP_ALL_ACCESS,
-									0,
-									0,
-									1024);
-	if(lpMapping ==NULL)
-	{
-	//	_tprintf(TEXT("Could not map view of file (%d).\n"), 
- 		//	GetLastError()); 
-
- 
- 		//CloseHandle(hMemMap); 
-	
- 
- 		//return 1; 
-
-	}
+		loopCount++;
 		//가장 가까운 거리를 구하기 위해 myMinDepth를 초기화해 준다.
 		myMinDepth = 4500;
 
@@ -275,7 +282,10 @@ int main(void)
 
 		//모드를 선택한다.
 		//영상 출력중에 입력키를 받는다.
-		mode_detec = cv::waitKey( 1);
+		cv::waitKey(1);
+
+		/*
+		//mode_detec = cv::waitKey( 1);
 
 		//받은 입력mode_detec이 효과를 원하는 키일 경우
 		//mode에 값을 넣어준다.
@@ -303,17 +313,69 @@ int main(void)
 		{
 			mode = FINDNEAR; // 1을 누르면 가까운 경우 붉은 색으로 표시
 		}
+		*/
+
+		///// Receive mode selection from joystick process
+		if(loopCount == 10)
+		{
+			loopCount = 0;
+
+			pBuf2 = (LPTSTR) MapViewOfFile(hMapFile2, // handle to map object
+				FILE_MAP_ALL_ACCESS,  // read/write permission
+				0,
+				0,
+				BUF_SIZE);
+
+			if (pBuf2 == NULL)
+			{
+				_tprintf(TEXT("Could not map view of hMapFile2 (%d).\n"),
+					GetLastError());
+
+				CloseHandle(hMapFile2);
+				return 1;
+			}
+
+			// convert LPCTSTR pBuf to char [] buf
+			WideCharToMultiByte(CP_ACP, 0, pBuf2, BUF_SIZE, buffer2, BUF_SIZE, NULL, NULL);
+
+			if(buffer2[0] == '0')
+			{
+				mode = NORMALIMAGE;
+			}
+			else if(buffer2[0] == '2')
+			{
+				mode = FINDNEAR;
+			}
+			else if(buffer2[0] == '4')
+			{
+				mode = GRAIMAGE;
+			}
+			else if(buffer2[0] == '6')
+			{
+				mode = BLINGBLING;
+			}
+
+			//printf("%c, %c\n", buffer2[0], mode);
+			//printf("current mode : %c\n", mode);
+
+			UnmapViewOfFile(pBuf2);
+		}
 
 		//만약 mode에서 선택영상을 받는 경우
 		//선택된 mode에 따라 영상처리 함수를 실행시킨다.
 		if(mode == NORMALIMAGE)
 		{
+			buffer3[0] = '0';
+			//Write buffer3 for kinect process
+			CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
+
 			//처리 과정 X
 			//calibration_image_processing_all(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
 		}
 		else if(mode == REDPOINT&& SUCCEEDED(depthResult))
 		{
-			calibration_image_processing_red(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
+			//calibration_image_processing_red(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
+			calibration_image_processing_all(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
 		}
 		else if(mode == FINDNEAR&& SUCCEEDED(depthResult))
 		{
@@ -374,19 +436,14 @@ int main(void)
 		cv::imshow("Output", colorMat);
 		cv::imshow("Depth", depthMat);
 		//cv::imshow("CoordinateMapper",colorCoordinateMapperMat);
-
-		
 		
 	}
 	////////////////////////////////////////////////////////////////////////////////////
 
-
-	//releasesharedmemory
-	//CopyMemory((PVOID)lpMapping,isStop,sizeof(char));
-
-	UnmapViewOfFile(lpMapping);
-	CloseHandle(hMemMap);
-	//strcpy(lpMapping,"Control");
+	UnmapViewOfFile(pBuf2);
+	UnmapViewOfFile(pBuf3);
+	CloseHandle(hMapFile2);
+	CloseHandle(hMapFile3);
 	SafeRelease( pColorSource );
 	SafeRelease( pColorReader );
 	SafeRelease( pDepthSource );

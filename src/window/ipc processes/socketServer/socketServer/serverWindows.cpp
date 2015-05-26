@@ -10,7 +10,6 @@
 #define BUF_SIZE 64
 #define NUM_DATA 14
 
-TCHAR szName[]=TEXT("RawData");
 HANDLE hMapFile;
 LPCTSTR pBuf;
 
@@ -19,12 +18,10 @@ int main()
 	//
 	// Open Named Shared Memory
 	//
-
 	hMapFile = OpenFileMapping(
 		FILE_MAP_ALL_ACCESS,   // read/write access
 		FALSE,                 // do not inherit the name
-		szName);               // name of mapping object
-
+		TEXT("RawData"));      // name of mapping object
 
 	if (hMapFile == NULL)
 	{
