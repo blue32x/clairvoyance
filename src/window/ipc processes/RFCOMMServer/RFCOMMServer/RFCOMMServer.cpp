@@ -113,14 +113,17 @@ int _tmain(int argc, _TCHAR* argv[])
 	*/
 
 	// send
+	/*
 	LARGE_INTEGER liCounter1, liCounter2, liFrequency;
 	QueryPerformanceFrequency(&liFrequency);
 	QueryPerformanceCounter(&liCounter1);         // Start
+	*/
 	int sended = 0;
-	int count = 0;
-	double elapsedTime = 0;
+	//int count = 0;
+	//double elapsedTime = 0;
 	while(1)
 	{
+		/*
 		QueryPerformanceCounter(&liCounter2);         // End
 		if((elapsedTime = (double)(liCounter2.QuadPart - liCounter1.QuadPart) / (double)liFrequency.QuadPart) > (double)1)
 		{
@@ -128,6 +131,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			return 1;
 		}
 		count++;
+		*/
 		pBuf = (LPTSTR) MapViewOfFile(hMapFile, // handle to map object
 			FILE_MAP_ALL_ACCESS,  // read/write permission
 			0,

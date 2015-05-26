@@ -32,7 +32,7 @@ char m_cText[100];
 
 HANDLE hMapFile;
 LPCTSTR pBuf;
-TCHAR szName[]=TEXT("GlobalMyFileMappingObject");
+TCHAR szName[]=TEXT("RawData");
 TCHAR szMsg[BUF_SIZE];
 
 void SendJoystickValues()
@@ -48,8 +48,24 @@ void SendJoystickValues()
 	// convert LPCTSTR pBuf to char [] buf
 	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, buffer, strlen(buffer), szMsg, BUF_SIZE);
 
+	pBuf = (LPTSTR) MapViewOfFile(hMapFile,   // handle to map object
+		FILE_MAP_ALL_ACCESS, // read/write permission
+		0,
+		0,
+		BUF_SIZE);
+
+	if (pBuf == NULL)
+	{
+		_tprintf(TEXT("Could not map view of file (%d).\n"),
+			GetLastError());
+
+		CloseHandle(hMapFile);
+		return ;
+	}
+
 	//Write buffer for rfcommServer process
 	CopyMemory((PVOID)pBuf, szMsg, (_tcslen(szMsg) * sizeof(TCHAR)));
+
 }
 
 void ParseRawInput(PRAWINPUT pRawInput)
@@ -83,11 +99,11 @@ void ParseRawInput(PRAWINPUT pRawInput)
 
 	// Button caps
 	CHECK( HidP_GetCaps(pPreparsedData, &Caps) == HIDP_STATUS_SUCCESS )
-	CHECK( pButtonCaps = (PHIDP_BUTTON_CAPS)HeapAlloc(hHeap, 0, sizeof(HIDP_BUTTON_CAPS) * Caps.NumberInputButtonCaps) );
+		CHECK( pButtonCaps = (PHIDP_BUTTON_CAPS)HeapAlloc(hHeap, 0, sizeof(HIDP_BUTTON_CAPS) * Caps.NumberInputButtonCaps) );
 
 	capsLength = Caps.NumberInputButtonCaps;
 	CHECK( HidP_GetButtonCaps(HidP_Input, pButtonCaps, &capsLength, pPreparsedData) == HIDP_STATUS_SUCCESS )
-	g_NumberOfButtons = pButtonCaps->Range.UsageMax - pButtonCaps->Range.UsageMin + 1;
+		g_NumberOfButtons = pButtonCaps->Range.UsageMax - pButtonCaps->Range.UsageMin + 1;
 
 	// Value caps
 	CHECK( pValueCaps = (PHIDP_VALUE_CAPS)HeapAlloc(hHeap, 0, sizeof(HIDP_VALUE_CAPS) * Caps.NumberInputValueCaps) );
@@ -98,7 +114,7 @@ void ParseRawInput(PRAWINPUT pRawInput)
 		// Get the pressed buttons
 		//
 
-	usageLength = g_NumberOfButtons;
+		usageLength = g_NumberOfButtons;
 	CHECK(
 		HidP_GetUsages(
 		HidP_Input, pButtonCaps->UsagePage, 0, usage, &usageLength, pPreparsedData,
@@ -303,7 +319,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	HWND hWnd;
 	MSG msg;
 	WNDCLASSEX wcex;
-		
+	int count = 0;
+
 	//
 	// Create Named Shared Memory
 	//
@@ -319,20 +336,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	{
 		_tprintf(TEXT("Could not create file mapping object (%d).\n"),
 			GetLastError());
-		return 1;
-	}
-	pBuf = (LPTSTR) MapViewOfFile(hMapFile,   // handle to map object
-		FILE_MAP_ALL_ACCESS, // read/write permission
-		0,
-		0,
-		BUF_SIZE);
-
-	if (pBuf == NULL)
-	{
-		_tprintf(TEXT("Could not map view of file (%d).\n"),
-			GetLastError());
-
-		CloseHandle(hMapFile);
 		return 1;
 	}
 
@@ -373,7 +376,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
-		SendJoystickValues();
+		if(count == 4)
+		{
+			count = 0;
+			SendJoystickValues();
+		}
+		count++;
 	}
 
 	FreeConsole();
