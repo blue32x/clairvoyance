@@ -67,7 +67,7 @@ void SendJoystickValues()
 
 
 	///// Send raw data to Server process
-	sprintf(buffer,"%c/%ld/%ld/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",
+	sprintf(buffer,"%ld/%ld/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%c",
 		lAxisX,lAxisY,bButtonStates[0],bButtonStates[1],
 		bButtonStates[2],bButtonStates[3],bButtonStates[4],
 		bButtonStates[5],bButtonStates[6],bButtonStates[7],

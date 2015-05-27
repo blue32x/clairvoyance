@@ -5,7 +5,7 @@
 #include <tchar.h>
 
 #define PORT 6061
-#define IP "192.168.0.82"
+#define IP "192.168.0.5"
 
 #define BUF_SIZE 64
 #define NUM_DATA 14
