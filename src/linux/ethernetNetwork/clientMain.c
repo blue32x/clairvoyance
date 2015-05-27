@@ -17,7 +17,7 @@
 #define NUM_DATA 14
 
 #define PORT 6061
-#define IP "192.168.0.82"
+#define IP "192.168.0.5"
 
 int main(int argc, char** argv)
 {
@@ -94,56 +94,65 @@ int main(int argc, char** argv)
 			}
 			printf( "\n");
 
-			if(data[13] != 0)
+			if(data[14] != 0)
 			{
-				data[13] = 1;
+				data[14] = 1;
 			}
 
-			///// control model car by raw data
-			// Control Speed
-			if((data[13] - preData13) == 1)				
+			if(data[14] == 0)
 			{
-				back_gear++;
+				///// control the model car by raw data
+				// Control Speed
+				if((data[13] - preData13) == 1)				
+				{
+					back_gear++;
+				}
+				if(back_gear%2 == 1)						
+				{
+					back_speedControl(fd, data[1]);
+				}
+				else 
+				{
+					speedControl(fd, data[1]);
+				}
+
+				// Control Steer
+				steeringControl(fd, data[0]);
+
+				// Control Flicker
+				if((data[7] - preData7) == 1)		//Right flicker
+				{ 
+					rf_count++; 
+					right_flicker(fd, rf_count);
+				}
+				if((data[6] - preData6) == 1)		//Left flicker
+				{	
+					lf_count++;
+					left_flicker(fd, lf_count);
+				}
+
+				// Control Light
+				if((data[2] - preData2) == 1)		//forward_light
+				{	
+					fl_count++;
+					forward_light(fd, fl_count);
+				}
+				if((data[4] - preData4) == 1)		//backward_light
+				{	
+					bl_count++;
+					back_light(fd, bl_count);  
+				}
+
+				// Control Buzzer
+				if(data[3] == 1)
+				{
+					soundControl(fd);
+				}
 			}
-			if(back_gear%2 == 1)						
+			else
 			{
-				back_speedControl(fd, data[1]);
-			}
-			else 
-			{
-				speedControl(fd, data[1]);
-			}
-
-			// Control Steer
-			steeringControl(fd, data[0]);
-
-			// Control Flicker
-			if((data[7] - preData7) == 1)		//Right flicker
-			{ 
-				rf_count++; 
-				right_flicker(fd, rf_count);
-			}
-			if((data[6] - preData6) == 1)		//Left flicker
-			{	
-				lf_count++;
-				left_flicker(fd, lf_count);
-			}
-
-			// Control Light
-			if((data[2] - preData2) == 1)		//forward_light
-			{	
-				fl_count++;
-				forward_light(fd, fl_count);
-			}
-			if((data[4] - preData4) == 1)		//backward_light
-			{	
-				bl_count++;
-				back_light(fd, bl_count);  
-			}
-
-			// Control Buzzer
-			if(data[3] == 1)
-			{
+				///// stop the model car and warning buzzer, if data[14](stop signal) is 1
+				stopCar(fd);
 				soundControl(fd);
 			}
 
