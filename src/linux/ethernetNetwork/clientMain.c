@@ -45,7 +45,7 @@ int main(int argc, char** argv)
 
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(PORT);			//server port
+	server_addr.sin_port = htons(PORT);					//server port
 	server_addr.sin_addr.s_addr = inet_addr(IP);		//server ip
 	printf("client socket initialize success\n");
 

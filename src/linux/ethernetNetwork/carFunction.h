@@ -25,7 +25,7 @@ int speedParam2 = 0;
 
 void stopCar(int fd)
 {
- 	unsigned char op = 0x91;
+	unsigned char op = 0x91;
 	unsigned char len = 0x04;
 	unsigned char RW = 0x01;
 	unsigned char speedParam = 0x00;
@@ -42,59 +42,57 @@ void stopCar(int fd)
 }
 void speedControl(int fd, long value) 
 {
-    // max speed is 01F4 (500) 256 =0100
-
-    unsigned char op = 0x91;
+	// max speed is 01F4 (500) 256 =0100
+	unsigned char op = 0x91;
 	unsigned char len = 0x04;
 	unsigned char RW = 0x01;   
 	unsigned char checkSum;
 
-        char strParam[] = "ff";
+	char strParam[] = "ff";
 	char strHex[BUFFER_SIZE];
 	char *ptr;
-	if( value == 0)
+
+	if(value == 0)
 	{
-	  value=-3;
+		value = -3;
 	}
 	else
 	{
-        value=(-1*value)/2;
-	}
-	
-        speedParam2+=value;
-        
-	if(speedParam2 < 0)
-        {
-	   speedParam2 = 0;
-        }
-	else if(speedParam2 > 500 )
-        {
-	 speedParam2=500;
-	}
-        else if(speedParam2 >255)
-        {
-	 speedParam=1;
-         speedParam2-=256;
-	 sprintf(strHex, "%x", speedParam2);
-	 strParam[0] = strHex[0];
-	 strParam[1] = strHex[1];
-	 speedParam2 = strtol(strParam, &ptr, 16);
-	 printf("%s, %x\n", strParam, speedParam2);
-	}
-	else
-	{
-	speedParam=0;
-	sprintf(strHex, "%x", speedParam2);
-	strParam[0] = strHex[0];
-	strParam[1] = strHex[1];
-	speedParam2 = strtol(strParam, &ptr, 16);
-	printf("%s, %x\n", strParam, speedParam2);
+		value = (-1*value)/2;
 	}
 
+	speedParam2 += value;
+
+	if(speedParam2 < 0)
+	{
+		speedParam2 = 0;
+	}
+	else if(speedParam2 > 500)
+	{
+		speedParam2 = 500;
+	}
+	else if(speedParam2 > 255)
+	{
+		speedParam=1;
+		speedParam2-=256;
+		sprintf(strHex, "%x", speedParam2);
+		strParam[0] = strHex[0];
+		strParam[1] = strHex[1];
+		speedParam2 = strtol(strParam, &ptr, 16);
+		printf("%s, %x\n", strParam, speedParam2);
+	}
+	else
+	{
+		speedParam=0;
+		sprintf(strHex, "%x", speedParam2);
+		strParam[0] = strHex[0];
+		strParam[1] = strHex[1];
+		speedParam2 = strtol(strParam, &ptr, 16);
+		printf("%s, %x\n", strParam, speedParam2);
+	}
 
 	printf("%x,  %x\n", speedParam, speedParam2);		// For debug
- 
-       	
+
 	checkSum = ((op + len + RW + speedParam2 + speedParam) & 0x00ff);
 
 	serialPutchar(fd, op);
@@ -104,46 +102,47 @@ void speedControl(int fd, long value)
 	serialPutchar(fd, speedParam);
 	serialPutchar(fd, checkSum);
 }
+
 void back_speedControl(int fd, long value) //ff ff < ff 00
 {
-        unsigned char op = 0x91;
+	unsigned char op = 0x91;
 	unsigned char len = 0x04;
 	unsigned char RW = 0x01;
 	unsigned char checkSum;
-        char strParam[] = "ff";
+	char strParam[] = "ff";
 	char strHex[BUFFER_SIZE];
 	char *ptr;
-	
+
 	if( value == 0)
 	{
-	  value=-3;
+		value=-3;
 	}
 	else
 	{
-        value=(-1*value)/2;
+		value=(-1*value)/2;
 	}
-	
-        speedParam2+=value;
-    if(speedParam2<0)
-    {
-        speedParam2=0;
-    }
+
+	speedParam2+=value;
+	if(speedParam2<0)
+	{
+		speedParam2=0;
+	}
 	if(speedParam2 > 255)
 	{
-	 speedParam2=256;
+		speedParam2=256;
 	}
-    if(speedParam2 ==0 )   
-    {speedParam = 0x00;}
-    else   
-    {speedParam=0xff;}
+	if(speedParam2 ==0 )   
+	{speedParam = 0x00;}
+	else   
+	{speedParam=0xff;}
 	speedParam2=256-speedParam2;
 	sprintf(strHex, "%x", value); 
 	strParam[0] = strHex[0];
 	strParam[1] = strHex[1];
 	speedParam2 = strtol(strParam, &ptr, 16);
-	
+
 	printf("%s, %x\n", strParam, speedParam2);
-	
+
 	checkSum = ((op + len + RW + speedParam2 + speedParam) & 0x00ff);
 
 	serialPutchar(fd, op);
@@ -201,7 +200,7 @@ void steeringControl(int fd, long value) // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 deg
 	strParam[1] = strHex[2];
 	param2 = strtol(strParam, &ptr, 16);
 	printf("%s, %x\n", strParam, param2);	// For Debug
-	
+
 	checkSum = ((op + len + RW + param2 + param) & 0x00ff);
 
 	serialPutchar(fd, op);
@@ -214,13 +213,13 @@ void steeringControl(int fd, long value) // 1000 ~/ ~ 1500 ~ / 2000 (+1 =0.1 deg
 
 void right_flicker(int fd,int f_count)
 {
-	
+
 	unsigned char op = 0xA1;
 	unsigned char len = 0x03;
 	unsigned char RW = 0x01;
 	unsigned char param;
 	unsigned char checkSum;
-    f_count = f_count % 2;
+	f_count = f_count % 2;
 	switch(f_count)
 	{
 	case 0: 
@@ -245,17 +244,17 @@ void right_flicker(int fd,int f_count)
 	serialPutchar(fd, RW);
 	serialPutchar(fd, param);
 	serialPutchar(fd, checkSum);
-	
+
 }
 void left_flicker(int fd,int f_count)
 {
-	
+
 	unsigned char op = 0xA1;
 	unsigned char len = 0x03;
 	unsigned char RW = 0x01;
 	unsigned char param;
 	unsigned char checkSum;
-     f_count = f_count % 2;
+	f_count = f_count % 2;
 	switch(f_count)
 	{
 	case 0: 
@@ -276,13 +275,13 @@ void left_flicker(int fd,int f_count)
 
 void forward_light(int fd,int l_count)
 {
-	
+
 	unsigned char op = 0xA0;
 	unsigned char len = 0x03;
 	unsigned char RW = 0x01;
 	unsigned char param ;
 	unsigned char checkSum ;
- l_count=l_count % 2 ;
+	l_count=l_count % 2 ;
 
 	switch(l_count)
 	{
@@ -294,7 +293,7 @@ void forward_light(int fd,int l_count)
 		param = 0x01 ;
 		checkSum = 0xA5 ;
 		break;
-	
+
 	}
 
 	serialPutchar (fd, op) ;
@@ -302,17 +301,17 @@ void forward_light(int fd,int l_count)
 	serialPutchar (fd, RW) ;
 	serialPutchar (fd, param) ;
 	serialPutchar (fd, checkSum) ;
-	
+
 }
 void back_light(int fd,int l_count)
 {
-	
+
 	unsigned char op = 0xA0;
 	unsigned char len = 0x03;
 	unsigned char RW = 0x01;
 	unsigned char param ;
 	unsigned char checkSum ;
- l_count=l_count % 2 ;
+	l_count=l_count % 2 ;
 
 	switch(l_count)
 	{
@@ -320,7 +319,7 @@ void back_light(int fd,int l_count)
 		param = 0x00 ; 
 		checkSum = 0xA4 ;
 		break;
-	
+
 	case 1: 
 		param = 0x02  ;
 		checkSum = 0xA6 ;
@@ -332,7 +331,7 @@ void back_light(int fd,int l_count)
 	serialPutchar (fd, RW) ;
 	serialPutchar (fd, param) ;
 	serialPutchar (fd, checkSum) ;
-	
+
 }
 
 void soundControl(int fd) 

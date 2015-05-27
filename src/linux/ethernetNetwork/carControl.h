@@ -11,9 +11,28 @@
 unsigned char speedParam = 0x00;
 unsigned char speedParam2 = 0x00;
 
+void stopCar(int fd)
+{
+	unsigned char op = 0x91;
+	unsigned char len = 0x04;
+	unsigned char RW = 0x01;
+	unsigned char speedParam = 0x00;
+	unsigned char speedParam2 = 0x00;   
+	unsigned char checkSum;
+
+	checkSum = ((op + len + RW + speedParam2 + speedParam) & 0x00ff);
+
+	serialPutchar(fd, op);
+	serialPutchar(fd, len);
+	serialPutchar(fd, RW);
+	serialPutchar(fd, speedParam2);
+	serialPutchar(fd, speedParam);
+	serialPutchar(fd, checkSum);
+}
+
 void speedControl(int fd, int value)
 {
-	// max speed is 01F4 (500)
+	// speed range is 0x0000(0) ~ 0x01F4(500)
 	unsigned char op = 0x91;
 	unsigned char len = 0x04;
 	unsigned char RW = 0x01;
@@ -67,8 +86,9 @@ void speedControl(int fd, int value)
 	serialPutchar(fd, checkSum);
 }
 
-void back_speedControl(int fd, long value) //ff ff < ff 00
+void back_speedControl(int fd, long value)
 {
+	// speed range is 0xFFFF(-1) ~ 0xFF00(-256)
 	unsigned char op = 0x91;
 	unsigned char len = 0x04;
 	unsigned char RW = 0x01;
@@ -202,6 +222,7 @@ void right_flicker(int fd, long f_count)
 	serialPutchar(fd, checkSum);
 
 }
+
 void left_flicker(int fd, long f_count)
 {
 
@@ -259,6 +280,7 @@ void forward_light(int fd, long l_count)
 	serialPutchar (fd, checkSum) ;
 
 }
+
 void back_light(int fd, long l_count)
 {
 
