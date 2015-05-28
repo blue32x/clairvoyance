@@ -22,6 +22,8 @@
 int gear = GEAR1;
 int speedParam = 0;
 int speedParam2 = 0;
+long speed=0;
+
 
 void stopCar(int fd)
 {
@@ -54,45 +56,49 @@ void speedControl(int fd, long value)
 
 	if(value == 0)
 	{
-		value = -3;
+		speed -= 10;
 	}
 	else
-	{
-		value = (-1*value)/2;
+	{        
+		speed += (-1*value)/20;
 	}
 
-	speedParam2 += value;
 
-	if(speedParam2 < 0)
+	if(speed < 0)
 	{
-		speedParam2 = 0;
+		speed= 0;
 	}
-	else if(speedParam2 > 500)
+	else if(speed > 500)
 	{
-		speedParam2 = 500;
+		speed = 500;
 	}
-	else if(speedParam2 > 255)
-	{
-		speedParam=1;
-		speedParam2-=256;
-		sprintf(strHex, "%x", speedParam2);
+
+
+
+        if(speed < 256 ) 
+     {   
+        if(speed < 10)
+       {   speedParam2 = speed;
+       } 
+         else 
+        {     
+		sprintf(strHex, "%x", speed);
 		strParam[0] = strHex[0];
 		strParam[1] = strHex[1];
+        speedParam = 0x00;
 		speedParam2 = strtol(strParam, &ptr, 16);
 		printf("%s, %x\n", strParam, speedParam2);
-	}
-	else
-	{
-		speedParam=0;
+         } 
+     }
+        else
+        {
 		sprintf(strHex, "%x", speedParam2);
-		strParam[0] = strHex[0];
-		strParam[1] = strHex[1];
-		speedParam2 = strtol(strParam, &ptr, 16);
+		strParam[0] = strHex[1];
+		strParam[1] = strHex[2];
+		speedParam= 0x01;
+        speedParam2 = strtol(strParam, &ptr, 16);
 		printf("%s, %x\n", strParam, speedParam2);
-	}
-
-	printf("%x,  %x\n", speedParam, speedParam2);		// For debug
-
+        }	
 	checkSum = ((op + len + RW + speedParam2 + speedParam) & 0x00ff);
 
 	serialPutchar(fd, op);
@@ -113,35 +119,36 @@ void back_speedControl(int fd, long value) //ff ff < ff 00
 	char strHex[BUFFER_SIZE];
 	char *ptr;
 
+
 	if( value == 0)
 	{
-		value=-3;
+		speed-=10;
 	}
 	else
-	{
-		value=(-1*value)/2;
+	{  
+		speed+=(-value)/20;
 	}
 
-	speedParam2+=value;
-	if(speedParam2<0)
-	{
-		speedParam2=0;
-	}
-	if(speedParam2 > 255)
-	{
-		speedParam2=256;
-	}
-	if(speedParam2 ==0 )   
-	{speedParam = 0x00;}
-	else   
-	{speedParam=0xff;}
-	speedParam2=256-speedParam2;
-	sprintf(strHex, "%x", value); 
+    
+      speedParam =0xff;
+    if (speed >256)
+    { speed = 256; 
+    }
+    else if(speed <= 0)
+    {speed = 0;
+     speedParam =0x00;
+    }    
+   
+    speed = 256 - speed;
+
+    /*
+    sprintf(strHex, "%x", speed); 
 	strParam[0] = strHex[0];
 	strParam[1] = strHex[1];
 	speedParam2 = strtol(strParam, &ptr, 16);
+    */
 
-	printf("%s, %x\n", strParam, speedParam2);
+    speedParam2=speed;
 
 	checkSum = ((op + len + RW + speedParam2 + speedParam) & 0x00ff);
 
