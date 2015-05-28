@@ -36,20 +36,19 @@ void calibration_image_processing_all(cv::Mat colorCoordinateMapperMat, DepthSpa
 				colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
 
 			}
-			if(depth_var<530 && depth_var >=500){
-						///// Send mode signal to kinect process
-						buffer3[0] = '1';
+			if(depth_var<600 && depth_var >=500)
+			{
+				buffer3[0] = '1';
+			}
+			/*
+			else{
+			///// Send mode signal to kinect process
+			buffer3[0] = '0';
 
-						//Write buffer3 for kinect process
-						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
-					}
-					else{
-						///// Send mode signal to kinect process
-						buffer3[0] = '0';
-
-						//Write buffer3 for kinect process
-						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
-					}
+			Write buffer3 for kinect process
+			CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
+			}
+			*/
 		}
 	}
 }
@@ -149,21 +148,18 @@ void calibration_image_processing_gra(cv::Mat colorCoordinateMapperMat, DepthSpa
 						if(colorG >= 255) colorG = 254;
 						if(colorR >= 255)colorR = 254;
 					}
-
-					if(depth_var<530 && depth_var >=500){
-						///// Send mode signal to kinect process
+					if(depth_var<600 && depth_var >=500){
 						buffer3[0] = '1';
-
-						//Write buffer3 for kinect process
-						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
 					}
+					/*
 					else{
 						///// Send mode signal to kinect process
 						buffer3[0] = '0';
 
-						//Write buffer3 for kinect process
+						Write buffer3 for kinect process
 						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
-					} 
+					}
+					*/
 				}
 
 				colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[0] = colorB;
@@ -257,20 +253,18 @@ void calibration_image_processing_near(cv::Mat colorCoordinateMapperMat, DepthSp
 						if(colorR >= 255) colorR = 254;
 						colorCoordinateMapperMat.at<cv::Vec4b>(y/SPEEDBOOST,x/SPEEDBOOST)[2] = colorR;
 					}
-					if(depth_var<530 && depth_var >=500){
-						///// Send mode signal to kinect process
+					if(depth_var<600 && depth_var >=500){
 						buffer3[0] = '1';
-
-						//Write buffer3 for kinect process
-						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
 					}
+					/*
 					else{
 						///// Send mode signal to kinect process
 						buffer3[0] = '0';
 
-						//Write buffer3 for kinect process
+						Write buffer3 for kinect process
 						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
 					}
+					*/
 				}
 			}
 		}
@@ -282,7 +276,7 @@ void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthS
 {
 	int colorR;
 	int depth_var;
-
+	//std::cout<<buffer3<<std::endl;
 	for(int y = 0; y < colorHeight; y+=SPEEDBOOST)
 	{
 		for(int x = 0; x < colorWidth; x+=SPEEDBOOST)
@@ -290,7 +284,7 @@ void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthS
 			DepthSpacePoint dPoint = depthSpacePoints[y][x]; //depthmap 좌표를 받아온다.
 			int depthX = static_cast<int>(dPoint.X); //depthX에 depthmap 좌표 x값을 저장한다.
 			int depthY = static_cast<int>(dPoint.Y); //depthY에 depthmap 좌표 y값을 저장한다.
-			if(depthX >=0 && depthX < depthWidth && depthY >= 0 && depthY < depthHeight)
+			if(depthX >=30 && depthX < depthWidth-30 && depthY >= 60 && depthY < depthHeight-60)
 			{
 				depth_var = depthMat.at<UINT16>(depthY,depthX);
 				if(depth_var != 0 || depth_var != 4500) // 노이즈 제거
@@ -348,20 +342,18 @@ void calibration_image_processing_bling(cv::Mat colorCoordinateMapperMat, DepthS
 
 						}
 					}
-					if(depth_var<530 && depth_var >=500){
-						///// Send mode signal to kinect process
+					if(depth_var<600 && depth_var >=500){
 						buffer3[0] = '1';
-
-						//Write buffer3 for kinect process
-						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
 					}
+					/*
 					else{
 						///// Send mode signal to kinect process
 						buffer3[0] = '0';
 
-						//Write buffer3 for kinect process
+						Write buffer3 for kinect process
 						CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
 					}
+					*/
 				}
 			}
 		}

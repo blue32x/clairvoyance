@@ -186,7 +186,7 @@ int main(void)
 	{
 		loopCount++;
 		//가장 가까운 거리를 구하기 위해 myMinDepth를 초기화해 준다.
-		myMinDepth = 4500;
+		
 
 		//colorFrame
 		IColorFrame * pColorFrame = nullptr; //color 이미지를 얻기 위한 Frame 인터페이스
@@ -213,6 +213,7 @@ int main(void)
 			//Depth 데이터가 저장된 배열의 포인터를 얻을 수 있다. 여기서 Depth 데이터를 시각화 하기 위한 변환처리에 편리한 cv::Mat 형으로 받고있다.
 			hResult = pDepthFrame -> AccessUnderlyingBuffer(&depthBufferSize, reinterpret_cast<UINT16**> (&depthBufferMat.data));
 
+			myMinDepth = 4500;
 			for(int y=0; y < depthHeight; y++)
 			{
 				for(int x = 0; x < depthWidth; x++)
@@ -220,8 +221,7 @@ int main(void)
 					if(myMinDepth > depthBufferMat.at<UINT16>(y,x) && depthBufferMat.at<UINT16>(y,x) != 0  )
 					 {
 						 myMinDepth= depthBufferMat.at<UINT16>(y,x);
-						 DrawX=x;
-						 DrawY=y;
+						
 					 }
 				}
 			}
@@ -282,7 +282,7 @@ int main(void)
 
 		//모드를 선택한다.
 		//영상 출력중에 입력키를 받는다.
-		cv::waitKey(1);
+		cv::waitKey(1); //fps 가 너무 빨라지면 450 default 값으로 틴다
 
 		/*
 		//mode_detec = cv::waitKey( 1);
@@ -363,38 +363,45 @@ int main(void)
 
 		//만약 mode에서 선택영상을 받는 경우
 		//선택된 mode에 따라 영상처리 함수를 실행시킨다.
+		//mode=BLINGBLING;
 		if(mode == NORMALIMAGE)
 		{
-			buffer3[0] = '0';
-			//Write buffer3 for kinect process
-			CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
-
 			//처리 과정 X
 			//calibration_image_processing_all(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
+
+			//Write buffer3 for kinect process
+			buffer3[0] = '0';
+			CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
 		}
-		else if(mode == REDPOINT&& SUCCEEDED(depthResult))
+		else if(mode == REDPOINT && SUCCEEDED(depthResult))
 		{
 			//calibration_image_processing_red(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
 			calibration_image_processing_all(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
+			CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
+			buffer3[0]='0';
 		}
-		else if(mode == FINDNEAR&& SUCCEEDED(depthResult))
+		else if(mode == FINDNEAR && SUCCEEDED(depthResult))
 		{
 			calibration_image_processing_near(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
+			CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
+			buffer3[0]='0';
 		}
-		else if(mode == BLINGBLING&& SUCCEEDED(depthResult))
+		else if(mode == BLINGBLING && SUCCEEDED(depthResult))
 		{
 			bling_var += 1;
 			if(bling_var > 100)
 			{
 				bling_var = 0;
 			}
-			
 			calibration_image_processing_bling(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat, bling_var);
-			
+			CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
+			buffer3[0]='0';
 		}
-		else if(mode == GRAIMAGE&& SUCCEEDED(depthResult))
+		else if(mode == GRAIMAGE && SUCCEEDED(depthResult))
 		{
 			calibration_image_processing_gra(colorCoordinateMapperMat, depthSpacePoints, depthBufferMat);
+			CopyMemory((PVOID)pBuf3, buffer3, sizeof(buffer3));
+			buffer3[0]='0';
 		}
 		//영상처리를 위한 함수
 		
@@ -425,8 +432,6 @@ int main(void)
 		//fps를 이미지 버퍼에 출력한다.
 		cv::putText(colorMat,strBuffer,mypoint,2,1.2,cv::Scalar::all(255));
 		//cv::circle(colorMat,cv::Point(DrawX,DrawY),10,cv::Scalar::all(255),2);
-
-
 
 		SafeRelease(pDepthFrame); 
 		SafeRelease(pColorFrame); //Frame을 풀어놓는다.

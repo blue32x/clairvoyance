@@ -67,18 +67,13 @@ void SendJoystickValues()
 
 
 	///// Send raw data to Server process
+
 	sprintf(buffer,"%ld/%ld/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%c",
 		lAxisX,lAxisY,bButtonStates[0],bButtonStates[1],
 		bButtonStates[2],bButtonStates[3],bButtonStates[4],
 		bButtonStates[5],bButtonStates[6],bButtonStates[7],
 		bButtonStates[8],bButtonStates[9],bButtonStates[10],bButtonStates[11], stopSig);
-	/*
-	sprintf(buffer,"%ld/%ld/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",
-		lAxisX,lAxisY,bButtonStates[0],bButtonStates[1],
-		bButtonStates[2],bButtonStates[3],bButtonStates[4],
-		bButtonStates[5],bButtonStates[6],bButtonStates[7],
-		bButtonStates[8],bButtonStates[9],bButtonStates[10],bButtonStates[11]);
-	*/
+
 	printf("raw data : %s\n",buffer);
 
 	// convert LPCTSTR pBuf to char [] buf
