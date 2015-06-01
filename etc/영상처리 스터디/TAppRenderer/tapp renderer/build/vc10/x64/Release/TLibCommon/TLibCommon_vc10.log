@@ -1,0 +1,63 @@
+﻿빌드 시작: 2015-01-14 오후 4:47:53
+     1>3 노드의 "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\vc10\TLibCommon_vc10.vcxproj" 프로젝트(Build 대상)입니다.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\source\Lib\\" /I"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\compat\msvc" /Zi /nologo /W3 /WX- /O2 /Ob2 /Ot /GL /D WIN32 /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _MBCS /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\\" /Fd"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\vc110.pdb" /Gd /TP /errorReport:prompt ..\..\source\Lib\TLibCommon\ContextModel.cpp ..\..\source\Lib\TLibCommon\ContextModel3DBuffer.cpp ..\..\source\Lib\TLibCommon\SEI.cpp ..\..\source\Lib\TLibCommon\TComBitStream.cpp ..\..\source\Lib\TLibCommon\TComCABACTables.cpp ..\..\source\Lib\TLibCommon\TComDataCU.cpp ..\..\source\Lib\TLibCommon\TComInterpolationFilter.cpp ..\..\source\Lib\TLibCommon\TComLoopFilter.cpp ..\..\source\Lib\TLibCommon\TComMotionInfo.cpp ..\..\source\Lib\TLibCommon\TComPattern.cpp ..\..\source\Lib\TLibCommon\TComPic.cpp ..\..\source\Lib\TLibCommon\TComPicSym.cpp ..\..\source\Lib\TLibCommon\TComPicYuv.cpp ..\..\source\Lib\TLibCommon\TComPicYuvMD5.cpp ..\..\source\Lib\TLibCommon\TComPrediction.cpp ..\..\source\Lib\TLibCommon\TComRdCost.cpp ..\..\source\Lib\TLibCommon\TComRdCostWeightPrediction.cpp ..\..\source\Lib\TLibCommon\TComRom.cpp ..\..\source\Lib\TLibCommon\TComSampleAdaptiveOffset.cpp ..\..\source\Lib\TLibCommon\TComSlice.cpp ..\..\source\Lib\TLibCommon\TComTrQuant.cpp ..\..\source\Lib\TLibCommon\TComWedgelet.cpp ..\..\source\Lib\TLibCommon\TComWeightPrediction.cpp ..\..\source\Lib\TLibCommon\TComYuv.cpp
+         ContextModel.cpp
+         ContextModel3DBuffer.cpp
+         SEI.cpp
+         TComBitStream.cpp
+         TComCABACTables.cpp
+         TComDataCU.cpp
+         TComInterpolationFilter.cpp
+         TComLoopFilter.cpp
+         TComMotionInfo.cpp
+         TComPattern.cpp
+         TComPic.cpp
+         TComPicSym.cpp
+         TComPicYuv.cpp
+         TComPicYuvMD5.cpp
+         TComPrediction.cpp
+         TComRdCost.cpp
+         TComRdCostWeightPrediction.cpp
+         TComRom.cpp
+         TComSampleAdaptiveOffset.cpp
+         TComSlice.cpp
+         컴파일하고 있습니다...
+         TComTrQuant.cpp
+         TComWedgelet.cpp
+         TComWeightPrediction.cpp
+         TComYuv.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\source\Lib\\" /I"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\compat\msvc" /Zi /nologo /W3 /WX- /O2 /Ob2 /Ot /GL /D WIN32 /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _MBCS /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\\" /Fd"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\vc110.pdb" /Gd /TC /errorReport:prompt ..\..\source\Lib\libmd5\libmd5.c
+         libmd5.c
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TLibCommon.lib" /NOLOGO /MACHINE:X64 /LTCG "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\ContextModel.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\ContextModel3DBuffer.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\libmd5.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\SEI.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComBitStream.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComCABACTables.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComDataCU.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComInterpolationFilter.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComLoopFilter.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComMotionInfo.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComPattern.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComPic.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComPicSym.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComPicYuv.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComPicYuvMD5.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComPrediction.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComRdCost.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComRdCostWeightPrediction.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComRom.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComSampleAdaptiveOffset.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComSlice.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComTrQuant.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComWedgelet.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComWeightPrediction.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TComYuv.obj"
+         TLibCommon_vc10.vcxproj -> C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibCommon\TLibCommon.lib
+     1>"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\vc10\TLibCommon_vc10.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
+
+빌드했습니다.
+
+경과 시간: 00:00:24.83

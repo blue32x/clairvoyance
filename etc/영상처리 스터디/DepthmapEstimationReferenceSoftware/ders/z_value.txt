@@ -1,0 +1,24 @@
+depth_dog41_segm_time_0_20.yuv(Depth Type 0)
+Depth map from camera is outputted. 
+NearestDepthValue    3907.725727
+FarthestDepthValue   8221.650623
+Input these values to View Synthesis software.
+
+depth_dog41_segm_time_0_20.yuv(Depth Type 0)
+Depth map from camera is outputted. 
+NearestDepthValue    3907.725727
+FarthestDepthValue   8221.650623
+Input these values to View Synthesis software.
+
+depth_dog41_segm_time_0_20.yuv(Depth Type 0)
+Depth map from camera is outputted. 
+NearestDepthValue    3907.725727
+FarthestDepthValue   8221.650623
+Input these values to View Synthesis software.
+
+depth_dog41_segm_time_0_20.yuv(Depth Type 0)
+Depth map from camera is outputted. 
+NearestDepthValue    3907.725727
+FarthestDepthValue   8221.650623
+Input these values to View Synthesis software.
+

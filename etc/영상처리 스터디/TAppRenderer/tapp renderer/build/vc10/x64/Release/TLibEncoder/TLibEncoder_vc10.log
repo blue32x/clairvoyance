@@ -1,0 +1,49 @@
+﻿빌드 시작: 2015-01-14 오후 4:47:53
+     1>5 노드의 "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\vc10\TLibEncoder_vc10.vcxproj" 프로젝트(Build 대상)입니다.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\source\Lib\\" /I"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\compat\msvc" /Zi /nologo /W3 /WX- /O2 /Ob2 /Ot /GL /D WIN32 /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _MBCS /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\\" /Fd"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\vc110.pdb" /Gd /TP /errorReport:prompt ..\..\source\Lib\TLibEncoder\NALwrite.cpp ..\..\source\Lib\TLibEncoder\SEIwrite.cpp ..\..\source\Lib\TLibEncoder\SyntaxElementWriter.cpp ..\..\source\Lib\TLibEncoder\TEncAnalyze.cpp ..\..\source\Lib\TLibEncoder\TEncBinCoderCABAC.cpp ..\..\source\Lib\TLibEncoder\TEncBinCoderCABACCounter.cpp ..\..\source\Lib\TLibEncoder\TEncCavlc.cpp ..\..\source\Lib\TLibEncoder\TEncCu.cpp ..\..\source\Lib\TLibEncoder\TEncEntropy.cpp ..\..\source\Lib\TLibEncoder\TEncGOP.cpp ..\..\source\Lib\TLibEncoder\TEncPic.cpp ..\..\source\Lib\TLibEncoder\TEncPreanalyzer.cpp ..\..\source\Lib\TLibEncoder\TEncRateCtrl.cpp ..\..\source\Lib\TLibEncoder\TEncSampleAdaptiveOffset.cpp ..\..\source\Lib\TLibEncoder\TEncSbac.cpp ..\..\source\Lib\TLibEncoder\TEncSearch.cpp ..\..\source\Lib\TLibEncoder\TEncSlice.cpp ..\..\source\Lib\TLibEncoder\TEncTop.cpp ..\..\source\Lib\TLibEncoder\WeightPredAnalysis.cpp
+         NALwrite.cpp
+         SEIwrite.cpp
+         SyntaxElementWriter.cpp
+         TEncAnalyze.cpp
+         TEncBinCoderCABAC.cpp
+         TEncBinCoderCABACCounter.cpp
+         TEncCavlc.cpp
+         TEncCu.cpp
+         TEncEntropy.cpp
+         TEncGOP.cpp
+         TEncPic.cpp
+         TEncPreanalyzer.cpp
+         TEncRateCtrl.cpp
+         TEncSampleAdaptiveOffset.cpp
+         TEncSbac.cpp
+         TEncSearch.cpp
+         TEncSlice.cpp
+         TEncTop.cpp
+         WeightPredAnalysis.cpp
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TLibEncoder.lib" /NOLOGO /MACHINE:X64 /LTCG "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\NALwrite.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\SEIwrite.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\SyntaxElementWriter.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncAnalyze.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncBinCoderCABAC.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncBinCoderCABACCounter.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncCavlc.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncCu.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncEntropy.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncGOP.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncPic.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncPreanalyzer.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncRateCtrl.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncSampleAdaptiveOffset.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncSbac.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncSearch.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncSlice.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TEncTop.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\WeightPredAnalysis.obj"
+         TLibEncoder_vc10.vcxproj -> C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibEncoder\TLibEncoder.lib
+     1>"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\vc10\TLibEncoder_vc10.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
+
+빌드했습니다.
+
+경과 시간: 00:00:27.60

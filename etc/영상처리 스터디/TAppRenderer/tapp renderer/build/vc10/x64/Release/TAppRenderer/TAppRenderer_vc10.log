@@ -1,0 +1,23 @@
+﻿빌드 시작: 2015-01-14 오후 4:48:18
+     1>2 노드의 "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\vc10\TAppRenderer_vc10.vcxproj" 프로젝트(Build 대상)입니다.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\source\Lib\\" /I"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\compat\msvc" /Zi /nologo /W3 /WX- /O2 /Ob2 /Ot /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /D _MBCS /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TAppRenderer\\" /Fd"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TAppRenderer\vc110.pdb" /Gd /TP /errorReport:prompt ..\..\source\App\TAppRenderer\RendererMain.cpp ..\..\source\App\TAppRenderer\TAppRendererCfg.cpp ..\..\source\App\TAppRenderer\TAppRendererTop.cpp
+         RendererMain.cpp
+         TAppRendererCfg.cpp
+         TAppRendererTop.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\bin\vc10\x64\Release\TAppRenderer.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\bin\vc10\x64\Release\TAppRenderer.pdb" /SUBSYSTEM:CONSOLE /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\bin\vc10\x64\Release\TAppRenderer.lib" /MACHINE:X64 "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TAppRenderer\RendererMain.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TAppRenderer\TAppRendererCfg.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TAppRenderer\TAppRendererTop.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\vc10\x64\Release\TAppCommon\TAppCommon.lib"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\vc10\x64\Release\TLibCommon\TLibCommon.lib"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\vc10\x64\Release\TLibRenderer\TLibRenderer.lib"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\vc10\x64\Release\TLibVideoIo\TLibVideoIO.lib"
+         코드를 생성하고 있습니다.
+         코드를 생성했습니다.
+         TAppRenderer_vc10.vcxproj -> C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\bin\vc10\x64\Release\TAppRenderer.exe
+     1>"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\vc10\TAppRenderer_vc10.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
+
+빌드했습니다.
+
+경과 시간: 00:00:11.23

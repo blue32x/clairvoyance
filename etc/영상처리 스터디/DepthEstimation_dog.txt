@@ -1,0 +1,38 @@
+#=============== INPUT PARAMETERS ===============
+DepthType                              0                     # 0...Depth from camera, 1...Depth from the origin of 3D space
+SourceWidth                            1280                  # Input frame width
+SourceHeight                           960                   # Input frame height
+StartFrame                             0                # Starting frame #
+TotalNumberOfFrames                    15                   # Total number of input frames
+LeftCameraName                         param_dog39           # Name of left camera
+CenterCameraName                       param_dog41           # Name of center camera
+RightCameraName                        param_dog43           # Name of right camera
+MinimumValueOfDisparitySearchRange     1                     # Minimum value of disparity search range. This value is not always same as all pairs of views.
+MaximumValueOfDisparitySearchRange     40                    # Maximum value of disparity search range. This value is not always same as all pairs of views. 
+MinimumValueOfDisparityRange           0                     # Minimum value of disparity range. This value is smaller than or equal to minimum value of disparity search ranges for all views.
+MaximumValueOfDisparityRange           40                    # Maximum value of disparity range. This value is larger than or equal to maximum value of disparity search ranges for all views. 
+SmoothingCoefficient                   2.0                   # Smoothing coefficient to compute depth maps
+FileLeftViewImage                      C:\\YUV\\Dog\\dog039.yuv           # Name of left input video
+FileCenterViewImage                    C:\\YUV\\Dog\\dog041.yuv           # Name of center input video
+FileRightViewImage                     C:\\YUV\\Dog\\dog043.yuv           # Name of right input video
+FileOutputDepthMapImage                depth_dog41_segm_time_0_20.yuv          # Name of output depth map file
+FileCameraParameter                    ..\\camera_parameter_files\\cam_param_dog.txt     # Name of text file which includes camera parameters
+
+BaselineBasis                          1                     # 0...minimum baseline, 1...maximum baseline, 2...left baseline, 3...right baseline
+Precision                              4                     # 1...Integer-pel, 2...Half-pel, 4...Quater-pel
+SearchLevel                            2                     # 1...Integer-pel, 2...Half-pel, 4...Quater-pel
+Filter                                 1                     # 0...(Bi)-linear, 1...(Bi)-Cubic, 2...MPEG-4 AVC 6-tap
+MatchingMethod                         2                     # 0...Conventional, 1...Disaprity-based, 2...Homography-based
+
+#========== Temporal Enhancement ==========
+TemporalEnhancement                    1                     # 0...Off, 1...On
+Threshold                              2.00                  # Threshold of MAD
+
+#========== Size of Matching Block ==========
+MatchingBlock                         3               # 1...Pixel matching, 3...3x3 block matching
+
+#========== Segmentation ==========
+SmoothingCoefficient2                  1.00                 # Smoothing coefficient to compute depth maps
+ImageSegmentation                      1             # 0...Off, 1...On
+SegmentationMethod                     3             # 1...mean shift algorithm, 2...phyramid segmentation, 3...K mean clustering
+MaxCluster                             64              # Positive Integer Value

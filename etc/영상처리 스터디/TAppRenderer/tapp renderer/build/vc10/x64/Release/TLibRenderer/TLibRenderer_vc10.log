@@ -1,0 +1,27 @@
+﻿빌드 시작: 2015-01-14 오후 4:47:59
+     1>3 노드의 "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\vc10\TLibRenderer_vc10.vcxproj" 프로젝트(Build 대상)입니다.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\source\Lib\\" /I"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\compat\msvc" /Zi /nologo /W3 /WX- /O2 /Ob2 /Ot /GL /D WIN32 /D NDEBUG /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _MBCS /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibRenderer\\" /Fd"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibRenderer\vc110.pdb" /Gd /TP /errorReport:prompt ..\..\source\Lib\TLibRenderer\TRenFilter.cpp ..\..\source\Lib\TLibRenderer\TRenImagePlane.cpp ..\..\source\Lib\TLibRenderer\TRenImage.cpp ..\..\source\Lib\TLibRenderer\TRenInterpFilter.cpp ..\..\source\Lib\TLibRenderer\TRenModel.cpp ..\..\source\Lib\TLibRenderer\TRenModSetupStrParser.cpp ..\..\source\Lib\TLibRenderer\TRenSingleModel.cpp ..\..\source\Lib\TLibRenderer\TRenTop.cpp
+         TRenFilter.cpp
+         TRenImagePlane.cpp
+         TRenImage.cpp
+         TRenInterpFilter.cpp
+         TRenModel.cpp
+         TRenModSetupStrParser.cpp
+         TRenSingleModel.cpp
+         TRenTop.cpp
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibRenderer\TLibRenderer.lib" /NOLOGO /MACHINE:X64 /LTCG "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibRenderer\TRenFilter.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibRenderer\TRenImagePlane.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibRenderer\TRenImage.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibRenderer\TRenInterpFilter.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibRenderer\TRenModel.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibRenderer\TRenModSetupStrParser.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibRenderer\TRenSingleModel.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibRenderer\TRenTop.obj"
+         TLibRenderer_vc10.vcxproj -> C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibRenderer\TLibRenderer.lib
+     1>"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\vc10\TLibRenderer_vc10.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
+
+빌드했습니다.
+
+경과 시간: 00:00:08.10

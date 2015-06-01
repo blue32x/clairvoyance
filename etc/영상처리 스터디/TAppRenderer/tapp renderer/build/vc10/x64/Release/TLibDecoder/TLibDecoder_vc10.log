@@ -1,0 +1,35 @@
+﻿빌드 시작: 2015-01-14 오후 4:47:53
+     1>4 노드의 "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\vc10\TLibDecoder_vc10.vcxproj" 프로젝트(Build 대상)입니다.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\source\Lib\\" /I"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\..\compat\msvc" /Zi /nologo /W3 /WX- /O2 /Ob2 /Ot /GL /D WIN32 /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _MBCS /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\\" /Fd"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\vc110.pdb" /Gd /TP /errorReport:prompt ..\..\source\Lib\TLibDecoder\AnnexBread.cpp ..\..\source\Lib\TLibDecoder\NALread.cpp ..\..\source\Lib\TLibDecoder\SEIread.cpp ..\..\source\Lib\TLibDecoder\SyntaxElementParser.cpp ..\..\source\Lib\TLibDecoder\TDecBinCoderCABAC.cpp ..\..\source\Lib\TLibDecoder\TDecCAVLC.cpp ..\..\source\Lib\TLibDecoder\TDecCu.cpp ..\..\source\Lib\TLibDecoder\TDecEntropy.cpp ..\..\source\Lib\TLibDecoder\TDecGop.cpp ..\..\source\Lib\TLibDecoder\TDecSbac.cpp ..\..\source\Lib\TLibDecoder\TDecSlice.cpp ..\..\source\Lib\TLibDecoder\TDecTop.cpp
+         AnnexBread.cpp
+         NALread.cpp
+         SEIread.cpp
+         SyntaxElementParser.cpp
+         TDecBinCoderCABAC.cpp
+         TDecCAVLC.cpp
+         TDecCu.cpp
+         TDecEntropy.cpp
+         TDecGop.cpp
+         TDecSbac.cpp
+         TDecSlice.cpp
+         TDecTop.cpp
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\TLibDecoder.lib" /NOLOGO /MACHINE:X64 /LTCG "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\AnnexBread.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\NALread.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\SEIread.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\SyntaxElementParser.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\TDecBinCoderCABAC.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\TDecCAVLC.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\TDecCu.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\TDecEntropy.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\TDecGop.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\TDecSbac.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\TDecSlice.obj"
+         "C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\TDecTop.obj"
+         TLibDecoder_vc10.vcxproj -> C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\\vc10\x64\Release\TLibDecoder\TLibDecoder.lib
+     1>"C:\Users\DPLAB\Desktop\졸업프로젝트\tapp renderer\build\vc10\TLibDecoder_vc10.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
+
+빌드했습니다.
+
+경과 시간: 00:00:15.42
